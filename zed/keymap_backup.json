@@ -1,0 +1,54 @@
+// Zed keymap
+//
+// For information on binding keys, see the Zed
+// documentation: https://zed.dev/docs/key-bindings
+//
+// To see the default key bindings run `zed: open default keymap`
+// from the command palette.
+[
+  {
+    "context": "Workspace",
+    "bindings": {
+      // "shift shift": "file_finder::Toggle"
+    }
+  },
+  {
+    "context": "Editor && vim_mode == insert",
+    "bindings": {
+      // "j k": "vim::NormalBefore"
+    }
+  },
+  {
+    "context": "Editor && (vim_mode == normal || vim_mode == visual) && !VimWaiting && !menu",
+    "bindings": {
+      "ctrl-h": ["workspace::ActivatePaneInDirection", "Left"],
+      "ctrl-l": ["workspace::ActivatePaneInDirection", "Right"],
+      "ctrl-k": ["workspace::ActivatePaneInDirection", "Up"],
+      "ctrl-j": ["workspace::ActivatePaneInDirection", "Down"],
+      "space c": "pane::CloseActiveItem",
+      "space b c": "pane::CloseInactiveItems",
+      "space b C": "pane::CloseAllItems",
+      "space e": "workspace::ToggleLeftDock",
+      "space f f": "file_finder::Toggle",
+      "space l a": "editor::ToggleCodeActions",
+      "space l d": "diagnostics::Deploy",
+      "space l f": "editor::Format",
+      "space l s": "outline::Toggle",
+      "space l r": "editor::Rename",
+      "space o": "tab_switcher::Toggle",
+      "space t h": "workspace::OpenInTerminal",
+      "space t f": "workspace::NewCenterTerminal",
+      "space /": "editor::ToggleComments",
+      "g d v": "editor::GoToDefinitionSplit",
+      "g r": "editor::FindAllReferences",
+      ">": "vim::Indent"
+    }
+  },
+  {
+    "context": "Terminal",
+    "bindings": {
+      "ctrl-k": ["workspace::ActivatePaneInDirection", "Up"],
+      "ctrl-j": ["workspace::ActivatePaneInDirection", "Down"]
+    }
+  }
+]

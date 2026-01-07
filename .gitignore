@@ -1,0 +1,16 @@
+# macOS
+.DS_Store
+
+# Environment files (may contain secrets)
+.env
+*.env
+
+# Editor backup files
+*~
+*.swp
+*.swo
+
+# Zed sensitive data
+zed/conversations/
+zed/prompts/
+
