@@ -13,6 +13,11 @@ end)
 return {
   keys = {
     {
+      key = 'O',
+      mods = 'CMD|SHIFT',
+      action = act.ToggleAlwaysOnTop,
+    },
+    {
       key = "n",
       mods = "LEADER",
       action = act.SpawnWindow,
@@ -125,7 +130,6 @@ return {
   -- https://wezfurlong.org/wezterm/config/key-tables.html
   key_tables = {
     -- Paneサイズ調整 leader + s
-    -- 
     resize_pane = {
       { key = "h", action = act.AdjustPaneSize({ "Left", 1 }) },
       { key = "l", action = act.AdjustPaneSize({ "Right", 1 }) },

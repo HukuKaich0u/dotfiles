@@ -3,8 +3,14 @@ local config = wezterm.config_builder()
 
 config.automatically_reload_config = true
 config.font_size = 12.0
+config.font = wezterm.font_with_fallback({
+    "JetBrainsMono Nerd Font", -- <- 常に最優先
+    "Hiragino Sans",      -- <- 日本語が出た時だけ
+    "Apple Color Emoji",       -- <- macの絵文字
+})
+
 config.use_ime = true
-config.window_background_opacity = 0.70
+config.window_background_opacity = 0.80
 config.macos_window_background_blur = 0
 
 ----------------------------------------------------

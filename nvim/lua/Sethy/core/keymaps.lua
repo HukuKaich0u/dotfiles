@@ -54,6 +54,10 @@ vim.keymap.set("n", "<leader>sh", "<C-w>s", { desc = "Split window horizontally"
 vim.keymap.set("n", "<leader>se", "<C-w>=", { desc = "Make splits equal size" }) -- make split windowss equal width and height
 vim.keymap.set("n", "<leader>sx", "<cmd>close<CR>", { desc = "Close current split" })
 
+-- Window navigation with leader + hjkl
+vim.keymap.set("n", "<leader>h", "<C-w>h", { desc = "Move to left window" })
+
+
 vim.keymap.set("n", "<leader>e", ":e %:h<CR>", { desc = "Open netrw in file directory" })
 
 -- Copy filepath to the clipboard
@@ -64,4 +68,4 @@ vim.keymap.set("n", "<leader>fp", function()
 end, { desc = "Copy file path to clipboard" })
 
 -- Lazy.nvim UI
-vim.keymap.set("n", "<leader>l", "<cmd>Lazy<CR>", { desc = "Open Lazy UI", silent = true })
+vim.keymap.set("n", "<leader>L", "<cmd>Lazy<CR>", { desc = "Open Lazy UI", silent = true })
