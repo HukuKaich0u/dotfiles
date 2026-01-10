@@ -54,10 +54,6 @@ vim.keymap.set("n", "<leader>sh", "<C-w>s", { desc = "Split window horizontally"
 vim.keymap.set("n", "<leader>se", "<C-w>=", { desc = "Make splits equal size" }) -- make split windowss equal width and height
 vim.keymap.set("n", "<leader>sx", "<cmd>close<CR>", { desc = "Close current split" })
 
--- Window navigation with leader + hjkl
-vim.keymap.set("n", "<leader>h", "<C-w>h", { desc = "Move to left window" })
-
-
 vim.keymap.set("n", "<leader>e", ":e %:h<CR>", { desc = "Open netrw in file directory" })
 
 -- Copy filepath to the clipboard
