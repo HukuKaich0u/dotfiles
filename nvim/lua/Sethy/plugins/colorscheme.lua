@@ -21,7 +21,7 @@ return {
                 highlight_groups = {
                     ColorColumn = { bg = "#1C1C21" },
                     Normal = { bg = "none" },                      -- Main background remains transparent
-                    Pmenu = { bg = "", fg = "#e0def4" },           -- Completion menu background
+                    Pmenu = { bg = "none", fg = "#e0def4" },           -- Completion menu background
                     PmenuSel = { bg = "#4a465d", fg = "#f8f5f2" }, -- Highlighted completion item
                     PmenuSbar = { bg = "#191724" },                -- Scrollbar background
                     PmenuThumb = { bg = "#9ccfd8" },               -- Scrollbar thumb
@@ -65,7 +65,7 @@ return {
                 contrast = "",  -- can be "hard", "soft" or empty string
                 palette_overrides = {},
                 overrides = {
-                    Pmenu = { bg = "" }, -- Completion menu background
+                    Pmenu = { bg = "NONE" }, -- Completion menu background
                 },
                 dim_inactive = false,
                 transparent_mode = true,

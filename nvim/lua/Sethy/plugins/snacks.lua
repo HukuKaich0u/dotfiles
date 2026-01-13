@@ -5,12 +5,6 @@ return {
         priority = 1000,
         lazy = false,
         opts = {
-            explorer = {
-                enabled = true,
-                layout = {
-                    cycle = false,
-                },
-            },
             quickfile = {
                 enabled = true,
                 exclude = {"latex"},
@@ -129,7 +123,6 @@ return {
         keys = {
             { "<leader>lg", function() require("snacks").lazygit() end, desc = "lazygit" },
             { "<leader>gl", function() require("snacks").lazygit.log() end, desc = "lazygit logs" },
-            { "<leader>es", function() require("snacks").explorer() end, desc = "open snacks explorer" },
             { "<leader>rn", function() require("snacks").rename.rename_file() end, desc = "fast rename current file" },
             { "<leader>db", function() require("snacks").bufdelete() end, desc = "delete or close buffer (confirm)" },
 
@@ -150,8 +143,8 @@ return {
         "folke/todo-comments.nvim",
         event = { "BufReadPre", "BufNewFile" },
         keys = {
-            { "<leader>pt", function() require("snacks").picker.todo_comments() end, desc = "todo" },
-            { "<leader>pT", function() require("snacks").picker.todo_comments({ keywords = { "todo", "fix", "fixme" } }) end, desc = "todo/fix/fixme" },
+            { "<leader>pt", function() require("snacks").picker.todo_comments() end, desc = "Todo" },
+            { "<leader>pT", function() require("snacks").picker.todo_comments({ filter = { keywords = { "TODO", "FIX", "FIXME" } } }) end, desc = "Todo/Fix/Fixme" },
         },
     },
 }
