@@ -48,14 +48,14 @@ return {
             })
 
             -- Incremental selection keymaps
-            vim.keymap.set("n", "<C-space>", function()
-                vim.cmd("normal! v")
-                require("nvim-treesitter.incremental_selection").init_selection()
-            end, { desc = "Init incremental selection" })
-
-            vim.keymap.set("x", "<C-space>", function()
-                require("nvim-treesitter.incremental_selection").node_incremental()
-            end, { desc = "Increment node selection" })
+                -- vim.keymap.set("n", "<C-space>", function()
+                --     vim.cmd("normal! v")
+                --     require("nvim-treesitter.incremental_selection").init_selection()
+                -- end, { desc = "Init incremental selection" })
+                --
+                -- vim.keymap.set("x", "<C-space>", function()
+                --     require("nvim-treesitter.incremental_selection").node_incremental()
+                -- end, { desc = "Increment node selection" })
         end
     }
 }
