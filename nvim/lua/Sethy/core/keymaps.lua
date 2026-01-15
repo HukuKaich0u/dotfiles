@@ -3,6 +3,7 @@ local opts = { noremap = true, silent = true }
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
 vim.keymap.set({ "n", "v" }, "<Space>", "<Nop>", { silent = true })
+vim.keymap.set("n", "s", "<Nop>", { noremap = true, silent =true })
 
 vim.keymap.set("x", "K", [[:<C-u>m '<-2<CR>gv=gv]], { desc = "moves lines up in visual selection" })
 vim.keymap.set("x", "J", [[:<C-u>m '>+1<CR>gv=gv]], { desc = "moves lines down in visual selection" })

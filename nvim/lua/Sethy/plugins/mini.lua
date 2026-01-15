@@ -45,8 +45,8 @@ return {
         end
     },
     {
-        "chasnovski/mini.surround",
-        event  { "BufReadPre", "BufNewFile" },
+        "echasnovski/mini.surround",
+        event = { "BufReadPre", "BufNewFile" },
         opts = {
             -- Add custom surroundings to be used on top of builin ones.
             -- For more information with examples, see `:h MiniSurround.config`.
@@ -57,8 +57,8 @@ return {
 
             -- Module mappings. Use `''` (empty string) to disable one.
             -- INFO:
-            -- saiw surround with no whitespace
-            -- saw surround with whitespace
+            -- loose ver: sawi[ surround with whitespace
+            -- tightver: sawi] surround with no whitespace
             mappings = {
                 add = 'sa',            -- Add surrounding in Normal and Visual modes
                 delete = 'ds',         -- Delete surrounding
@@ -72,14 +72,45 @@ return {
                 suffix_next = 'n',     -- Suffix to search whth "next" method
             },
 
-            -- Number of liines within which surrounding is searched
+            -- Number of lines within which surrounding is searched
             n_lines = 20,
 
             -- Whether to respect selection typs:
             --  - Place surroundings on separate lines in linewise mode.
             --  - Place surroundings on each line in blockwise mode.
             respect_selection_type = false,
+
+            -- How to search for surrounding (first inside current line, then inside
+            -- neighborhood). One of 'cover', 'cover_or_next', 'cover_or_prev',
+            -- 'cover_or_nearest', 'next', 'prev', 'nearest'. For more details,
+            -- see `:h MiniSurround.config`.
+            search_method = 'cover',
+
+            -- Whether to disable showing non-error feedback
+            silent = false,
         }
+    },
+    -- get rid of whitespace
+    {
+        "echasnovski/mini.trailspace",
+        event = { "BufReadPost", "BufNewFile" },
+        config = function()
+            local minitrailspace = require("mini.trailspace")
+
+            minitrailspace.setup({
+                only_in_normal_buffers = true,
+            })
+
+            vim.keymap.set("n", "<leader>cw", function() minitrailspace.trim() end, { desc = "erase whitespace" })
+
+            -- Ensure highlight never reappears by removing it on CursorMoved
+            vim.api.nvim_create_autocmd("CursorMoved", {
+                pattern = "*",
+                callback = function()
+                    require("mini.trailspace").unhighlight()
+                end,
+            })
+        end
     }
 }
 
