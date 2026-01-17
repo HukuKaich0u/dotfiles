@@ -10,7 +10,7 @@ config.font = wezterm.font_with_fallback({
 })
 
 config.use_ime = true
-config.window_background_opacity = 0.95
+config.window_background_opacity = 0.80
 config.macos_window_background_blur = 0
 
 ----------------------------------------------------
