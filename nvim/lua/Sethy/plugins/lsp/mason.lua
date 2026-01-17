@@ -60,7 +60,8 @@ return {
         mason_tool_installer.setup({
             ensure_installed = {
                 -- formatters
-                "prettier",   -- js/ts/html/css
+                "biome",      -- js/ts/json (fast, rust-based)
+                "prettier",   -- html/css/yaml/markdown
                 "stylua",     -- lua
                 "gofumpt",    -- go
                 -- note: ruff replaces black/isort/pylint for python

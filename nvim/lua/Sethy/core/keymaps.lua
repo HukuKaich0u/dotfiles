@@ -27,7 +27,7 @@ vim.keymap.set({ "n", "v" }, "<leader>d", [["_d"_d]])
 
 vim.keymap.set("n", "<C-c>", ":nohl<CR>", { desc = "Clear search hl", silent = true })
 
-vim.keymap.set("n", "<leader>f", vim.lsp.buf.format)
+-- <leader>f is handled by conform.nvim
 vim.keymap.set("n", "Q", "<nop>")
 vim.keymap.set("n", "x", '"_x', opts) -- prevents deleted characters from copying to clipboard
 
