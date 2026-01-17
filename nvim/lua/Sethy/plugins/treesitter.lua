@@ -7,7 +7,7 @@ return {
             local ts = require("nvim-treesitter")
 
             -- Install parsers on startup
-            ts.install({
+            local parsers = {
                 -- data / config
                 "json", "yaml", "toml", "ini",
 
@@ -31,8 +31,10 @@ return {
                 -- tooling
                 "bash", "lua", "vim", "vimdoc",
                 "gitignore", "query", "regex",
-                "make", "diff", "tmux"
-            }, { summary = false }):wait(30000)
+                "make", "diff", "tmux",
+            }
+
+            ts.install(parsers, { summary = false }):wait(30000)
 
             -- Enable treesitter features for all filetypes
             vim.api.nvim_create_autocmd("FileType", {
@@ -46,16 +48,20 @@ return {
                     vim.bo[event.buf].indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
                 end,
             })
-
-            -- Incremental selection keymaps
-                -- vim.keymap.set("n", "<C-space>", function()
-                --     vim.cmd("normal! v")
-                --     require("nvim-treesitter.incremental_selection").init_selection()
-                -- end, { desc = "Init incremental selection" })
-                --
-                -- vim.keymap.set("x", "<C-space>", function()
-                --     require("nvim-treesitter.incremental_selection").node_incremental()
-                -- end, { desc = "Increment node selection" })
-        end
-    }
+        end,
+    },
+    -- NOTE: js, ts, jsx, tsx Auto Close Tags
+    {
+        "windwp/nvim-ts-autotag",
+        ft = { "html", "xml", "javascript", "typescript", "javascriptreact", "typescriptreact", "svelte" },
+        config = function()
+            require("nvim-ts-autotag").setup({
+                opts = {
+                    enable_close = true,
+                    enable_rename = true,
+                    enable_close_on_slash = false,
+                },
+            })
+        end,
+    },
 }
