@@ -35,28 +35,36 @@ return {
             automatic_enable = false,
             -- servers for mason to install
             ensure_installed = {
+                -- lua
                 "lua_ls",
+                -- web
                 "ts_ls",
                 "html",
                 "cssls",
                 "tailwindcss",
-                "gopls",
                 "astro",
                 "emmet_ls",
                 "emmet_language_server",
                 "eslint",
+                -- backend / systems
+                "gopls",        -- Go
+                "pyright",      -- Python (type checking)
+                "ruff",         -- Python (linter/formatter)
+                "rust_analyzer", -- Rust
+                "clangd",       -- C/C++
+                "jdtls",        -- Java
+                "zls",          -- Zig
             },
         })
 
         mason_tool_installer.setup({
             ensure_installed = {
-                "prettier", -- prettier formatter
-                "stylua",   -- lua formatter
-                "isort",    -- python formatter
-                "pylint",
-                "clangd",
-                "denols",
-                -- { 'eslint_d', version = '13.1.2' },
+                -- formatters
+                "prettier",   -- js/ts/html/css
+                "stylua",     -- lua
+                "gofumpt",    -- go
+                -- note: ruff replaces black/isort/pylint for python
+                -- note: rustfmt usually comes with rust toolchain
             },
 
             -- NOTE: mason BREAKING Change! Removed setup_handlers
