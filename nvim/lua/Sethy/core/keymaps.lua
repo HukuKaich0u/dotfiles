@@ -62,5 +62,15 @@ vim.keymap.set("n", "<leader>fp", function()
     print("File path copied to clipboard: " .. filePath)
 end, { desc = "Copy file path to clipboard" })
 
+-- Toggle LSP diagnostics variables
+local isLspDiagnosticsVisible = true
+vim.keymap.set("n", "<leader>lx", function()
+    isLspDiagnosticsVisible = not isLspDiagnosticsVisible
+    vim.diagnostic.config({
+        virtual_text = isLspDiagnosticsVisible,
+        underline = isLspDiagnosticsVisible
+    })
+end, { desc = "Toggle LSP diagnostics" } )
+
 -- Lazy.nvim UI
 vim.keymap.set("n", "<leader>L", "<cmd>Lazy<CR>", { desc = "Open Lazy UI", silent = true })
