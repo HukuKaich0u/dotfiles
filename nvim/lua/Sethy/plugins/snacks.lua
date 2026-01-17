@@ -88,22 +88,22 @@ return {
                     },
                 },
             },
-            -- image  = {
-            --     enabled = true,
-            --     doc = {
-            --         float = false,
-            --         inline = true, -- if you want show image on cursor hover
-            --         max_width = 50,
-            --         wo = {
-            --             wrap = true,
-            --         },
-            --         convert = {
-            --             notify = true,
-            --             command = "magick"
-            --         },
-            --         img_dirs = { "img", "images", "assets", "static", "public", "media", "attachments", "Archives/All-Vault-Images/", "~/Library", "~/Downloads" },
-            --     },
-            -- },
+            image  = {
+                enabled = true,
+                doc = {
+                    float = false,
+                    inline = true, -- if you want show image on cursor hover
+                    max_width = 50,
+                    wo = {
+                        wrap = true,
+                    },
+                    convert = {
+                        notify = true,
+                        command = "magick"
+                    },
+                    img_dirs = { "img", "images", "assets", "static", "public", "media", "attachments", "Archives/All-Vault-Images/", "~/Library", "~/Downloads" },
+                },
+            },
             dashboard = {
                 enabled = true,
                 sections = {
