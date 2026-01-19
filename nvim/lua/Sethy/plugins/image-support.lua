@@ -38,6 +38,13 @@ return {
 	{
 		"3rd/image.nvim",
 		ft = { "markdown", "norg", "html", "css" },
+		event = {
+			"BufReadPre *.png",
+			"BufReadPre *.jpg",
+			"BufReadPre *.jpeg",
+			"BufReadPre *.gif",
+			"BufReadPre *.webp",
+		},
 		dependencies = {
 			"nvim-treesitter/nvim-treesitter",
 		},
