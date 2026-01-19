@@ -1,6 +1,6 @@
 return {
-    -- Mini Nvim
-    { "echasnovski/mini.nvim", version = false },
+    -- Mini Nvim (disabled for crash test)
+    -- { "echasnovski/mini.nvim", version = false },
     -- Comments
     {
         "echasnovski/mini.comment",
@@ -24,9 +24,10 @@ return {
         end
     },
 
-    -- File explorer (this works properly with oil unlike nvim-tree)
+    -- File explorer (disabled for crash test)
     {
         "echasnovski/mini.files",
+        enabled = false,
         config = function()
             local MiniFiles = require("mini.files")
             MiniFiles.setup({
@@ -44,8 +45,9 @@ return {
             end, { desc = "Toggle into currently opend file" })
         end
     },
-    {
+    { -- disabled for crash test
         "echasnovski/mini.surround",
+        enabled = false,
         event = { "BufReadPre", "BufNewFile" },
         opts = {
             -- Add custom surroundings to be used on top of builin ones.
@@ -90,30 +92,31 @@ return {
             silent = false,
         }
     },
-    -- get rid of whitespace
-    {
-        "echasnovski/mini.trailspace",
-        event = { "BufReadPost", "BufNewFile" },
-        config = function()
-            local minitrailspace = require("mini.trailspace")
-
-            minitrailspace.setup({
-                only_in_normal_buffers = true,
-            })
-
-            vim.keymap.set("n", "<leader>cw", function() minitrailspace.trim() end, { desc = "erase whitespace" })
-
-            -- Ensure highlight never reappears by removing it on CursorMoved
-            vim.api.nvim_create_autocmd("CursorMoved", {
-                pattern = "*",
-                callback = function()
-                    require("mini.trailspace").unhighlight()
-                end,
-            })
-        end
-    },
+    -- get rid of whitespace (disabled for crash test)
+    -- {
+    --     "echasnovski/mini.trailspace",
+    --     event = { "BufReadPost", "BufNewFile" },
+    --     config = function()
+    --         local minitrailspace = require("mini.trailspace")
+    --
+    --         minitrailspace.setup({
+    --             only_in_normal_buffers = true,
+    --         })
+    --
+    --         vim.keymap.set("n", "<leader>cw", function() minitrailspace.trim() end, { desc = "erase whitespace" })
+    --
+    --         -- Ensure highlight never reappears by removing it on CursorMoved
+    --         vim.api.nvim_create_autocmd("CursorMoved", {
+    --             pattern = "*",
+    --             callback = function()
+    --                 require("mini.trailspace").unhighlight()
+    --             end,
+    --         })
+    --     end
+    -- },
     {
         "echasnovski/mini.splitjoin",
+        enabled = false, -- crash test
         config = function()
             local miniSplitJoin = require("mini.splitjoin")
 
