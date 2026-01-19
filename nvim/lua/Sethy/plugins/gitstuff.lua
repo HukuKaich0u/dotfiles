@@ -23,7 +23,7 @@ return {
 
                     -- NOTE: rebase always
                     vim.keymap.set("n", "<leader>p", function()
-                        vim.cmd.Git({'pull', '--rebase'})
+                        vim.cmd.Git('pull --rebase')
                     end, opts)
 
                     -- NOTE: easy set up branch that wasn't setup properly
