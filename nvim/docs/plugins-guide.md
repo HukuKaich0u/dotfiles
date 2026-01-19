@@ -10,7 +10,9 @@
 4. **編集補助** - mini.comment, mini.surround, mini.splitjoin, mini.trailspace
 5. **診断・エラー** - trouble.nvim
 6. **フォーマット** - conform.nvim
-7. **ユーティリティ** - undotree, vim-maximizer, noice
+7. **Markdown** - render-markdown, image-support, after/ftplugin/markdown.lua
+8. **コード折りたたみ** - nvim-ufo
+9. **ユーティリティ** - undotree, vim-maximizer, noice
 
 ---
 
@@ -207,7 +209,92 @@ func(a, b, c)
 
 ---
 
-## 7. ユーティリティ
+## 7. Markdown
+
+### render-markdown.nvim
+
+Markdownをリッチに装飾表示するプラグイン。
+
+| 機能 | 説明 |
+|------|------|
+| 見出し | `#` をアイコン（󰎤 󰎧 など）に置換、背景色付き |
+| コードブロック | ブロック幅で背景色、言語表示 |
+| チェックボックス | `[ ]` → 󰄱、`[x]` → 󰱒 に置換 |
+| 箇条書き | `-` を装飾アイコンに |
+| テーブル | 罫線を綺麗に描画 |
+
+### image-support (img-clip.nvim + image.nvim)
+
+Markdown内に画像を貼り付け・表示。
+
+**img-clip.nvim** - クリップボードから画像を貼り付け
+
+| キー | 動作 |
+|------|------|
+| `<leader>pi` | クリップボードから画像を貼り付け |
+
+- 画像は `assets/` ディレクトリに保存
+- `![alt](path)` 形式で挿入
+
+**image.nvim** - ターミナル内で画像を表示
+
+- Kittyグラフィックプロトコル使用（WezTerm対応）
+- Markdownの画像リンクを自動検出して表示
+- 依存: `pngpaste`, `imagemagick`, `luarocks magick`
+
+### after/ftplugin/markdown.lua
+
+Markdownファイル専用のカスタム設定。
+
+**基本設定（自動適用）**
+
+| 設定 | 説明 |
+|------|------|
+| `textwidth = 80` | 80文字で自動改行 |
+| `spell = true` | スペルチェック有効 |
+| `linebreak = true` | 単語の途中で改行しない |
+
+**リスト操作キーマップ（Normal / Visual）**
+
+| キー | 動作 |
+|------|------|
+| `tn` | 番号付きリスト トグル |
+| `tb` | 箇条書き（`-`）トグル |
+| `tc` | チェックボックス トグル |
+| `tt` | タスク状態 `[ ]` ↔ `[x]` トグル |
+| `tl` | スマートトグル（プレーン → 箇条書き → チェックボックス → 番号 → プレーン） |
+
+**見出し操作**
+
+| キー | 動作 |
+|------|------|
+| `<leader>h1` 〜 `h6` | 見出しレベル トグル |
+
+**タスク一括操作**
+
+| キー | 動作 |
+|------|------|
+| `<leader>tc` | 全タスクを完了にする |
+| `<leader>tu` | 全タスクを未完了にする |
+
+---
+
+## 8. コード折りたたみ (nvim-ufo)
+
+Treesitterベースの高速な折りたたみ。
+
+| キー | 動作 |
+|------|------|
+| `za` | カーソル位置の折りたたみトグル |
+| `zR` | 全ての折りたたみを開く |
+| `zM` | 全ての折りたたみを閉じる |
+
+- 起動時は全て展開（`foldlevel = 99`）
+- 関数、クラス、if文などを折りたたんでコードを俯瞰可能
+
+---
+
+## 9. ユーティリティ
 
 ### undotree
 
@@ -323,3 +410,4 @@ LSPがアタッチされたバッファで使用可能。
 ## Leader キー
 
 `<Space>` がリーダーキーとして設定されている。
+![image](assets/2026-01-19-18-43-57.png)
