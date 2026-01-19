@@ -9,6 +9,9 @@ return {
 				enabled = true,
 				exclude = { "latex" },
 			},
+			explorer = {
+				enabled = true,
+			},
 			-- HACK: read picker docs @ https://github.com/folke/snakcs.nvim/blob/main/docs/picker.md
 			picker = {
 				enabled = true,
@@ -50,7 +53,7 @@ return {
 						layout = {
 							box = "horizontal",
 							backdrop = false,
-							width = 0.8,
+							width = 0.95,
 							height = 0.9,
 							border = "none",
 							{
@@ -67,7 +70,7 @@ return {
 							{
 								win = "preview",
 								title = "{preview:preview}",
-								width = 0.50,
+								width = 0.73,
 								border = "rounded",
 								title_pos = "center",
 							},
@@ -223,6 +226,13 @@ return {
 					require("snacks").picker.help()
 				end,
 				desc = "help pages",
+			},
+			{
+				"<leader>ee",
+				function()
+					require("snacks").explorer()
+				end,
+				desc = "File Explorer",
 			},
 		},
 	},

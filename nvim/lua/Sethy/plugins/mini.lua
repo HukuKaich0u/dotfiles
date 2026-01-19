@@ -24,7 +24,7 @@ return {
         end
     },
 
-    -- File explorer (disabled for crash test)
+    -- File explorer (using snacks.explorer instead)
     {
         "echasnovski/mini.files",
         enabled = false,
@@ -45,9 +45,9 @@ return {
             end, { desc = "Toggle into currently opend file" })
         end
     },
-    { -- disabled for crash test
+    {
         "echasnovski/mini.surround",
-        enabled = false,
+        enabled = true,
         event = { "BufReadPre", "BufNewFile" },
         opts = {
             -- Add custom surroundings to be used on top of builin ones.
@@ -116,7 +116,7 @@ return {
     -- },
     {
         "echasnovski/mini.splitjoin",
-        enabled = false, -- crash test
+        enabled = true,
         config = function()
             local miniSplitJoin = require("mini.splitjoin")
 
