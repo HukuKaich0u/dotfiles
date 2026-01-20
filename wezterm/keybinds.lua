@@ -12,6 +12,8 @@ end)
 
 return {
   keys = {
+    -- JISキーボード: Ctrl+@ を Escape に変換
+    { key = "@", mods = "CTRL", action = act.SendKey({ key = "Escape" }) },
     {
       key = 'O',
       mods = 'CMD|SHIFT',
