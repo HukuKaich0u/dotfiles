@@ -97,7 +97,7 @@ return {
 				},
 			},
 			image = {
-				enabled = false, -- TODO: enable after fixing crash on .md files
+				enabled = true, -- TODO: enable after fixing crash on .md files
 				doc = {
 					float = false,
 					inline = true, -- if you want show image on cursor hover
