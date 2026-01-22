@@ -1,7 +1,5 @@
 return {
-	-- Mini Nvim (disabled for crash test)
-	-- { "echasnovski/mini.nvim", version = false },
-	-- Comments
+	{ "echasnovski/mini.nvim", version = false },
 	{
 		"echasnovski/mini.comment",
 		version = false,
