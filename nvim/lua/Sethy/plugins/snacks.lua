@@ -130,7 +130,7 @@ return {
 					{ section = "keys", gap = 1, padding = 1 },
 					{
 						section = "terminal",
-						cmd = ("ascii-image-converter %q -C -c"):format(vim.fn.expand("~/Documents/doraemon.JPG")),
+						cmd = ("ascii-image-converter %q -C -c"):format(vim.fn.expand("~/Documents/profiles.jpeg")),
 						pane = 2,
 						indent = 4,
 						height = 30,

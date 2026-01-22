@@ -11,7 +11,7 @@ config.font = wezterm.font_with_fallback({
 
 config.use_ime = true
 config.enable_kitty_graphics = true
-config.window_background_opacity = 0.80
+config.window_background_opacity = 0.90
 config.macos_window_background_blur = 0
 
 ----------------------------------------------------
