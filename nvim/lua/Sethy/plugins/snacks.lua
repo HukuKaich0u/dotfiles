@@ -11,10 +11,18 @@ return {
 			},
 			explorer = {
 				enabled = true,
+				hidden = true,
+				ignored = true,
 			},
 			-- HACK: read picker docs @ https://github.com/folke/snakcs.nvim/blob/main/docs/picker.md
 			picker = {
 				enabled = true,
+				sources = {
+					explorer = {
+						hidden = true,
+						ignored = true,
+					},
+				},
 				matchers = {
 					frecency = true,
 					cwd_bonus = true,
