@@ -118,6 +118,21 @@ return {
 
     -- 設定再読み込み
     { key = "r", mods = "SHIFT|CTRL", action = act.ReloadConfiguration },
+    -- 背景透明度切り替え (0.70 ⇔ 0.90)
+    {
+      key = "b",
+      mods = "LEADER",
+      action = wezterm.action_callback(function(window, pane)
+        local overrides = window:get_config_overrides() or {}
+        local current = overrides.window_background_opacity or 0.70
+        if current < 0.85 then
+          overrides.window_background_opacity = 0.90
+        else
+          overrides.window_background_opacity = 0.70
+        end
+        window:set_config_overrides(overrides)
+      end),
+    },
     -- キーテーブル用
     { key = "s", mods = "LEADER", action = act.ActivateKeyTable({ name = "resize_pane", one_shot = false }) },
     {
