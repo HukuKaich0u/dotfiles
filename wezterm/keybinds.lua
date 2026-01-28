@@ -24,42 +24,42 @@ return {
       mods = "LEADER",
       action = act.SpawnWindow,
     },
-    {
-      -- workspaceの切り替え
-      key = "w",
-      mods = "LEADER",
-      action = act.ShowLauncherArgs({ flags = "WORKSPACES", title = "Select workspace" }),
-    },
-    {
-      --workspaceの名前変更
-      key = "$",
-      mods = "LEADER",
-      action = act.PromptInputLine({
-        description = "(wezterm) Set workspace title:",
-        action = wezterm.action_callback(function(win, pane, line)
-          if line then
-            wezterm.mux.rename_workspace(wezterm.mux.get_active_workspace(), line)
-          end
-        end),
-      }),
-    },
-    {
-      key = "W",
-      mods = "LEADER|SHIFT",
-      action = act.PromptInputLine({
-        description = "(wezterm) Create new workspace:",
-        action = wezterm.action_callback(function(window, pane, line)
-          if line then
-            window:perform_action(
-              act.SwitchToWorkspace({
-                name = line,
-              }),
-              pane
-            )
-          end
-        end),
-      }),
-    },
+    -- {
+    --   -- workspaceの切り替え
+    --   key = "w",
+    --   mods = "LEADER",
+    --   action = act.ShowLauncherArgs({ flags = "WORKSPACES", title = "Select workspace" }),
+    -- },
+    -- {
+    --   --workspaceの名前変更
+    --   key = "$",
+    --   mods = "LEADER",
+    --   action = act.PromptInputLine({
+    --     description = "(wezterm) Set workspace title:",
+    --     action = wezterm.action_callback(function(win, pane, line)
+    --       if line then
+    --         wezterm.mux.rename_workspace(wezterm.mux.get_active_workspace(), line)
+    --       end
+    --     end),
+    --   }),
+    -- },
+    -- {
+    --   key = "W",
+    --   mods = "LEADER|SHIFT",
+    --   action = act.PromptInputLine({
+    --     description = "(wezterm) Create new workspace:",
+    --     action = wezterm.action_callback(function(window, pane, line)
+    --       if line then
+    --         window:perform_action(
+    --           act.SwitchToWorkspace({
+    --             name = line,
+    --           }),
+    --           pane
+    --         )
+    --       end
+    --     end),
+    --   }),
+    -- },
     -- コマンドパレット表示
     { key = "p", mods = "SUPER", action = act.ActivateCommandPalette },
     -- Tab移動
