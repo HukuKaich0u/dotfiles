@@ -1,7 +1,7 @@
 return {
     "folke/trouble.nvim",
     dependencies = {
-        "nvim-trree/nvim-web-devicons",
+        "nvim-tree/nvim-web-devicons",
         "folke/todo-comments.nvim",
     },
     opts = {
