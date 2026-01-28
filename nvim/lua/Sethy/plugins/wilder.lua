@@ -1,5 +1,6 @@
 return {
     "gelguy/wilder.nvim",
+    enabled = false,  -- noiceとバッティングするため無効化
     dependencies = {
         "nvim-tree/nvim-web-devicons",
         "romgrk/fzy-lua-native",
