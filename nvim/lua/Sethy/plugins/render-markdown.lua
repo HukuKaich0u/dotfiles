@@ -36,7 +36,8 @@ return {
     opts = {
         heading = {
             sign = false,
-            icons = { "󰎤 ", "󰎧 ", "󰎪 ", "󰎭 ", "󰎱 ", "󰎳 " },
+            -- icons = { "󰎤 ", "󰎧 ", "󰎪 ", "󰎭 ", "󰎱 ", "󰎳 " },
+            icons = {},
             backgrounds = {
                 "Headline1Bg",
                 "Headline2Bg",
