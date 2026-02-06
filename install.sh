@@ -11,6 +11,7 @@ DIRS=(
     "nvim"
     "fish"
     "wezterm"
+    "ghostty"
     "zed"
     "git"
     "mise"
@@ -44,4 +45,3 @@ done
 
 echo ""
 echo "Done!"
-
