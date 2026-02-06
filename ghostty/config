@@ -1,0 +1,13 @@
+# Managed by dotfiles
+
+font-family = "JetBrainsMono Nerd Font"
+font-size = 12
+
+# Match wezterm look and feel
+background-opacity = 0.70
+window-padding-x = 8
+window-padding-y = 4
+
+# Better Japanese support fallback
+font-family-fallback = "Hiragino Sans"
+font-family-fallback = "Apple Color Emoji"
