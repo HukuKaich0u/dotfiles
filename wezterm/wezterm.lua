@@ -13,6 +13,20 @@ config.use_ime = true
 config.enable_kitty_graphics = true
 config.window_background_opacity = 0.70
 config.macos_window_background_blur = 0
+config.scrollback_lines = 50000
+config.audible_bell = "Disabled"
+config.adjust_window_size_when_changing_font_size = false
+-- デフォルトはアクティブ/非アクティブを統一
+config.inactive_pane_hsb = {
+  saturation = 1.00,
+  brightness = 1.00,
+}
+config.window_padding = {
+  left = 8,
+  right = 8,
+  top = 4,
+  bottom = 0,
+}
 
 ----------------------------------------------------
 -- Tab
@@ -86,4 +100,3 @@ config.disable_default_key_bindings = true
 config.leader = { key = ";", mods = "CTRL", timeout_milliseconds = 2000 }
 
 return config
-

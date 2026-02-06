@@ -1,8 +1,38 @@
 local wezterm = require("wezterm")
 local act = wezterm.action
 
+local default_opacity = 0.70
+local opacity_mid = 0.90
+local opacity_max = 1.00
+local inactive_contrast_on = { saturation = 1.00, brightness = 0.30 }
+local inactive_contrast_off = { saturation = 1.00, brightness = 1.00 }
+
+local function toggle_window_opacity(window)
+  local overrides = window:get_config_overrides() or {}
+  local current = overrides.window_background_opacity or default_opacity
+  if current < 0.80 then
+    overrides.window_background_opacity = opacity_mid
+  elseif current < 0.95 then
+    overrides.window_background_opacity = opacity_max
+  else
+    overrides.window_background_opacity = default_opacity
+  end
+  window:set_config_overrides(overrides)
+end
+
+local function toggle_inactive_pane_dim(window)
+  local overrides = window:get_config_overrides() or {}
+  local current = overrides.inactive_pane_hsb or inactive_contrast_off
+  if current.brightness < 0.99 then
+    overrides.inactive_pane_hsb = inactive_contrast_off
+  else
+    overrides.inactive_pane_hsb = inactive_contrast_on
+  end
+  window:set_config_overrides(overrides)
+end
+
 -- Show which key table is active in the status area
-wezterm.on("update-right-status", function(window, pane)
+wezterm.on("update-right-status", function(window)
   local name = window:active_key_table()
   if name then
     name = "TABLE: " .. name
@@ -118,19 +148,20 @@ return {
 
     -- 設定再読み込み
     { key = "r", mods = "SHIFT|CTRL", action = act.ReloadConfiguration },
-    -- 背景透明度切り替え (0.70 ⇔ 0.90)
+    -- 非アクティブ pane のコントラスト切り替え (1.00 ⇔ 0.30)
     {
       key = "b",
       mods = "LEADER",
-      action = wezterm.action_callback(function(window, pane)
-        local overrides = window:get_config_overrides() or {}
-        local current = overrides.window_background_opacity or 0.70
-        if current < 0.85 then
-          overrides.window_background_opacity = 0.90
-        else
-          overrides.window_background_opacity = 0.70
-        end
-        window:set_config_overrides(overrides)
+      action = wezterm.action_callback(function(window)
+        toggle_inactive_pane_dim(window)
+      end),
+    },
+    -- 全体透明度切り替え (0.70 -> 0.90 -> 1.00 -> 0.70)
+    {
+      key = "B",
+      mods = "LEADER|SHIFT",
+      action = wezterm.action_callback(function(window)
+        toggle_window_opacity(window)
       end),
     },
     -- キーテーブル用
