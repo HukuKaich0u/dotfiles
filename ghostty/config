@@ -1,13 +1,91 @@
 # Managed by dotfiles
+# Goal: mirror wezterm config as closely as Ghostty supports.
 
+# Font
 font-family = "JetBrainsMono Nerd Font"
+font-family = "Hiragino Sans"
+font-family = "Apple Color Emoji"
 font-size = 12
 
-# Match wezterm look and feel
+# Appearance
+background = "#000000"
 background-opacity = 0.70
+background-blur = false
 window-padding-x = 8
-window-padding-y = 4
+window-padding-y = 4,0
+scrollback-limit = 50_000_000
+bell-features = no-system
+unfocused-split-opacity = 1
 
-# Better Japanese support fallback
-font-family-fallback = "Hiragino Sans"
-font-family-fallback = "Apple Color Emoji"
+# Window chrome (wezterm "RESIZE" style approximation)
+window-decoration = auto
+macos-titlebar-style = hidden
+window-inherit-working-directory = true
+
+# NOTE: Ghostty has no equivalent for wezterm's tab bar shape/colors.
+# NOTE: window-show-tab-bar is currently GTK-only (ignored on macOS).
+window-show-tab-bar = auto
+
+# Keybinds
+# We keep defaults and add wezterm-like mappings.
+
+# JIS keyboard: Ctrl+@ -> Escape
+keybind = ctrl+@=text:\x1b
+
+# Global / app controls
+keybind = cmd+shift+o=toggle_window_float_on_top
+keybind = cmd+p=toggle_command_palette
+keybind = alt+enter=toggle_fullscreen
+keybind = ctrl+shift+r=reload_config
+
+# Tabs
+keybind = ctrl+tab=next_tab
+keybind = ctrl+shift+tab=previous_tab
+keybind = cmd+t=new_tab
+keybind = cmd+w=close_tab
+keybind = cmd+1=goto_tab:1
+keybind = cmd+2=goto_tab:2
+keybind = cmd+3=goto_tab:3
+keybind = cmd+4=goto_tab:4
+keybind = cmd+5=goto_tab:5
+keybind = cmd+6=goto_tab:6
+keybind = cmd+7=goto_tab:7
+keybind = cmd+8=goto_tab:8
+keybind = cmd+9=last_tab
+
+# Clipboard
+keybind = cmd+c=copy_to_clipboard
+keybind = cmd+v=paste_from_clipboard
+
+# Font size
+keybind = cmd+=increase_font_size:1
+keybind = cmd+plus=increase_font_size:1
+keybind = cmd+minus=decrease_font_size:1
+keybind = ctrl+0=reset_font_size
+
+# Leader-like sequences (wezterm LEADER = Ctrl+;)
+keybind = ctrl+;>n=new_window
+keybind = ctrl+;>{=move_tab:-1
+keybind = ctrl+;>}=move_tab:1
+
+# Split management
+keybind = ctrl+;>d=new_split:right
+keybind = ctrl+;>r=new_split:down
+keybind = ctrl+;>x=close_surface
+keybind = ctrl+;>h=goto_split:left
+keybind = ctrl+;>j=goto_split:down
+keybind = ctrl+;>k=goto_split:up
+keybind = ctrl+;>l=goto_split:right
+keybind = ctrl+;>z=toggle_split_zoom
+
+# Resize split (approximation of wezterm key table)
+keybind = ctrl+;>s>h=resize_split:left,10
+keybind = ctrl+;>s>j=resize_split:down,10
+keybind = ctrl+;>s>k=resize_split:up,10
+keybind = ctrl+;>s>l=resize_split:right,10
+
+# Quick split navigation sequence (approximation of wezterm key table)
+keybind = ctrl+;>a>h=goto_split:left
+keybind = ctrl+;>a>j=goto_split:down
+keybind = ctrl+;>a>k=goto_split:up
+keybind = ctrl+;>a>l=goto_split:right
