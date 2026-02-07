@@ -12,7 +12,7 @@ return {
                 hide = {
                     only_win = false,
                 },
-                
+
                 render = function(props)
                     local bufname = vim.api.nvim_buf_get_name(props.buf)
                     local filename = vim.fn.fnamemodify(bufname, ":t")
