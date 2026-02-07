@@ -119,16 +119,13 @@ return {
     { key = "J", mods = "LEADER|SHIFT", action = act.SplitPane({ direction = "Down", size = { Percent = 50 } }) },
     { key = "K", mods = "LEADER|SHIFT", action = act.SplitPane({ direction = "Up", size = { Percent = 50 } }) },
     { key = "L", mods = "LEADER|SHIFT", action = act.SplitPane({ direction = "Right", size = { Percent = 50 } }) },
-    -- 旧来の r/d も維持（下/右）
-    { key = "d", mods = "LEADER", action = act.SplitPane({ direction = "Right", size = { Percent = 50 } }) },
-    { key = "r", mods = "LEADER", action = act.SplitPane({ direction = "Down", size = { Percent = 50 } }) },
-    -- Paneを閉じる leader + x
-    { key = "x", mods = "LEADER", action = act({ CloseCurrentPane = { confirm = true } }) },
     -- Pane移動 leader + hljk
     { key = "h", mods = "LEADER", action = act.ActivatePaneDirection("Left") },
     { key = "l", mods = "LEADER", action = act.ActivatePaneDirection("Right") },
     { key = "k", mods = "LEADER", action = act.ActivatePaneDirection("Up") },
     { key = "j", mods = "LEADER", action = act.ActivatePaneDirection("Down") },
+    -- Paneを閉じる leader + x
+    { key = "x", mods = "LEADER", action = act({ CloseCurrentPane = { confirm = true } }) },
     -- Pane選択
     { key = "[", mods = "CTRL|SHIFT", action = act.PaneSelect },
     -- 選択中のPaneのみ表示
