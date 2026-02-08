@@ -23,6 +23,12 @@ return {
                 java = false,
             },
         })
+        -- Rust lifetime ('a) と衝突しやすいので、Rustではシングルクォートの自動ペアを無効化
+        local single_quote_rule = autopairs.get_rules("'")[1]
+        if single_quote_rule then
+            single_quote_rule.not_filetypes = single_quote_rule.not_filetypes or {}
+            table.insert(single_quote_rule.not_filetypes, "rust")
+        end
 
         local cmp_autopairs = require("nvim-autopairs.completion.cmp")
         local cmp = require("cmp")
@@ -31,4 +37,3 @@ return {
 
     end,
 }
-
