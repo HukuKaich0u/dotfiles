@@ -24,10 +24,12 @@ return {
             },
         })
         -- Rust lifetime ('a) と衝突しやすいので、Rustではシングルクォートの自動ペアを無効化
-        local single_quote_rule = autopairs.get_rules("'")[1]
-        if single_quote_rule then
-            single_quote_rule.not_filetypes = single_quote_rule.not_filetypes or {}
-            table.insert(single_quote_rule.not_filetypes, "rust")
+        local single_quote_rules = autopairs.get_rules("'") or {}
+        for _, rule in ipairs(single_quote_rules) do
+            rule.not_filetypes = rule.not_filetypes or {}
+            if not vim.tbl_contains(rule.not_filetypes, "rust") then
+                table.insert(rule.not_filetypes, "rust")
+            end
         end
 
         local cmp_autopairs = require("nvim-autopairs.completion.cmp")
