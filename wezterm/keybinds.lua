@@ -97,11 +97,11 @@ return {
     { key = "Tab", mods = "SHIFT|CTRL", action = act.ActivateTabRelative(-1) },
     -- Tab入れ替え
     { key = "{", mods = "LEADER", action = act({ MoveTabRelative = -1 }) },
+    { key = "}", mods = "LEADER", action = act({ MoveTabRelative = 1 }) },
     -- Tab新規作成
     { key = "t", mods = "SUPER", action = act({ SpawnTab = "CurrentPaneDomain" }) },
     -- Tabを閉じる
     { key = "w", mods = "SUPER", action = act({ CloseCurrentTab = { confirm = true } }) },
-    { key = "}", mods = "LEADER", action = act({ MoveTabRelative = 1 }) },
 
     -- 画面フルスクリーン切り替え
     { key = "Enter", mods = "ALT", action = act.ToggleFullScreen },
@@ -186,12 +186,6 @@ return {
 
       -- Cancel the mode by pressing escape
       { key = "Enter", action = "PopKeyTable" },
-    },
-    activate_pane = {
-      { key = "h", action = act.ActivatePaneDirection("Left") },
-      { key = "l", action = act.ActivatePaneDirection("Right") },
-      { key = "k", action = act.ActivatePaneDirection("Up") },
-      { key = "j", action = act.ActivatePaneDirection("Down") },
     },
     -- copyモード leader + [
     copy_mode = {
