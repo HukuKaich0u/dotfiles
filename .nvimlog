@@ -3,3 +3,4 @@ WRN 2026-02-19T08:29:41.602 ?.36484    server_start:199: Failed to start server:
 WRN 2026-02-19T08:30:01.594 ?.38113    server_start:199: Failed to start server: operation not permitted: /var/folders/6k/81c_pp7n2fqf98s8jk49pcm00000gp/T/nvim.KokiAoyagi/IVkCqF/nvim.38113.0
 WRN 2026-02-19T08:30:06.833 ?.38116    server_start:199: Failed to start server: operation not permitted: /var/folders/6k/81c_pp7n2fqf98s8jk49pcm00000gp/T/nvim.KokiAoyagi/XapBn5/nvim.38116.0
 WRN 2026-02-19T08:44:24.763 ?.49981    server_start:199: Failed to start server: operation not permitted: /var/folders/6k/81c_pp7n2fqf98s8jk49pcm00000gp/T/nvim.KokiAoyagi/xrDRRo/nvim.49981.0
+WRN 2026-02-19T09:11:04.099 ?.60852    server_start:199: Failed to start server: operation not permitted: /var/folders/6k/81c_pp7n2fqf98s8jk49pcm00000gp/T/nvim.KokiAoyagi/mhkPJU/nvim.60852.0
