@@ -20,6 +20,7 @@ return {
 				"tsx",
 				"html",
 				"css",
+				"astro",
 
 				-- backend / systems
 				"python",
@@ -75,7 +76,7 @@ return {
 	-- NOTE: js, ts, jsx, tsx Auto Close Tags
 	{
 		"windwp/nvim-ts-autotag",
-		ft = { "html", "xml", "javascript", "typescript", "javascriptreact", "typescriptreact", "svelte" },
+		ft = { "html", "xml", "javascript", "typescript", "javascriptreact", "typescriptreact", "svelte", "astro" },
 		config = function()
 			require("nvim-ts-autotag").setup({
 				opts = {
