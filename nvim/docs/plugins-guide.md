@@ -63,7 +63,7 @@ Telescope風のファジーファインダー。
 |------|------|
 | `<leader>pk` | キーマップ検索 |
 | `<leader>vh` | ヘルプページ検索 |
-| `<leader>th` | カラースキーム選択 |
+| `<leader>ts` | カラースキーム選択 |
 | `<leader>gbr` | Gitブランチ切り替え |
 | `<leader>pt` | TODO コメント検索 |
 | `<leader>pT` | TODO/FIX/FIXME 検索 |

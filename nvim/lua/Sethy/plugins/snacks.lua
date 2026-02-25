@@ -213,7 +213,6 @@ return {
 				end,
 				desc = "search keymaps (snacks picker)",
 			},
-
 			{
 				"<leader>gbr",
 				function()
@@ -222,7 +221,7 @@ return {
 				desc = "pick and switch git branches",
 			},
 			{
-				"<leader>th",
+				"<leader>ts",
 				function()
 					require("snacks").picker.colorschemes({ layout = "ivy" })
 				end,
