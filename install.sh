@@ -9,10 +9,7 @@ CONFIG_DIR="$HOME/.config"
 # List of directories to link
 DIRS=(
     "nvim"
-    "fish"
     "wezterm"
-    "ghostty"
-    "zed"
     "git"
     "mise"
 )
