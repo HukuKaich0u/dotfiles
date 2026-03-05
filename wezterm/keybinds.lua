@@ -54,42 +54,12 @@ return {
       mods = "LEADER",
       action = act.SpawnWindow,
     },
-    -- {
-    --   -- workspaceの切り替え
-    --   key = "w",
-    --   mods = "LEADER",
-    --   action = act.ShowLauncherArgs({ flags = "WORKSPACES", title = "Select workspace" }),
-    -- },
-    -- {
-    --   --workspaceの名前変更
-    --   key = "$",
-    --   mods = "LEADER",
-    --   action = act.PromptInputLine({
-    --     description = "(wezterm) Set workspace title:",
-    --     action = wezterm.action_callback(function(win, pane, line)
-    --       if line then
-    --         wezterm.mux.rename_workspace(wezterm.mux.get_active_workspace(), line)
-    --       end
-    --     end),
-    --   }),
-    -- },
-    -- {
-    --   key = "W",
-    --   mods = "LEADER|SHIFT",
-    --   action = act.PromptInputLine({
-    --     description = "(wezterm) Create new workspace:",
-    --     action = wezterm.action_callback(function(window, pane, line)
-    --       if line then
-    --         window:perform_action(
-    --           act.SwitchToWorkspace({
-    --             name = line,
-    --           }),
-    --           pane
-    --         )
-    --       end
-    --     end),
-    --   }),
-    -- },
+    {
+      -- workspace プレフィックス
+      key = "w",
+      mods = "LEADER",
+      action = act.ActivateKeyTable({ name = "workspace", timeout_milliseconds = 1500 }),
+    },
     -- コマンドパレット表示
     { key = "p", mods = "SUPER", action = act.ActivateCommandPalette },
     -- Tab移動
@@ -177,6 +147,43 @@ return {
   -- キーテーブル
   -- https://wezfurlong.org/wezterm/config/key-tables.html
   key_tables = {
+    -- Workspace操作 leader + w -> c/m/r
+    workspace = {
+      {
+        key = "c",
+        action = act.ShowLauncherArgs({ flags = "WORKSPACES", title = "Select workspace" }),
+      },
+      {
+        key = "m",
+        action = act.PromptInputLine({
+          description = "(wezterm) Create new workspace:",
+          action = wezterm.action_callback(function(window, pane, line)
+            if line then
+              window:perform_action(
+                act.SwitchToWorkspace({
+                  name = line,
+                }),
+                pane
+              )
+            end
+          end),
+        }),
+      },
+      {
+        key = "r",
+        action = act.PromptInputLine({
+          description = "(wezterm) Set workspace title:",
+          action = wezterm.action_callback(function(win, pane, line)
+            if line then
+              wezterm.mux.rename_workspace(wezterm.mux.get_active_workspace(), line)
+            end
+          end),
+        }),
+      },
+      { key = "Escape", action = "PopKeyTable" },
+      { key = "Enter", action = "PopKeyTable" },
+    },
+
     -- Paneサイズ調整 leader + s
     resize_pane = {
       { key = "h", action = act.AdjustPaneSize({ "Left", 1 }) },
