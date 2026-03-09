@@ -1,27 +1,25 @@
 return {
     {
         "anuvyklack/hydra.nvim",
-        keys = {
-            { "<leader>sr", desc = "Resize split mode" },
-        },
+        lazy = false,
         config = function()
             local Hydra = require("hydra")
 
             Hydra({
                 name = "Resize split",
                 mode = "n",
-                body = "<leader>sr",
+                body = "<leader>sz",
                 config = {
-                    color = "pink",
+                    color = "amaranth",
                     invoke_on_body = true,
-                    hint = [[
+                },
+                hint = [[
      Resize split
     _h_: narrower   _l_: wider
     _j_: taller     _k_: shorter
 
     _<Enter>_/_<Esc>_: exit
-                    ]],
-                },
+                ]],
                 heads = {
                     { "h", "<cmd>vertical resize -5<CR>", { desc = "narrower" } },
                     { "l", "<cmd>vertical resize +5<CR>", { desc = "wider" } },
