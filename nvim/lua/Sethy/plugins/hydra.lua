@@ -10,7 +10,7 @@ return {
                 mode = "n",
                 body = "<leader>sz",
                 config = {
-                    color = "amaranth",
+                    color = "pink",
                     invoke_on_body = true,
                 },
                 hint = [[
