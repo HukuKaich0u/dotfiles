@@ -9,8 +9,3 @@
 *~
 *.swp
 *.swo
-
-# Zed sensitive data
-zed/conversations/
-zed/prompts/
-
