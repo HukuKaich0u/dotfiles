@@ -14,6 +14,11 @@ DIRS=(
     "mise"
 )
 
+# List of root-level files to link into $HOME
+FILES=(
+    ".tmux.conf"
+)
+
 echo "Installing dotfiles from $DOTFILES_DIR"
 echo ""
 
@@ -37,6 +42,27 @@ for dir in "${DIRS[@]}"; do
         fi
     else
         echo "✗ $dir not found in dotfiles"
+    fi
+done
+
+for file in "${FILES[@]}"; do
+    SOURCE="$DOTFILES_DIR/$file"
+    TARGET="$HOME/$file"
+
+    if [ -e "$SOURCE" ]; then
+        if [ -L "$TARGET" ]; then
+            echo "✓ $file (already linked)"
+        elif [ -e "$TARGET" ]; then
+            echo "⚠ $file exists, backing up to ${TARGET}.backup"
+            mv "$TARGET" "${TARGET}.backup"
+            ln -s "$SOURCE" "$TARGET"
+            echo "✓ $file linked"
+        else
+            ln -s "$SOURCE" "$TARGET"
+            echo "✓ $file linked"
+        fi
+    else
+        echo "✗ $file not found in dotfiles"
     fi
 done
 
