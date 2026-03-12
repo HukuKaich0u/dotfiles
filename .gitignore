@@ -1,3 +1,6 @@
+# SymLink
+install.sh
+
 # macOS
 .DS_Store
 
@@ -9,3 +12,6 @@
 *~
 *.swp
 *.swo
+
+# nvim
+.nvimlog
