@@ -50,6 +50,10 @@ vim.keymap.set("n", "<leader>tp", "<cmd>tabp<CR>")      -- go to pre
 vim.keymap.set("n", "<leader>tf", "<cmd>tabnew %<CR>")  -- open current tab in new tab
 
 -- Split
+vim.keymap.set("n", "<C-h>", "<C-w>h", { desc = "Move to left split" })
+vim.keymap.set("n", "<C-j>", "<C-w>j", { desc = "Move to lower split" })
+vim.keymap.set("n", "<C-k>", "<C-w>k", { desc = "Move to upper split" })
+vim.keymap.set("n", "<C-l>", "<C-w>l", { desc = "Move to right split" })
 vim.keymap.set("n", "<leader>sv", "<C-w>v", { desc = "Split window vertically" })
 vim.keymap.set("n", "<leader>sh", "<C-w>s", { desc = "Split window horizontally" })
 vim.keymap.set("n", "<leader>se", "<C-w>=", { desc = "Make splits equal size" }) -- make split windowss equal width and height
