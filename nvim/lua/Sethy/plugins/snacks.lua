@@ -15,18 +15,36 @@ return {
 				ignored = true,
 			},
 			-- HACK: read picker docs @ https://github.com/folke/snakcs.nvim/blob/main/docs/picker.md
-			picker = {
-				enabled = true,
-				sources = {
-					explorer = {
-						hidden = true,
-						ignored = true,
+				picker = {
+					enabled = true,
+					sources = {
+						files = {
+							hidden = true,
+							ignored = true,
+						},
+						explorer = {
+							hidden = true,
+							ignored = true,
+						},
 					},
-				},
-				matchers = {
-					frecency = true,
-					cwd_bonus = true,
-				},
+					win = {
+						input = {
+							keys = {
+								["H"] = { "toggle_hidden", mode = { "i", "n" } },
+								["I"] = { "toggle_ignored", mode = { "i", "n" } },
+							},
+						},
+						list = {
+							keys = {
+								["H"] = "toggle_hidden",
+								["I"] = "toggle_ignored",
+							},
+						},
+					},
+					matchers = {
+						frecency = true,
+						cwd_bonus = true,
+					},
 				formatters = {
 					file = {
 						filename_first = false,
