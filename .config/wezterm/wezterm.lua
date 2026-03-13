@@ -22,9 +22,9 @@ config.inactive_pane_hsb = {
   brightness = 1.00,
 }
 config.window_padding = {
-  left = 8,
-  right = 8,
-  top = 4,
+  left = 6,
+  right = 6,
+  top = 9,
   bottom = 0,
 }
 
