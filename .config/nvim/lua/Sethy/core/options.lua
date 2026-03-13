@@ -43,7 +43,7 @@ vim.opt.backspace = {"start", "eol", "indent"}
 vim.opt.splitright = true
 vim.opt.splitbelow = true
 
-vim.opt.cmdheight = 2
+vim.opt.cmdheight = 1
 vim.opt.showmode = true
 vim.opt.mousescroll = "ver:3,hor:1"
 
