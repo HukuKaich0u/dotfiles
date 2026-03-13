@@ -43,7 +43,9 @@ vim.opt.backspace = {"start", "eol", "indent"}
 vim.opt.splitright = true
 vim.opt.splitbelow = true
 
-vim.opt.mousescroll = "ver:1,hor:1"
+vim.opt.cmdheight = 2
+vim.opt.showmode = true
+vim.opt.mousescroll = "ver:3,hor:1"
 
 vim.opt.isfname:append("@-@")
 vim.opt.updatetime = 50

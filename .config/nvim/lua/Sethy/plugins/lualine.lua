@@ -31,7 +31,7 @@ return {
                 c = { fg = colors.color2, bg = colors.color3 },
             },
             visual = {
-                a = { fg = colors.color0, bg = colors.coloru8, gui = "bold" },
+                a = { fg = colors.color0, bg = colors.color8, gui = "bold" },
                 b = { fg = colors.color2, bg = colors.color3 },
             },
             insert = {

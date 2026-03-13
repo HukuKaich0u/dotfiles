@@ -10,10 +10,11 @@ return {
 		config = function()
 			local noice = require("noice")
 
-				noice.setup({
-					cmdline = {
-						enabled = false,
-						format = {
+			noice.setup({
+				cmdline = {
+					enabled = true,
+					view = "cmdline_popup",
+					format = {
 						cmdline = { pattern = "", icon = "󱐌 :", lang = "vim" },
 						help = { pattern = "^:%s*he?l?p?%s+", icon = " 󰮦 :" },
 						search_down = { kind = "search", pattern = "^/", icon = "/", lang = "regex" },
@@ -80,7 +81,7 @@ return {
 					},
 				},
 				messages = {
-					enabled = true,
+					enabled = false,
 				},
 				health = {
 					checker = true,
