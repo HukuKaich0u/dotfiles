@@ -15,3 +15,6 @@ install.sh
 
 # nvim
 .nvimlog
+
+# tmux plugins managed by TPM
+.config/tmux/plugins/
