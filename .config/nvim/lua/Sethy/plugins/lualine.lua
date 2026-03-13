@@ -6,37 +6,39 @@ return {
         local lazy_status = require("lazy.status") -- to configure lazy pending updates count
 
         local colors = {
-            color0 = "#092236",
-            color1 = "#ff5874",
-            color2 = "#c3ccdc",
-            color3 = "#1c1e26",
-            color6 = "#a1aab8",
-            color7 = "#828697",
-            color8 = "#ae81ff",
+            bg = "NONE",
+            bg_alt = "#1a1b26",
+            blue = "#7aa2f7",
+            cyan = "#7dcfff",
+            gold = "#e0af68",
+            red = "#f7768e",
+            fg = "#c0caf5",
+            fg_muted = "#7f85a3",
+            purple = "#bb9af7",
         }
 
         local my_lualine_theme = {
             replace = {
-                a = { fg = colors.color0, bg = colors.color1, gui = "bold" },
-                b = { fg = colors.color2, bg = colors.color3 },
+                a = { fg = colors.bg_alt, bg = colors.red, gui = "bold" },
+                b = { fg = colors.fg, bg = colors.bg },
             },
             inactive = {
-                a = { fg = colors.color6, bg = colors.color3, gui = "bold" },
-                b = { fg = colors.color6, bg = colors.color3 },
-                c = { fg = colors.color6, bg = colors.color3 },
+                a = { fg = colors.fg_muted, bg = colors.bg, gui = "bold" },
+                b = { fg = colors.fg_muted, bg = colors.bg },
+                c = { fg = colors.fg_muted, bg = colors.bg },
             },
             normal = {
-                a = { fg = colors.color0, bg = colors.color7, gui = "bold" },
-                b = { fg = colors.color2, bg = colors.color3 },
-                c = { fg = colors.color2, bg = colors.color3 },
+                a = { fg = colors.bg_alt, bg = colors.blue, gui = "bold" },
+                b = { fg = colors.cyan, bg = colors.bg },
+                c = { fg = colors.fg, bg = colors.bg },
             },
             visual = {
-                a = { fg = colors.color0, bg = colors.color8, gui = "bold" },
-                b = { fg = colors.color2, bg = colors.color3 },
+                a = { fg = colors.bg_alt, bg = colors.purple, gui = "bold" },
+                b = { fg = colors.fg, bg = colors.bg },
             },
             insert = {
-                a = { fg = colors.color0, bg = colors.color2, gui = "bold" },
-                b = { fg = colors.color2, bg = colors.color3 },
+                a = { fg = colors.bg_alt, bg = colors.gold, gui = "bold" },
+                b = { fg = colors.fg, bg = colors.bg },
             },
         }
 
@@ -62,7 +64,7 @@ return {
             path = 0,
         }
 
-        local branch = {'branch', icon = {'', color = { fg='#a6d4de' }}, '|'}
+        local branch = {'branch', icon = {'', color = { fg = colors.cyan }}, '|'}
 
         lualine.setup({
             icons_enabled = true,
@@ -81,7 +83,7 @@ return {
                         -- cond = require("noice").api.statusline.mode.has,
                         lazy_status.updates,
                         cond = lazy_status.has_updates,
-                        color = { fg = "#ff9e64" },
+                        color = { fg = colors.gold },
                     },
                     -- { "encoding" },
                     -- { "fileformat" },
