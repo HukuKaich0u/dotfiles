@@ -8,5 +8,3 @@ alias rsbintest='oj t -c "./main" -d tests'
 
 alias nv='nvim'
 alias tm='tmux'
-alias codex='codex'
-alias codex-inline='codex --no-alt-screen'
