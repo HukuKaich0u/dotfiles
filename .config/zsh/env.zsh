@@ -1,5 +1,9 @@
 source "$ZSH_CONFIG_DIR/homebrew.zsh"
 
+export ZSH_STATE_DIR="${XDG_STATE_HOME:-$HOME/.local/state}/zsh"
+mkdir -p "$ZSH_STATE_DIR"
+export HISTFILE="$ZSH_STATE_DIR/.zsh_history"
+
 export PATH="$HOME/.npm-global/bin:$PATH"
 export PATH="/Users/KokiAoyagi/go/bin:$PATH"
 export PATH="$PATH:/usr/local/bin"
