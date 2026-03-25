@@ -9,7 +9,7 @@ set -euo pipefail
 DOTFILES_DIR="$(cd "$(dirname "$0")" && pwd)"
 REPO_CONFIG_DIR="$DOTFILES_DIR/.config"
 HOME_CONFIG_DIR="$HOME/.config"
-HOME_DOTFILES=".zshrc .zprofile"
+HOME_DOTFILES=".zshenv .zshrc .zprofile"
 
 link_config_dir() {
     local name="$1"
