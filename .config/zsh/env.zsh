@@ -1,3 +1,5 @@
+source "$ZSH_CONFIG_DIR/homebrew.zsh"
+
 export PATH="$HOME/.npm-global/bin:$PATH"
 export PATH="/Users/KokiAoyagi/go/bin:$PATH"
 export PATH="$PATH:/usr/local/bin"
