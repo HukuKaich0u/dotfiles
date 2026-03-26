@@ -1,4 +1,118 @@
 return {
+    -- NOTE: NVCode color schemes
+    {
+        "ChristianChiarulli/nvcode-color-schemes.vim",
+        config = function()
+            vim.g.nvcode_termcolors = 256
+
+            local transparent_themes = {
+                nvcode = true,
+                onedark = true,
+                nord = true,
+                aurora = true,
+                palenight = true,
+                snazzy = true,
+                xoria = true,
+            }
+
+            local palette = {
+                fg = "#bbc2cf",
+                fg_bright = "#e6edf3",
+                muted = "#7f848e",
+                panel = "#1f2430",
+                panel_alt = "#252b39",
+                border = "#3b4261",
+                accent = "#7aa2f7",
+                search = "#33467c",
+            }
+
+            local function apply_nvcode_highlights()
+                if not transparent_themes[vim.g.colors_name] then
+                    return
+                end
+
+                local highlights = {
+                    Normal = { bg = "none" },
+                    NormalNC = { bg = "none" },
+                    SignColumn = { bg = "none" },
+                    EndOfBuffer = { bg = "none" },
+                    ColorColumn = { bg = palette.panel },
+                    NormalFloat = { bg = "none" },
+                    NormalDark = { bg = palette.panel, fg = palette.muted },
+                    FloatBorder = { bg = "none", fg = palette.border },
+                    FloatTitle = { bg = "none", fg = palette.accent, bold = true },
+                    Pmenu = { bg = "none", fg = palette.fg },
+                    PmenuSel = { bg = palette.panel_alt, fg = palette.fg_bright, bold = true },
+                    PmenuSbar = { bg = palette.panel },
+                    PmenuThumb = { bg = palette.accent },
+                    StatusLine = { bg = "none", fg = palette.fg },
+                    StatusLineNC = { bg = "none", fg = palette.muted },
+                    TabLineFill = { bg = "none" },
+                    WinSeparator = { bg = "none", fg = palette.border },
+                    VertSplit = { bg = "none", fg = palette.border },
+                    Search = { bg = palette.search, fg = palette.fg_bright },
+                    IncSearch = { bg = palette.accent, fg = "#0b1020", bold = true },
+                    LazyNormal = { bg = palette.panel, fg = palette.muted },
+                    MasonNormal = { bg = palette.panel, fg = palette.muted },
+                    TelescopeNormal = { bg = "none", fg = palette.fg },
+                    TelescopeBorder = { bg = "none", fg = palette.border },
+                    TelescopePromptNormal = { bg = "none", fg = palette.fg },
+                    TelescopePromptBorder = { bg = "none", fg = palette.accent },
+                    TelescopePromptTitle = { bg = "none", fg = palette.accent, bold = true },
+                    TelescopeResultsNormal = { bg = "none", fg = palette.muted },
+                    TelescopeResultsBorder = { bg = "none", fg = palette.border },
+                    TelescopeResultsTitle = { bg = "none", fg = palette.border },
+                    TelescopePreviewBorder = { bg = "none", fg = palette.border },
+                    TelescopePreviewTitle = { bg = "none", fg = palette.border },
+                    TelescopeTitle = { bg = "none", fg = palette.accent, bold = true },
+                    NoiceCmdlinePopup = { bg = "none", fg = palette.fg },
+                    NoiceCmdlinePopupBorder = { bg = "none", fg = palette.accent },
+                    NoicePopup = { bg = "none", fg = palette.fg },
+                    NoicePopupBorder = { bg = "none", fg = palette.border },
+                    NoiceConfirm = { bg = "none", fg = palette.fg },
+                    NoiceConfirmBorder = { bg = "none", fg = palette.accent },
+                }
+
+                for group, opts in pairs(highlights) do
+                    vim.api.nvim_set_hl(0, group, opts)
+                end
+            end
+
+            local group = vim.api.nvim_create_augroup("SethyNvcodeHighlights", { clear = true })
+
+            vim.api.nvim_create_autocmd("ColorScheme", {
+                group = group,
+                pattern = "*",
+                callback = apply_nvcode_highlights,
+            })
+
+            apply_nvcode_highlights()
+        end,
+    },
+    -- NOTE: Moonfly
+    {
+        "bluz71/vim-moonfly-colors",
+        name = "moonfly",
+        config = function()
+            vim.g.moonflyTransparent = true
+            vim.g.moonflyNormalFloat = true
+            vim.g.moonflyNormalPmenu = true
+
+            vim.api.nvim_create_autocmd("ColorScheme", {
+                pattern = "moonfly",
+                callback = function()
+                    vim.api.nvim_set_hl(0, "Normal", { bg = "none" })
+                    vim.api.nvim_set_hl(0, "NormalFloat", { bg = "none" })
+                    vim.api.nvim_set_hl(0, "FloatBorder", { bg = "none" })
+                    vim.api.nvim_set_hl(0, "FloatTitle", { bg = "none" })
+                    vim.api.nvim_set_hl(0, "Pmenu", { bg = "none" })
+                    vim.api.nvim_set_hl(0, "PmenuSel", { bg = "#323437", fg = "#e4e4e4" })
+                    vim.api.nvim_set_hl(0, "PmenuSbar", { bg = "#080808" })
+                    vim.api.nvim_set_hl(0, "PmenuThumb", { bg = "#79dac8" })
+                end,
+            })
+        end,
+    },
     -- NOTE: Rose pine
     {
         "rose-pine/neovim",
@@ -10,8 +124,8 @@ return {
                 dark_variant = "main", -- main, moon, or dawn
                 dim_inactive_windows = false,
                 -- disable_background = true,
-                -- 	disable_nc_background = false,
-                -- 	disable_float_background = false,
+                -- disable_nc_background = false,
+                -- disable_float_background = false,
                 -- extend_background_behind_borders = false,
                 styles = {
                     bold = true,
