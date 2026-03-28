@@ -4,28 +4,6 @@ return {
 		"folke/snacks.nvim",
 		priority = 1000,
 		lazy = false,
-		init = function()
-			local group = vim.api.nvim_create_augroup("SethySnacksDashboard", { clear = true })
-
-			vim.api.nvim_create_autocmd("FileType", {
-				group = group,
-				pattern = "snacks_dashboard",
-				callback = function()
-					vim.fn.clearmatches()
-				end,
-			})
-
-			vim.api.nvim_create_autocmd({ "BufWinEnter", "WinEnter" }, {
-				group = group,
-				callback = function(args)
-					if vim.bo[args.buf].filetype ~= "snacks_dashboard" then
-						return
-					end
-
-					vim.fn.clearmatches()
-				end,
-			})
-		end,
 		opts = {
 			quickfile = {
 				enabled = true,
