@@ -102,6 +102,10 @@ return {
 				only_in_normal_buffers = true,
 			})
 
+			vim.keymap.set("n", "<leader>hw", function()
+				minitrailspace.highlight()
+			end, { desc = "highlight trailing whitespace" })
+
 			vim.keymap.set("n", "<leader>cw", function()
 				minitrailspace.trim()
 			end, { desc = "erase whitespace" })
