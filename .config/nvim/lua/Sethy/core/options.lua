@@ -72,15 +72,51 @@ vim.api.nvim_set_hl(0, "Whitespace", { fg = "#666666", bg = "NONE" })
 vim.api.nvim_set_hl(0, "NonText", { fg = "#666666", bg = "NONE" })
 vim.api.nvim_set_hl(0, "SpecialKey", { fg = "#666666", bg = "NONE" })
 vim.api.nvim_set_hl(0, "ExtraWhitespace", { bg = "#51202A" })
-vim.cmd([[
-  augroup SethyWhitespace
-    autocmd!
-    autocmd ColorScheme * highlight Whitespace guifg=#666666 guibg=NONE ctermfg=243 ctermbg=NONE
-    autocmd ColorScheme * highlight NonText guifg=#666666 guibg=NONE ctermfg=243 ctermbg=NONE
-    autocmd ColorScheme * highlight SpecialKey guifg=#666666 guibg=NONE ctermfg=243 ctermbg=NONE
-    autocmd ColorScheme * highlight ExtraWhitespace guibg=#51202A ctermbg=52
-    autocmd BufWinEnter,WinEnter * match ExtraWhitespace /\s\+$\| \+\ze\t/
-    autocmd InsertEnter * match ExtraWhitespace /\s\+\%#\@<!$\| \+\ze\t/
-    autocmd InsertLeave * match ExtraWhitespace /\s\+$\| \+\ze\t/
-  augroup END
-]])
+local whitespace_group = vim.api.nvim_create_augroup("SethyWhitespace", { clear = true })
+
+local function skip_extra_whitespace(buf)
+    local filetype = vim.bo[buf].filetype
+    local buftype = vim.bo[buf].buftype
+
+    return filetype == "snacks_dashboard" or buftype == "nofile"
+end
+
+local function apply_extra_whitespace(pattern)
+    if skip_extra_whitespace(0) then
+        vim.fn.clearmatches()
+        return
+    end
+
+    vim.fn.matchadd("ExtraWhitespace", pattern)
+end
+
+vim.api.nvim_create_autocmd("ColorScheme", {
+    group = whitespace_group,
+    callback = function()
+        vim.api.nvim_set_hl(0, "Whitespace", { fg = "#666666", bg = "NONE" })
+        vim.api.nvim_set_hl(0, "NonText", { fg = "#666666", bg = "NONE" })
+        vim.api.nvim_set_hl(0, "SpecialKey", { fg = "#666666", bg = "NONE" })
+        vim.api.nvim_set_hl(0, "ExtraWhitespace", { bg = "#51202A" })
+    end,
+})
+
+vim.api.nvim_create_autocmd({ "BufWinEnter", "WinEnter" }, {
+    group = whitespace_group,
+    callback = function()
+        apply_extra_whitespace([[\s\+$\| \+\ze\t]])
+    end,
+})
+
+vim.api.nvim_create_autocmd("InsertEnter", {
+    group = whitespace_group,
+    callback = function()
+        apply_extra_whitespace([[\s\+\%#\@<!$\| \+\ze\t]])
+    end,
+})
+
+vim.api.nvim_create_autocmd("InsertLeave", {
+    group = whitespace_group,
+    callback = function()
+        apply_extra_whitespace([[\s\+$\| \+\ze\t]])
+    end,
+})
