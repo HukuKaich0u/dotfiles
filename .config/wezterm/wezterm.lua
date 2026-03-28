@@ -10,6 +10,8 @@ config.font = wezterm.font_with_fallback({
 })
 
 config.use_ime = true
+config.send_composed_key_when_left_alt_is_pressed = true
+config.send_composed_key_when_right_alt_is_pressed = true
 config.enable_kitty_graphics = true
 config.window_background_opacity = 0.70
 config.macos_window_background_blur = 0
