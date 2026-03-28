@@ -66,21 +66,3 @@ vim.opt.listchars = {
     extends = ">",
     precedes = "<",
 }
-
--- Highlight suspicious whitespace (trailing spaces, spaces before tabs)
-vim.api.nvim_set_hl(0, "Whitespace", { fg = "#666666", bg = "NONE" })
-vim.api.nvim_set_hl(0, "NonText", { fg = "#666666", bg = "NONE" })
-vim.api.nvim_set_hl(0, "SpecialKey", { fg = "#666666", bg = "NONE" })
-vim.api.nvim_set_hl(0, "ExtraWhitespace", { bg = "#51202A" })
-vim.cmd([[
-  augroup SethyWhitespace
-    autocmd!
-    autocmd ColorScheme * highlight Whitespace guifg=#666666 guibg=NONE ctermfg=243 ctermbg=NONE
-    autocmd ColorScheme * highlight NonText guifg=#666666 guibg=NONE ctermfg=243 ctermbg=NONE
-    autocmd ColorScheme * highlight SpecialKey guifg=#666666 guibg=NONE ctermfg=243 ctermbg=NONE
-    autocmd ColorScheme * highlight ExtraWhitespace guibg=#51202A ctermbg=52
-    autocmd BufWinEnter,WinEnter * match ExtraWhitespace /\s\+$\| \+\ze\t/
-    autocmd InsertEnter * match ExtraWhitespace /\s\+\%#\@<!$\| \+\ze\t/
-    autocmd InsertLeave * match ExtraWhitespace /\s\+$\| \+\ze\t/
-  augroup END
-]])
