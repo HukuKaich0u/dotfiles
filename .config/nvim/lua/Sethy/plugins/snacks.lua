@@ -22,6 +22,10 @@ return {
 							hidden = true,
 							ignored = true,
 						},
+						grep = {
+							hidden = true,
+							ignored = true,
+						},
 						explorer = {
 							hidden = true,
 							ignored = true,
