@@ -2,6 +2,7 @@ local set = vim.opt_local
 
 set.textwidth = 80   -- move text to new line at 80 characters
 set.spell = true     -- Enable spell checking
+set.spelllang = { "en_us", "cjk" }
 set.linebreak = true
 
 -- Toggle Line Numbers (Visual Selection)
@@ -426,21 +427,48 @@ vim.keymap.set("n", "<leader>h4", function() toggle_heading(4) end, { buffer = t
 vim.keymap.set("n", "<leader>h5", function() toggle_heading(5) end, { buffer = true, desc = "Toggle H5" })
 vim.keymap.set("n", "<leader>h6", function() toggle_heading(6) end, { buffer = true, desc = "Toggle H6" })
 
--- ** Header Colors **
--- VS Code Dark+ inspired markdown heading colors.
-local heading_colors = {
-    "#569CD6",
-    "#4EC9B0",
-    "#DCDCAA",
-    "#CE9178",
-    "#C586C0",
-    "#9CDCFE",
+-- ** Markdown Colors **
+-- VS Code Dark+ inspired markdown colors.
+local markdown_hls = {
+    ["@markup.heading.1.markdown"] = { fg = "#569CD6", bold = true },
+    ["@markup.heading.2.markdown"] = { fg = "#4EC9B0", bold = true },
+    ["@markup.heading.3.markdown"] = { fg = "#DCDCAA", bold = true },
+    ["@markup.heading.4.markdown"] = { fg = "#CE9178", bold = true },
+    ["@markup.heading.5.markdown"] = { fg = "#C586C0", bold = true },
+    ["@markup.heading.6.markdown"] = { fg = "#9CDCFE", bold = true },
+    ["@markup.strong.markdown_inline"] = { fg = "#D4D4D4", bold = true },
+    ["@markup.italic.markdown_inline"] = { fg = "#D4D4D4", italic = true },
+    ["@markup.link.markdown_inline"] = { fg = "#4FC1FF", underline = true },
+    ["@markup.link.label.markdown_inline"] = { fg = "#9CDCFE" },
+    ["@markup.link.url.markdown_inline"] = { fg = "#4FC1FF", underline = true },
+    ["@markup.raw.markdown_inline"] = { fg = "#CE9178", bg = "NONE" },
+    ["@markup.raw.block.markdown"] = { fg = "#CE9178", bg = "NONE" },
+    ["@markup.list.markdown"] = { fg = "#D7BA7D" },
+    ["@markup.quote.markdown"] = { fg = "#6A9955", italic = true },
+    RenderMarkdownH1 = { fg = "#569CD6", bold = true },
+    RenderMarkdownH2 = { fg = "#4EC9B0", bold = true },
+    RenderMarkdownH3 = { fg = "#DCDCAA", bold = true },
+    RenderMarkdownH4 = { fg = "#CE9178", bold = true },
+    RenderMarkdownH5 = { fg = "#C586C0", bold = true },
+    RenderMarkdownH6 = { fg = "#9CDCFE", bold = true },
+    RenderMarkdownH1Bg = { bg = "NONE" },
+    RenderMarkdownH2Bg = { bg = "NONE" },
+    RenderMarkdownH3Bg = { bg = "NONE" },
+    RenderMarkdownH4Bg = { bg = "NONE" },
+    RenderMarkdownH5Bg = { bg = "NONE" },
+    RenderMarkdownH6Bg = { bg = "NONE" },
+    RenderMarkdownCode = { fg = "#D4D4D4", bg = "#1E1E1E" },
+    RenderMarkdownCodeBorder = { fg = "#3C3C3C", bg = "NONE" },
+    RenderMarkdownCodeInline = { fg = "#CE9178", bg = "#252526" },
+    RenderMarkdownBullet = { fg = "#D7BA7D" },
+    RenderMarkdownQuote = { fg = "#6A9955", italic = true },
+    RenderMarkdownLink = { fg = "#4FC1FF" },
+    RenderMarkdownLinkTitle = { fg = "#9CDCFE" },
+    RenderMarkdownTableHead = { fg = "#808080", bg = "NONE" },
+    RenderMarkdownTableRow = { fg = "#D4D4D4", bg = "NONE" },
 }
 
-for level, fg in ipairs(heading_colors) do
-    vim.api.nvim_set_hl(0, "@markup.heading." .. level .. ".markdown", {
-        fg = fg,
-        bg = "NONE",
-        bold = true,
-    })
+for group, hl in pairs(markdown_hls) do
+    hl.bg = hl.bg or "NONE"
+    vim.api.nvim_set_hl(0, group, hl)
 end
