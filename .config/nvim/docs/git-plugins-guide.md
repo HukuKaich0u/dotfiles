@@ -5,6 +5,7 @@
 | プラグイン | 用途 |
 |-----------|------|
 | **gitsigns.nvim** | hunk単位の変更操作・可視化 |
+| **diffview.nvim** | Git差分レビュー・ファイル履歴・merge conflict確認 |
 | **lazygit** (snacks.nvim経由) | フルスクリーンGit TUI |
 
 ---
@@ -73,6 +74,40 @@
 <leader>gs      " 良ければstage
 <leader>gr      " 不要なら破棄
 ```
+
+---
+
+## diffview.nvim
+
+Gitの差分レビュー用UI。変更ファイル一覧とdiffを1つのタブで確認できる。
+
+### 起動
+
+| キー | 動作 |
+|------|------|
+| `<leader>gv` | 現在の変更をDiffviewで開く |
+| `<leader>gV` | `:DiffviewOpen` 入力を開始 |
+| `<leader>gq` | Diffviewを閉じる |
+| `<leader>gf` | ファイル一覧パネルを表示/非表示 |
+
+### 履歴
+
+| キー | 動作 |
+|------|------|
+| `<leader>gh` | 現在ファイルの履歴 |
+| `<leader>gH` | リポジトリ全体の履歴 |
+
+### 使い方
+
+```
+:DiffviewOpen
+:DiffviewOpen HEAD~2
+:DiffviewOpen origin/main...HEAD
+:DiffviewOpen HEAD~2 -- lua/Sethy
+:DiffviewFileHistory %
+```
+
+Diffview内では `Tab` / `Shift-Tab` でファイルを移動し、`q` または `<leader>gq` で閉じる。
 
 ---
 
@@ -182,6 +217,26 @@
 
 ---
 
+## Builtin DiffTool
+
+Neovim builtin の `nvim.difftool`。2つのファイルまたはディレクトリを横並びで比較する。
+
+### 起動
+
+| キー | 動作 |
+|------|------|
+| `<leader>gdt` | `:DiffTool` 入力を開始 |
+
+### 使い方
+
+```
+:DiffTool path/to/left path/to/right
+```
+
+`git difftool -d` などから使う場合は、Neovim 側で `packadd nvim.difftool` してから `nvim -d` で起動する。
+
+---
+
 ## 使い分けガイド
 
 ### gitsignsを使う場面
@@ -200,6 +255,13 @@
 - 履歴確認
 - 複雑なstash操作
 
+### diffviewを使う場面
+
+- 複数ファイルの差分レビュー
+- `origin/main...HEAD` などブランチ間の比較
+- ファイル単位の履歴確認
+- merge conflictの確認
+
 ---
 
 ## 推奨ワークフロー
@@ -215,6 +277,15 @@
 [コミット時]
 <leader>lg      " lazygit起動
 c               " コミット
+```
+
+### 1.5. 変更全体をレビュー
+
+```
+<leader>gv      " Diffviewで変更一覧を開く
+Tab / S-Tab     " ファイル間を移動
+<leader>gf      " ファイル一覧を表示/非表示
+<leader>gq      " 閉じる
 ```
 
 ### 2. 部分的な変更だけコミット

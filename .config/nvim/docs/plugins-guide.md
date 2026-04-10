@@ -302,7 +302,8 @@ Treesitterベースの高速な折りたたみ。
 
 | キー | 動作 |
 |------|------|
-| `<leader>u` | undotreeをトグル |
+| `<leader>u` | 外部 undotree をトグル |
+| `<leader>U` | builtin undotree を開く |
 
 ### vim-maximizer
 

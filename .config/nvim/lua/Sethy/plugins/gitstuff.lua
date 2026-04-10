@@ -1,4 +1,28 @@
 return {
+    {
+        "sindrets/diffview.nvim",
+        cmd = {
+            "DiffviewOpen",
+            "DiffviewClose",
+            "DiffviewFileHistory",
+            "DiffviewToggleFiles",
+            "DiffviewFocusFiles",
+            "DiffviewRefresh",
+        },
+        dependencies = {
+            "nvim-lua/plenary.nvim",
+            "nvim-tree/nvim-web-devicons",
+        },
+        keys = {
+            { "<leader>gv", "<cmd>DiffviewOpen<CR>", desc = "Git view changes" },
+            { "<leader>gV", ":DiffviewOpen ", desc = "Git view range" },
+            { "<leader>gh", "<cmd>DiffviewFileHistory %<CR>", desc = "Git history current file" },
+            { "<leader>gH", "<cmd>DiffviewFileHistory<CR>", desc = "Git history repository" },
+            { "<leader>gf", "<cmd>DiffviewToggleFiles<CR>", desc = "Git view files" },
+            { "<leader>gq", "<cmd>DiffviewClose<CR>", desc = "Git view close" },
+        },
+        opts = {},
+    },
     -- {
     --     "tpope/vim-fugitive",
     --     config = function()

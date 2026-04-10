@@ -5,5 +5,5 @@ package.cpath = package.cpath .. ";" .. vim.fn.expand("$HOME") .. "/.luarocks/li
 
 require("Sethy.core")
 require("Sethy.lazy")
+require("Sethy.builtin")
 require("current-theme")
-
