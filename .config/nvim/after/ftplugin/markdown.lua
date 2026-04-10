@@ -427,33 +427,20 @@ vim.keymap.set("n", "<leader>h5", function() toggle_heading(5) end, { buffer = t
 vim.keymap.set("n", "<leader>h6", function() toggle_heading(6) end, { buffer = true, desc = "Toggle H6" })
 
 -- ** Header Colors **
--- highlights for markdown files to render highlights properly
--- thx to Linkarzu for this
+-- VS Code Dark+ inspired markdown heading colors.
+local heading_colors = {
+    "#569CD6",
+    "#4EC9B0",
+    "#DCDCAA",
+    "#CE9178",
+    "#C586C0",
+    "#9CDCFE",
+}
 
-local color1_bg = "#ff757f"
-local color2_bg = "#4fd6be"
-local color3_bg = "#7dcfff"
-local color4_bg = "#ff9e64"
-local color5_bg = "#7aa2f7"
-local color6_bg = "#c0caf5"
-local color_fg = "#1F2335"
-
-vim.cmd(
-    string.format([[highlight @markup.heading.1.markdown cterm=bold gui=bold guifg=%s guibg=%s]], color_fg, color1_bg)
-)
-vim.cmd(
-    string.format([[highlight @markup.heading.2.markdown cterm=bold gui=bold guifg=%s guibg=%s]], color_fg, color2_bg)
-)
-vim.cmd(
-    string.format([[highlight @markup.heading.3.markdown cterm=bold gui=bold guifg=%s guibg=%s]], color_fg, color3_bg)
-)
-vim.cmd(
-    string.format([[highlight @markup.heading.4.markdown cterm=bold gui=bold guifg=%s guibg=%s]], color_fg, color4_bg)
-)
-vim.cmd(
-    string.format([[highlight @markup.heading.5.markdown cterm=bold gui=bold guifg=%s guibg=%s]], color_fg, color5_bg)
-)
-vim.cmd(
-    string.format([[highlight @markup.heading.6.markdown cterm=bold gui=bold guifg=%s guibg=%s]], color_fg, color6_bg)
-)
-
+for level, fg in ipairs(heading_colors) do
+    vim.api.nvim_set_hl(0, "@markup.heading." .. level .. ".markdown", {
+        fg = fg,
+        bg = "NONE",
+        bold = true,
+    })
+end
