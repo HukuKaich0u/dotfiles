@@ -2,13 +2,18 @@ return {
     "neovim/nvim-lspconfig",
     event = { "BufReadPre", "BufNewFile" },
     dependencies = {
-        "hrsh7th/cmp-nvim-lsp", { "antosha417/nvim-lsp-file-operations", config = true },
+        { "antosha417/nvim-lsp-file-operations", config = true },
     },
     config = function()
         -- NOTE: LSP Keybinds
         vim.api.nvim_create_autocmd("LspAttach", {
             group = vim.api.nvim_create_augroup("UserLspConfig", {}),
             callback = function(ev)
+                local client = vim.lsp.get_client_by_id(ev.data.client_id)
+                if not client then
+                    return
+                end
+
                 -- Buffer local mappings
                 local opts = { buffer = ev.buf, silent = true }
 
@@ -51,6 +56,16 @@ return {
                 vim.keymap.set("i", "<C-h>", function()
                     vim.lsp.buf.signature_help()
                 end, opts)
+
+                if client:supports_method("textDocument/completion") then
+                    vim.lsp.completion.enable(true, client.id, ev.buf, {
+                        autotrigger = true,
+                    })
+
+                    vim.keymap.set("i", "<C-Space>", function()
+                        vim.lsp.completion.get()
+                    end, opts)
+                end
             end,
         })
 
@@ -72,14 +87,7 @@ return {
             update_in_insert = false,
         })
 
-        -- Setup servers
-        local cmp_nvim_lsp = require("cmp_nvim_lsp")
-        local capabilities = cmp_nvim_lsp.default_capabilities()
-
-        -- Global LSP settings (applied to all servers)
-        vim.lsp.config('*', {
-            capabilities = capabilities,
-        })
+        vim.opt.completeopt:append({ "menuone", "noselect", "popup" })
 
         -- Configure and enable LSP servers
         -- lua_ls
