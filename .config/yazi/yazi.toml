@@ -1,14 +1,26 @@
 [mgr]
+# ペイン幅: 親ディレクトリ / 現在のディレクトリ / プレビュー。
 ratio = [1, 4, 3]
+
+# natural sort は file2 が file10 より前に来るような、人間向けの並び順。
 sort_by = "natural"
 sort_sensitive = false
 sort_reverse = false
 sort_dir_first = true
+
+# 一覧にファイルサイズを表示する。
 linemode = "size"
+
+# dotfiles と symlink のリンク先をデフォルトで表示する。
 show_hidden = true
 show_symlink = true
+
+# スクロール時にカーソル上下へ残す余白行数。
 scrolloff = 5
 
 [preview]
+# プレビューペインで長い行を折り返す。
 wrap = "yes"
+
+# プレビュー内の tab を 2 spaces として表示する。
 tab_size = 2
