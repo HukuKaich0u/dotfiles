@@ -66,9 +66,6 @@ return {
 				callback = function(event)
 					-- Enable highlighting
 					pcall(vim.treesitter.start, event.buf)
-
-					-- Enable indentation
-					vim.bo[event.buf].indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
 				end,
 			})
 		end,
