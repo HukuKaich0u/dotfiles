@@ -42,7 +42,9 @@ return {
         })
 
         --Keymaps
-        vim.keymap.set("n", "<leader>pr", "<cmd>Telescope oldfiles<CR>", { desc = "Fuzzy find recent files" })
+        vim.keymap.set("n", "<leader>pr", function()
+            builtin.oldfiles({ cwd_only = true })
+        end, { desc = "Fuzzy find recent files in current project" })
         vim.keymap.set("n", "<leader>pWs", function()
             local word = vim.fn.expand("<cWORD>")
             builtin.grep_string({ search = word })
