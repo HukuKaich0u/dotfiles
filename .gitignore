@@ -19,3 +19,20 @@ nvim.log
 
 # tmux plugins managed by TPM
 .config/tmux/plugins/
+
+# AI CLI local state
+.claude.json
+.codex/auth.json
+.codex/history.jsonl
+.codex/session_index.jsonl
+.codex/sessions/
+.codex/log/
+.codex/sqlite/
+.codex/*.sqlite
+.codex/*.sqlite-shm
+.codex/*.sqlite-wal
+.claude/history.jsonl
+.claude/projects/
+.claude/todos/
+.claude/debug/
+.claude/shell-snapshots/
