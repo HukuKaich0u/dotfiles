@@ -10,6 +10,7 @@ DOTFILES_DIR="$(cd "$(dirname "$0")" && pwd)"
 REPO_CONFIG_DIR="$DOTFILES_DIR/.config"
 HOME_CONFIG_DIR="$HOME/.config"
 HOME_DOTFILES=".zshenv .zshrc .zprofile"
+TERMINFO_SOURCE_DIR="$DOTFILES_DIR/terminfo"
 
 link_config_dir() {
     local name="$1"
@@ -113,6 +114,25 @@ link_home_dotfile() {
     echo "✓ $name linked"
 }
 
+compile_terminfo() {
+    local source_dir="$1"
+
+    if [ ! -d "$source_dir" ]; then
+        return
+    fi
+
+    mkdir -p "$HOME/.terminfo"
+
+    for source in "$source_dir"/*.src; do
+        if [ ! -f "$source" ]; then
+            continue
+        fi
+
+        tic -x -o "$HOME/.terminfo" "$source"
+        echo "✓ terminfo $(basename "$source" .src) compiled"
+    done
+}
+
 echo "Installing dotfiles from $DOTFILES_DIR"
 echo ""
 
@@ -132,6 +152,8 @@ done
 for dotfile in $HOME_DOTFILES; do
     link_home_dotfile "$dotfile"
 done
+
+compile_terminfo "$TERMINFO_SOURCE_DIR"
 
 echo ""
 echo "Done!"

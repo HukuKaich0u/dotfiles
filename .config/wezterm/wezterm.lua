@@ -1,4 +1,5 @@
 local wezterm = require("wezterm")
+local act = wezterm.action
 local config = wezterm.config_builder()
 
 config.automatically_reload_config = true
@@ -95,6 +96,24 @@ wezterm.on("format-tab-title", function(tab, tabs, panes, config, hover, max_wid
     { Text = SOLID_RIGHT_ARROW },
   }
 end)
+
+config.mouse_bindings = {
+  -- Keep wheel scrolling in WezTerm scrollback even when tmux is capturing mouse.
+  {
+    event = { Down = { streak = 1, button = { WheelUp = 1 } } },
+    mods = "NONE",
+    mouse_reporting = true,
+    alt_screen = false,
+    action = act.ScrollByCurrentEventWheelDelta,
+  },
+  {
+    event = { Down = { streak = 1, button = { WheelDown = 1 } } },
+    mods = "NONE",
+    mouse_reporting = true,
+    alt_screen = false,
+    action = act.ScrollByCurrentEventWheelDelta,
+  },
+}
 
 config.keys = require("keybinds").keys
 config.key_tables = require("keybinds").key_tables

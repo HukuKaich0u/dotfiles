@@ -8,3 +8,7 @@ alias rsbintest='oj t -c "./main" -d tests'
 
 alias nv='nvim'
 alias tm='tmux'
+
+# Keep Codex output in normal terminal scrollback so wheel scrolling works in tmux.
+alias codex='codex --no-alt-screen'
+alias codex-alt='command codex'
