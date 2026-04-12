@@ -31,6 +31,11 @@ return {
                     return
                 end
 
+                local function merge_highlight(name, opts)
+                    local ok, current = pcall(vim.api.nvim_get_hl, 0, { name = name, link = false })
+                    vim.api.nvim_set_hl(0, name, vim.tbl_extend("force", ok and current or {}, opts))
+                end
+
                 local highlights = {
                     Normal = { bg = "none" },
                     NormalNC = { bg = "none" },
@@ -71,7 +76,7 @@ return {
                 }
 
                 for group, opts in pairs(highlights) do
-                    vim.api.nvim_set_hl(0, group, opts)
+                    merge_highlight(group, opts)
                 end
             end
 
