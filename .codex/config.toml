@@ -1,0 +1,6 @@
+model = "gpt-5.4"
+model_reasoning_effort = "medium"
+personality = "pragmatic"
+
+[plugins."gmail@openai-curated"]
+enabled = true
