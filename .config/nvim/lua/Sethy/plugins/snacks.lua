@@ -1,3 +1,21 @@
+local env = require("Sethy.core.env")
+
+local dashboard_sections = {
+	{ section = "header" },
+	{ section = "keys", gap = 1, padding = 1 },
+}
+
+local dashboard_image_command = env.dashboard_image_command()
+if dashboard_image_command then
+	table.insert(dashboard_sections, {
+		section = "terminal",
+		cmd = dashboard_image_command,
+		pane = 2,
+		indent = 4,
+		height = 30,
+	})
+end
+
 return {
 	-- HACK: docs @ https://github.com/folke/snacks.nvim/blob/main/docs
 	{
@@ -127,7 +145,7 @@ return {
 				},
 			},
 				image = {
-					enabled = true,
+					enabled = env.image_support_enabled(),
 					doc = {
 					float = false,
 					inline = true, -- if you want show image on cursor hover
@@ -140,32 +158,13 @@ return {
 						command = "magick",
 					},
 					img_dirs = {
-						"img",
-						"images",
-						"assets",
-						"static",
-						"public",
-						"media",
-						"attachments",
-						"Archives/All-Vault-Images/",
-						"~/Library",
-						"~/Downloads",
+						unpack(env.image_directories()),
 						},
 					},
 				},
 				dashboard = {
 					enabled = true,
-					sections = {
-					{ section = "header" },
-					{ section = "keys", gap = 1, padding = 1 },
-					{
-						section = "terminal",
-						cmd = ("ascii-image-converter %q -C -c"):format(vim.fn.expand("~/Documents/profiles.jpeg")),
-						pane = 2,
-						indent = 4,
-						height = 30,
-					},
-				},
+					sections = dashboard_sections,
 			},
 			lazygit = {
 				theme = {

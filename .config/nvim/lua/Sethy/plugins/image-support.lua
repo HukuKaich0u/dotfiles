@@ -1,7 +1,10 @@
+local env = require("Sethy.core.env")
+
 return {
 	-- Paste images from clipboard (requires: brew install pngpaste)
 	{
 		"HakonHarnes/img-clip.nvim",
+		enabled = env.paste_image_enabled(),
 		event = "VeryLazy",
 		keys = {
 			{ "<leader>pi", "<cmd>PasteImage<cr>", desc = "Paste image from system clipboard" },
@@ -37,6 +40,7 @@ return {
 	-- Display images in Neovim (requires: luarocks --local --lua-version=5.1 install magick)
 	{
 		"3rd/image.nvim",
+		enabled = env.image_support_enabled(),
 		ft = { "markdown", "norg", "html", "css" },
 		event = {
 			"BufReadPre *.png",
@@ -49,7 +53,7 @@ return {
 			"nvim-treesitter/nvim-treesitter",
 		},
 		opts = {
-			backend = "kitty", -- WezTerm supports kitty graphics protocol
+			backend = env.image_backend(), -- WezTerm supports kitty graphics protocol
 			processor = "magick_rock",
 			integrations = {
 				markdown = {

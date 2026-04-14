@@ -1,3 +1,5 @@
+local env = require("Sethy.core.env")
+
 vim.cmd("let g:netrw_banner = 0")
 
 vim.opt.nu = true
@@ -51,7 +53,11 @@ vim.opt.isfname:append("@-@")
 vim.opt.updatetime = 50
 vim.opt.colorcolumn = "80"
 
-vim.opt.clipboard = "unnamedplus"
+if env.clipboard_available() then
+    vim.opt.clipboard = "unnamedplus"
+else
+    vim.opt.clipboard = ""
+end
 vim.opt.hlsearch = true
 
 vim.opt.mouse = "a"
