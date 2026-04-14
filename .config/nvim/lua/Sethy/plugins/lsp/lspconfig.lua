@@ -295,20 +295,6 @@ return {
         -- ruff (Python - linter/formatter)
         vim.lsp.config("ruff", {})
 
-        -- rust_analyzer (Rust)
-        vim.lsp.config("rust_analyzer", {
-            settings = {
-                ["rust-analyzer"] = {
-                    checkOnSave = {
-                        command = "clippy",
-                    },
-                    cargo = {
-                        allFeatures = true,
-                    },
-                },
-            },
-        })
-
         -- clangd (C/C++)
         vim.lsp.config("clangd", {
             cmd = {
@@ -383,7 +369,6 @@ return {
         vim.lsp.enable("gopls")      -- Go
         vim.lsp.enable("pyright")    -- Python (types)
         vim.lsp.enable("ruff")       -- Python (lint/format)
-        vim.lsp.enable("rust_analyzer") -- Rust
         vim.lsp.enable("clangd")     -- C/C++
         vim.lsp.enable("jdtls")      -- Java
         vim.lsp.enable("zls")        -- Zig

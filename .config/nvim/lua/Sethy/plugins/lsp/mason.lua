@@ -44,7 +44,6 @@ return {
                 "gopls",        -- Go
                 "pyright",      -- Python (type checking)
                 "ruff",         -- Python (linter/formatter)
-                "rust_analyzer", -- Rust
                 "clangd",       -- C/C++
                 "zls",          -- Zig
             },
