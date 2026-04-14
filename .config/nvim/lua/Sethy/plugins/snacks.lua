@@ -126,9 +126,9 @@ return {
 					},
 				},
 			},
-			image = {
-				enabled = true,
-				doc = {
+				image = {
+					enabled = true,
+					doc = {
 					float = false,
 					inline = true, -- if you want show image on cursor hover
 					max_width = 50,
@@ -150,12 +150,12 @@ return {
 						"Archives/All-Vault-Images/",
 						"~/Library",
 						"~/Downloads",
+						},
 					},
 				},
-			},
-			dashboard = {
-				enabled = true,
-				sections = {
+				dashboard = {
+					enabled = true,
+					sections = {
 					{ section = "header" },
 					{ section = "keys", gap = 1, padding = 1 },
 					{

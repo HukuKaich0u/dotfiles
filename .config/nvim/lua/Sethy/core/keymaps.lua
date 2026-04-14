@@ -54,6 +54,39 @@ vim.keymap.set("n", "<C-h>", "<C-w>h", { desc = "Move to left split" })
 vim.keymap.set("n", "<C-j>", "<C-w>j", { desc = "Move to lower split" })
 vim.keymap.set("n", "<C-k>", "<C-w>k", { desc = "Move to upper split" })
 vim.keymap.set("n", "<C-l>", "<C-w>l", { desc = "Move to right split" })
+
+local function map_terminal_window_nav(bufnr)
+    local directions = {
+        ["<C-h>"] = "h",
+        ["<C-j>"] = "j",
+        ["<C-k>"] = "k",
+        ["<C-l>"] = "l",
+    }
+
+    for lhs, direction in pairs(directions) do
+        vim.keymap.set("n", lhs, "<C-w>" .. direction, {
+            buffer = bufnr,
+            silent = true,
+            desc = "Move between splits",
+        })
+        vim.keymap.set("t", lhs, function()
+            vim.cmd.stopinsert()
+            vim.cmd.wincmd(direction)
+        end, {
+            buffer = bufnr,
+            silent = true,
+            desc = "Move between splits from terminal",
+        })
+    end
+end
+
+vim.api.nvim_create_autocmd("FileType", {
+    pattern = "snacks_terminal",
+    callback = function(args)
+        map_terminal_window_nav(args.buf)
+    end,
+})
+
 vim.keymap.set("n", "<leader>sv", "<C-w>v", { desc = "Split window vertically" })
 vim.keymap.set("n", "<leader>sh", "<C-w>s", { desc = "Split window horizontally" })
 vim.keymap.set("n", "<leader>se", "<C-w>=", { desc = "Make splits equal size" }) -- make split windowss equal width and height
