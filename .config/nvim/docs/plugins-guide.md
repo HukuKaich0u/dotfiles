@@ -203,7 +203,7 @@ func(a, b, c)
 | Rust | LSP (rust_analyzer → rustfmt) |
 | Python | LSP (ruff) |
 | Go | LSP (gopls → gofumpt) |
-| C/C++ | LSP (clangd) |
+| C/C++ | clang-format |
 
 **動作**: conform.nvim に設定されている言語はそのフォーマッターを使用、それ以外はLSPにフォールバック。
 

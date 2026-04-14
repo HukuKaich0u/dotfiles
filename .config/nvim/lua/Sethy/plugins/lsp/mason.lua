@@ -58,6 +58,7 @@ return {
                 "prettier",   -- html/css/yaml/markdown
                 "stylua",     -- lua
                 "gofumpt",    -- go
+                "clang-format", -- C/C++
                 -- note: ruff replaces black/isort/pylint for python
                 -- note: rustfmt usually comes with rust toolchain
             },

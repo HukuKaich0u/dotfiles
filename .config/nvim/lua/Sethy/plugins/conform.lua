@@ -29,7 +29,12 @@ return {
             scss = { "prettier" },
             yaml = { "prettier" },
             markdown = { "prettier" },
-            -- fallback to LSP for: rust, python, c/cpp, java, zig, go
+            -- backend / systems
+            c = { "clang_format" },
+            cpp = { "clang_format" },
+            objc = { "clang_format" },
+            objcpp = { "clang_format" },
+            -- fallback to LSP for: rust, python, java, zig, go
         },
         -- biome works with default settings even without biome.json
         -- format on save (optional, uncomment if you want)
