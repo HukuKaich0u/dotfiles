@@ -12,11 +12,11 @@ HOME_CONFIG_DIR="$HOME/.config"
 HOME_DOTFILES=".zshenv .zshrc .zprofile"
 TERMINFO_SOURCE_DIR="$DOTFILES_DIR/terminfo"
 EXPLICIT_LINKS=(
-    ".codex/config.toml:$HOME/.codex/config.toml"
+    ".agents/AGENTS.md:$HOME/AGENTS.md"
+    ".claude/CLAUDE.md:$HOME/CLAUDE.md"
+    ".agents/AGENTS.md:$HOME/.agents/AGENTS.md"
+    ".agents/skills:$HOME/.agents/skills"
     ".codex/AGENTS.md:$HOME/.codex/AGENTS.md"
-    ".codex/hooks.json:$HOME/.codex/hooks.json"
-    ".codex/hooks:$HOME/.codex/hooks"
-    ".claude/settings.json:$HOME/.claude/settings.json"
     ".claude/CLAUDE.md:$HOME/.claude/CLAUDE.md"
 )
 
@@ -92,40 +92,24 @@ install_explicit_links() {
     done
 }
 
-ensure_real_directory() {
-    local target="$1"
+cleanup_legacy_ai_links() {
+    local target=""
+    local current_target=""
 
-    if [ -L "$target" ]; then
-        echo "⚠ $target is a symlink, backing up to ${target}.dirlink.backup"
-        mv "$target" "${target}.dirlink.backup"
-    elif [ -e "$target" ] && [ ! -d "$target" ]; then
-        echo "⚠ $target exists and is not a directory, backing up to ${target}.backup"
-        mv "$target" "${target}.backup"
-    fi
-
-    mkdir -p "$target"
-}
-
-link_directory_children() {
-    local source_dir="$1"
-    local target_dir="$2"
-    local label_prefix="$3"
-    local child=""
-    local name=""
-
-    if [ ! -d "$source_dir" ]; then
-        return
-    fi
-
-    ensure_real_directory "$target_dir"
-
-    for child in "$source_dir"/*; do
-        if [ ! -e "$child" ]; then
+    for target in \
+        "$HOME/.claude/skills"
+    do
+        if [ ! -L "$target" ]; then
             continue
         fi
 
-        name="$(basename "$child")"
-        link_path "$child" "$target_dir/$name" "$label_prefix/$name"
+        current_target="$(readlink "$target")"
+        case "$current_target" in
+            "$DOTFILES_DIR"/*)
+                rm "$target"
+                echo "✓ removed legacy AI link $target"
+                ;;
+        esac
     done
 }
 
@@ -154,36 +138,6 @@ install_home_dotfiles() {
     done
 }
 
-install_managed_skill_entries() {
-    link_directory_children "$DOTFILES_DIR/.agents/skills" "$HOME/.agents/skills" ".agents/skills"
-    link_directory_children "$DOTFILES_DIR/.claude/skills" "$HOME/.claude/skills" ".claude/skills"
-}
-
-restore_local_skill_links() {
-    if [ -L "$HOME/.agents/skills.backup/superpowers" ] && [ ! -e "$HOME/.agents/skills/superpowers" ]; then
-        ln -s "$HOME/.codex/superpowers/skills" "$HOME/.agents/skills/superpowers"
-        echo "✓ restored local skill link .agents/skills/superpowers"
-    fi
-}
-
-mirror_common_skills_to_claude() {
-    local source_dir="$HOME/.agents/skills"
-    local target_dir="$HOME/.claude/skills"
-    local child=""
-    local name=""
-
-    ensure_real_directory "$target_dir"
-
-    for child in "$source_dir"/*; do
-        if [ ! -e "$child" ]; then
-            continue
-        fi
-
-        name="$(basename "$child")"
-        link_path "$child" "$target_dir/$name" ".claude/skills/$name"
-    done
-}
-
 compile_terminfo() {
     local source_dir="$1"
 
@@ -207,11 +161,9 @@ echo "Installing dotfiles from $DOTFILES_DIR"
 echo ""
 
 install_config_tree
+cleanup_legacy_ai_links
 install_explicit_links
 install_home_dotfiles
-install_managed_skill_entries
-restore_local_skill_links
-mirror_common_skills_to_claude
 
 compile_terminfo "$TERMINFO_SOURCE_DIR"
 
