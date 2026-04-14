@@ -21,7 +21,19 @@ return {
             { "<leader>gf", "<cmd>DiffviewToggleFiles<CR>", desc = "Git view files" },
             { "<leader>gq", "<cmd>DiffviewClose<CR>", desc = "Git view close" },
         },
-        opts = {},
+        opts = {
+            keymaps = {
+                view = {
+                    { "n", "q", "<cmd>DiffviewClose<CR>", { desc = "Close diffview" } },
+                },
+                file_panel = {
+                    { "n", "q", "<cmd>DiffviewClose<CR>", { desc = "Close diffview" } },
+                },
+                file_history_panel = {
+                    { "n", "q", "<cmd>DiffviewClose<CR>", { desc = "Close diffview" } },
+                },
+            },
+        },
     },
     -- {
     --     "tpope/vim-fugitive",
