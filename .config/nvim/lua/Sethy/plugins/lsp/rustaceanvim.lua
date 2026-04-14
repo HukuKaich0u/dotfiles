@@ -17,7 +17,7 @@ return {
                         cwd = root,
                         win = {
                             position = "bottom",
-                            height = 0.35,
+                            height = 0.4,
                         },
                     })
                 end, {
