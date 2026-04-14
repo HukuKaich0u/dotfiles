@@ -46,7 +46,6 @@ return {
                 "ruff",         -- Python (linter/formatter)
                 "rust_analyzer", -- Rust
                 "clangd",       -- C/C++
-                "jdtls",        -- Java
                 "zls",          -- Zig
             },
         })
