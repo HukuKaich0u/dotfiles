@@ -11,7 +11,6 @@ alias tm='tmux'
 
 # Keep Codex output in normal terminal scrollback so wheel scrolling works in tmux.
 alias codex='codex --no-alt-screen'
-alias cdx='codex --no-alt-screen'
 alias codex-alt='command codex'
 
 alias tmls='tmux list-sessions'
