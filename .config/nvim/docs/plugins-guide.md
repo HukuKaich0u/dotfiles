@@ -207,6 +207,32 @@ func(a, b, c)
 
 **動作**: conform.nvim に設定されている言語はそのフォーマッターを使用、それ以外はLSPにフォールバック。
 
+### Rust 補助: bacon
+
+Rust では `bacon` を使った継続チェックも利用可能。
+
+| キー | 動作 |
+|------|------|
+| `<leader>lb` | 下部ターミナルで `bacon` を開閉 |
+| `<leader>lB` | `bacon` の locations 一覧を開く |
+| `<leader>lj` | 次の `bacon` エラー/警告へ移動 |
+| `<leader>lk` | 前の `bacon` エラー/警告へ移動 |
+
+一覧ウィンドウ内では `Ctrl-j` / `Ctrl-k` で上下移動できる。
+
+`nvim-bacon` は `.bacon-locations` を読むので、`~/.config/bacon/prefs.toml` などで locations export を有効化する必要がある。
+
+```toml
+[exports.locations]
+auto = true
+path = ".bacon-locations"
+line_format = "{item-idx}: {kind} {path}:{line}:{column} {message}"
+
+listen = true
+```
+
+`bacon` を別 pane や `<leader>lb` で起動しておくと、診断結果が quickfix に反映され、`Trouble quickfix` (`<leader>xq`) から一覧確認もできる。
+
 ---
 
 ## 7. Markdown
