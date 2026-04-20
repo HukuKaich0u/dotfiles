@@ -37,6 +37,7 @@ return {
                 "cssls",
                 "tailwindcss",
                 "astro",
+                "svelte",
                 "emmet_ls",
                 "emmet_language_server",
                 "eslint",

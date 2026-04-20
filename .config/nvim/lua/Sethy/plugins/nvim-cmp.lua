@@ -1,6 +1,7 @@
 return {
     "hrsh7th/nvim-cmp",
     dependencies = {
+        "hrsh7th/cmp-nvim-lsp",
         "hrsh7th/cmp-buffer", -- source for text in buffer
         "hrsh7th/cmp-path", -- source for file system paths
         {
@@ -228,6 +229,7 @@ return {
             },
             -- autocompletion sources
             sources = cmp.config.sources({
+                { name = "nvim_lsp" }, -- lsp
                 { name = "luasnip" }, -- snippets
                 { name = "lazydev" },
                 { name = "buffer" }, -- text within current buffer

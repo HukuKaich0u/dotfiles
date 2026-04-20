@@ -8,6 +8,8 @@ return {
         "nvim-java/nvim-java",
     },
     config = function()
+        local capabilities = require("cmp_nvim_lsp").default_capabilities()
+
         require("java").setup({
             jdk = {
                 auto_install = false,
@@ -170,6 +172,7 @@ return {
         -- Configure and enable LSP servers
         -- lua_ls
         vim.lsp.config("lua_ls", {
+            capabilities = capabilities,
             settings = {
                 Lua = {
                     diagnostics = {
@@ -190,6 +193,7 @@ return {
 
         -- emmet_language_server
         vim.lsp.config("emmet_language_server", {
+            capabilities = capabilities,
             filetypes = {
                 "css",
                 "eruby",
@@ -200,6 +204,8 @@ return {
                 "sass",
                 "scss",
                 "pug",
+                "astro",
+                "svelte",
                 "typescriptreact",
             },
             init_options = {
@@ -217,6 +223,7 @@ return {
 
         -- emmet_ls
         vim.lsp.config("emmet_ls", {
+            capabilities = capabilities,
             filetypes = {
                 "html",
                 "typescriptreact",
@@ -226,11 +233,13 @@ return {
                 "scss",
                 "less",
                 "svelte",
+                "astro",
             },
         })
 
         -- ts_ls (TypeScript/JavaScript)
         vim.lsp.config("ts_ls", {
+            capabilities = capabilities,
             filetypes = {
                 "javascript",
                 "javascriptreact",
@@ -248,6 +257,7 @@ return {
 
         -- gopls
         vim.lsp.config("gopls", {
+            capabilities = capabilities,
             settings = {
                 gopls = {
                     analyses = {
@@ -261,6 +271,7 @@ return {
 
         -- tailwind
         vim.lsp.config("tailwindcss", {
+            capabilities = capabilities,
             filetypes = {
                 "html",
                 "css",
@@ -281,6 +292,7 @@ return {
 
         -- pyright (Python - type checking)
         vim.lsp.config("pyright", {
+            capabilities = capabilities,
             settings = {
                 python = {
                     analysis = {
@@ -293,10 +305,13 @@ return {
         })
 
         -- ruff (Python - linter/formatter)
-        vim.lsp.config("ruff", {})
+        vim.lsp.config("ruff", {
+            capabilities = capabilities,
+        })
 
         -- clangd (C/C++)
         vim.lsp.config("clangd", {
+            capabilities = capabilities,
             cmd = {
                 "clangd",
                 "--background-index",
@@ -306,8 +321,42 @@ return {
             },
         })
 
+        vim.lsp.config("html", {
+            capabilities = capabilities,
+            filetypes = {
+                "html",
+                "templ",
+                "javascriptreact",
+                "typescriptreact",
+                "astro",
+                "svelte",
+            },
+            init_options = {
+                provideFormatter = false,
+            },
+        })
+
+        vim.lsp.config("cssls", {
+            capabilities = capabilities,
+            filetypes = {
+                "css",
+                "scss",
+                "less",
+                "sass",
+            },
+        })
+
+        vim.lsp.config("astro", {
+            capabilities = capabilities,
+        })
+
+        vim.lsp.config("svelte", {
+            capabilities = capabilities,
+        })
+
         -- jdtls (Java)
         vim.lsp.config("jdtls", {
+            capabilities = capabilities,
             settings = {
                 java = {
                     eclipse = {
@@ -351,7 +400,9 @@ return {
         })
 
         -- zls (Zig)
-        vim.lsp.config("zls", {})
+        vim.lsp.config("zls", {
+            capabilities = capabilities,
+        })
 
         -- Enable LSP servers
         -- lua
@@ -362,6 +413,7 @@ return {
         vim.lsp.enable("cssls")
         vim.lsp.enable("tailwindcss")
         vim.lsp.enable("astro")
+        vim.lsp.enable("svelte")
         vim.lsp.enable("emmet_language_server")
         vim.lsp.enable("emmet_ls")
         vim.lsp.enable("eslint")

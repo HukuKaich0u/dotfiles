@@ -21,6 +21,7 @@ return {
 				"html",
 				"css",
 				"astro",
+				"svelte",
 
 				-- backend / systems
 				"python",
