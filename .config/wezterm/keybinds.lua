@@ -1,8 +1,8 @@
 local wezterm = require("wezterm")
 local act = wezterm.action
 
-local default_opacity = 0.70
-local opacity_mid = 0.90
+local default_opacity = 0.60
+local opacity_mid = 0.80
 local opacity_max = 1.00
 local inactive_contrast_on = { saturation = 1.00, brightness = 0.30 }
 local inactive_contrast_off = { saturation = 1.00, brightness = 1.00 }
