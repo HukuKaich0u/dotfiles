@@ -53,6 +53,29 @@ assert_no_match(blink, '%["<C%-j>"%] =',
   "blink config should not use Ctrl-j for next completion item")
 assert_no_match(blink, '%["<C%-k>"%] =',
   "blink config should not use Ctrl-k for previous completion item")
+assert_match(blink, 'ghost_text = {', "blink config should configure insert ghost text explicitly")
+assert_match(blink, 'show_with_selection = true',
+  "blink insert ghost text should only appear for the selected completion")
+assert_match(blink, 'auto_show = true',
+  "blink insert documentation should auto-show to increase menu information density")
+assert_match(blink, 'auto_show_delay_ms = 200',
+  "blink insert documentation should wait briefly before auto-showing")
+assert_match(blink, 'border = "rounded"', "blink popups should use rounded borders")
+assert_match(blink, '"source_name"', "blink menu should display source names")
+assert_match(blink, 'lsp = {%s*name = "%[LSP%]"', "blink sources should label LSP items clearly")
+assert_match(blink, 'buffer = {%s*name = "%[Buffer%]"', "blink sources should label buffer items clearly")
+assert_match(blink, 'path = {%s*name = "%[Path%]"', "blink sources should label path items clearly")
+assert_match(blink, 'snippets = {%s*name = "%[Snip%]"', "blink sources should label snippet items clearly")
+assert_match(blink, '"BlinkCmpKindFunction"',
+  "blink config should define a function kind highlight")
+assert_match(blink, '"BlinkCmpKindVariable"',
+  "blink config should define a variable kind highlight")
+assert_match(blink, '"BlinkCmpKindClass"',
+  "blink config should define a class kind highlight")
+assert_match(blink, '"BlinkCmpKindKeyword"',
+  "blink config should define a keyword kind highlight")
+assert_match(blink, '"BlinkCmpSource"',
+  "blink config should define a dedicated source highlight")
 assert_match(blink, 'cmdline = {', "blink config should configure cmdline separately")
 assert_match(blink, 'preset = "cmdline"', "blink cmdline should use the dedicated preset")
 assert_match(blink, 'auto_show = false', "blink cmdline should not auto-show completions")
