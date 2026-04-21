@@ -6,9 +6,10 @@ return {
         "mfussenegger/nvim-dap",
         "MunifTanjim/nui.nvim",
         "nvim-java/nvim-java",
+        "Saghen/blink.cmp",
     },
     config = function()
-        local capabilities = require("cmp_nvim_lsp").default_capabilities()
+        local capabilities = require("blink.cmp").get_lsp_capabilities()
 
         require("java").setup({
             jdk = {
@@ -76,16 +77,6 @@ return {
                 vim.keymap.set("i", "<C-h>", function()
                     vim.lsp.buf.signature_help()
                 end, opts)
-
-                if client:supports_method("textDocument/completion") then
-                    vim.lsp.completion.enable(true, client.id, ev.buf, {
-                        autotrigger = true,
-                    })
-
-                    vim.keymap.set("i", "<C-Space>", function()
-                        vim.lsp.completion.get()
-                    end, opts)
-                end
 
                 if client.name == "jdtls" then
                     opts.desc = "Java organize imports"
@@ -167,8 +158,6 @@ return {
             update_in_insert = false,
         })
 
-        vim.opt.completeopt:append({ "menuone", "noselect", "popup" })
-
         -- Configure and enable LSP servers
         -- lua_ls
         vim.lsp.config("lua_ls", {
@@ -196,14 +185,11 @@ return {
             capabilities = capabilities,
             filetypes = {
                 "css",
-                "eruby",
                 "html",
-                "javascript",
-                "javascriptreact",
                 "less",
                 "sass",
                 "scss",
-                "pug",
+                "javascriptreact",
                 "astro",
                 "svelte",
                 "typescriptreact",
@@ -218,22 +204,6 @@ return {
                 showSuggestionsAsSnippets = false,
                 syntaxProfiles = {},
                 variables = {},
-            },
-        })
-
-        -- emmet_ls
-        vim.lsp.config("emmet_ls", {
-            capabilities = capabilities,
-            filetypes = {
-                "html",
-                "typescriptreact",
-                "javascriptreact",
-                "css",
-                "sass",
-                "scss",
-                "less",
-                "svelte",
-                "astro",
             },
         })
 
@@ -326,10 +296,6 @@ return {
             filetypes = {
                 "html",
                 "templ",
-                "javascriptreact",
-                "typescriptreact",
-                "astro",
-                "svelte",
             },
             init_options = {
                 provideFormatter = false,
@@ -415,7 +381,6 @@ return {
         vim.lsp.enable("astro")
         vim.lsp.enable("svelte")
         vim.lsp.enable("emmet_language_server")
-        vim.lsp.enable("emmet_ls")
         vim.lsp.enable("eslint")
         -- backend / systems
         vim.lsp.enable("gopls")      -- Go

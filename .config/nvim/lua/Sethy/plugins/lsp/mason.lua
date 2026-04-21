@@ -38,7 +38,6 @@ return {
                 "tailwindcss",
                 "astro",
                 "svelte",
-                "emmet_ls",
                 "emmet_language_server",
                 "eslint",
                 -- backend / systems
