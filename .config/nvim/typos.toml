@@ -1,5 +1,11 @@
 [default.extend-words]
 # Add personal or cross-repo spellings here.
+# Example:
+# teh = "teh"
+# nd = "nd"
+teh = "teh"
+koki = "koki"
+hukukaich0u = "hukukaich0u"
 
 [files]
 extend-exclude = [
