@@ -1,0 +1,7 @@
+[default.extend-words]
+# Add personal or cross-repo spellings here.
+
+[files]
+extend-exclude = [
+  "lazy-lock.json",
+]

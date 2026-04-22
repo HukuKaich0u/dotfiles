@@ -320,6 +320,14 @@ return {
             capabilities = capabilities,
         })
 
+        vim.lsp.config("typos_lsp", {
+            capabilities = capabilities,
+            cmd = { "typos-lsp" },
+            init_options = {
+                config = vim.fn.stdpath("config") .. "/typos.toml",
+            },
+        })
+
         -- jdtls (Java)
         vim.lsp.config("jdtls", {
             capabilities = capabilities,
@@ -382,6 +390,7 @@ return {
         vim.lsp.enable("svelte")
         vim.lsp.enable("emmet_language_server")
         vim.lsp.enable("eslint")
+        vim.lsp.enable("typos_lsp")
         -- backend / systems
         vim.lsp.enable("gopls")      -- Go
         vim.lsp.enable("pyright")    -- Python (types)

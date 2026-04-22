@@ -40,6 +40,7 @@ return {
                 "svelte",
                 "emmet_language_server",
                 "eslint",
+                "typos_lsp",
                 -- backend / systems
                 "gopls",        -- Go
                 "pyright",      -- Python (type checking)
