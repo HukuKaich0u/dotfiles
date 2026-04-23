@@ -16,7 +16,7 @@
 	helper = !/opt/homebrew/bin/gh auth git-credential
 [pull]
 	rebase = false
-[includeIf "gitdir:/Users/KokiAoyagi/Documents/repos/personal/"]
+[includeIf "gitdir:~/Documents/repos/personal/"]
 	path = ~/.gitconfig-personal
-[includeIf "gitdir:/Users/KokiAoyagi/Documents/repos/university/"]
+[includeIf "gitdir:~/Documents/repos/university/"]
 	path = ~/.gitconfig-university
