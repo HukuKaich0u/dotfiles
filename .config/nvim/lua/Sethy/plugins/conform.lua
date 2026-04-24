@@ -36,6 +36,10 @@ return {
             cpp = { "clang_format" },
             objc = { "clang_format" },
             objcpp = { "clang_format" },
+            nix = { "alejandra" },
+            sh = { "shfmt" },
+            bash = { "shfmt" },
+            zsh = { "shfmt" },
             -- fallback to LSP for: rust, python, java, zig, go
         },
         -- biome works with default settings even without biome.json

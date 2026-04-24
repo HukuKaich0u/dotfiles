@@ -47,6 +47,8 @@ return {
                 "ruff",         -- Python (linter/formatter)
                 "clangd",       -- C/C++
                 "zls",          -- Zig
+                "nil_ls",       -- Nix
+                "bashls",       -- shell
             },
         })
 
@@ -58,6 +60,9 @@ return {
                 "stylua",     -- lua
                 "gofumpt",    -- go
                 "clang-format", -- C/C++
+                "alejandra",  -- Nix
+                "shfmt",      -- shell
+                "shellcheck",  -- shell diagnostics
                 -- note: ruff replaces black/isort/pylint for python
                 -- note: rustfmt usually comes with rust toolchain
             },

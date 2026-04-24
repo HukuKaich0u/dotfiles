@@ -378,6 +378,16 @@ return {
             capabilities = capabilities,
         })
 
+        -- nil_ls (Nix)
+        vim.lsp.config("nil_ls", {
+            capabilities = capabilities,
+        })
+
+        -- bashls (shell)
+        vim.lsp.config("bashls", {
+            capabilities = capabilities,
+        })
+
         -- Enable LSP servers
         -- lua
         vim.lsp.enable("lua_ls")
@@ -398,5 +408,7 @@ return {
         vim.lsp.enable("clangd")     -- C/C++
         vim.lsp.enable("jdtls")      -- Java
         vim.lsp.enable("zls")        -- Zig
+        vim.lsp.enable("nil_ls")     -- Nix
+        vim.lsp.enable("bashls")     -- shell
     end,
 }

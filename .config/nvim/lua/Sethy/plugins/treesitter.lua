@@ -13,6 +13,7 @@ return {
 				"yaml",
 				"toml",
 				"ini",
+				"nix",
 
 				-- web
 				"javascript",
