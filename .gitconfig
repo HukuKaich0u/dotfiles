@@ -7,7 +7,7 @@
 	required = true
 	clean = git-lfs clean -- %f
 [core]
-	editor = code --wait
+	editor = nvim
 [credential "https://github.com"]
 	helper =
 	helper = !/opt/homebrew/bin/gh auth git-credential
