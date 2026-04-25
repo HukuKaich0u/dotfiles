@@ -34,6 +34,15 @@ assert_symlink() {
   fi
 }
 
-assert_symlink "$home_dir/.gitconfig" "$repo_root/.gitconfig"
-assert_symlink "$home_dir/.gitconfig-personal" "$repo_root/.gitconfig-personal"
-assert_symlink "$home_dir/.gitconfig-university" "$repo_root/.gitconfig-university"
+assert_absent() {
+  target="$1"
+
+  if [ -e "$target" ] || [ -L "$target" ]; then
+    echo "expected install.sh not to manage: $target"
+    exit 1
+  fi
+}
+
+assert_absent "$home_dir/.gitconfig"
+assert_absent "$home_dir/.gitconfig-personal"
+assert_absent "$home_dir/.gitconfig-university"

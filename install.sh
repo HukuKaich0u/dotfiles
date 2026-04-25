@@ -9,7 +9,7 @@ set -euo pipefail
 DOTFILES_DIR="$(cd "$(dirname "$0")" && pwd)"
 REPO_CONFIG_DIR="$DOTFILES_DIR/.config"
 HOME_CONFIG_DIR="$HOME/.config"
-HOME_DOTFILES=".zshenv .zshrc .zprofile .gitconfig .gitconfig-personal .gitconfig-university"
+HOME_DOTFILES=".zshenv .zshrc .zprofile"
 TERMINFO_SOURCE_DIR="$DOTFILES_DIR/terminfo"
 EXPLICIT_LINKS=(
     ".agents/AGENTS.md:$HOME/AGENTS.md"

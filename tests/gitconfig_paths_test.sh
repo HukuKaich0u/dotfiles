@@ -3,7 +3,7 @@
 set -eu
 
 repo_root="$(CDPATH= cd -- "$(dirname "$0")/.." && pwd)"
-gitconfig="$repo_root/.gitconfig"
+gitconfig="$repo_root/.config/nix/home-manager/git/.gitconfig"
 
 if ! grep -Fq '[includeIf "gitdir:~/Documents/repos/personal/"]' "$gitconfig"; then
   echo "personal includeIf should use ~/Documents/repos/personal/"
