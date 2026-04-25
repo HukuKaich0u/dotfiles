@@ -1,0 +1,22 @@
+[user]
+	email = 170926658+HukuKaich0u@users.noreply.github.com
+	name = HukuKaich0u
+[filter "lfs"]
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true
+	clean = git-lfs clean -- %f
+[core]
+	editor = nvim
+[credential "https://github.com"]
+	helper =
+	helper = !/opt/homebrew/bin/gh auth git-credential
+[credential "https://gist.github.com"]
+	helper =
+	helper = !/opt/homebrew/bin/gh auth git-credential
+[pull]
+	rebase = false
+[includeIf "gitdir:~/Documents/repos/personal/"]
+	path = ~/.gitconfig-personal
+[includeIf "gitdir:~/Documents/repos/university/"]
+	path = ~/.gitconfig-university
