@@ -44,7 +44,7 @@ return {
         },
         -- biome works with default settings even without biome.json
         format_on_save = function(bufnr)
-            local web_filetypes = {
+            local format_on_save_filetypes = {
                 html = true,
                 css = true,
                 scss = true,
@@ -54,9 +54,13 @@ return {
                 typescriptreact = true,
                 astro = true,
                 svelte = true,
+                nix = true,
+                sh = true,
+                bash = true,
+                zsh = true,
             }
 
-            if web_filetypes[vim.bo[bufnr].filetype] then
+            if format_on_save_filetypes[vim.bo[bufnr].filetype] then
                 return {
                     timeout_ms = 500,
                     lsp_fallback = true,

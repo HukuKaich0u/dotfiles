@@ -53,5 +53,13 @@ assert_match(conform, 'nix = { "alejandra" }', "Nix files should format with ale
 assert_match(conform, 'sh = { "shfmt" }', "sh files should format with shfmt")
 assert_match(conform, 'bash = { "shfmt" }', "bash files should format with shfmt")
 assert_match(conform, 'zsh = { "shfmt" }', "zsh files should format with shfmt")
+assert_match(conform, "nix = true", "nix should format on save")
+assert_match(conform, "sh = true", "sh should format on save")
+assert_match(conform, "bash = true", "bash should format on save")
+assert_match(conform, "zsh = true", "zsh should format on save")
+
+local docs = read(".config/nvim/docs/plugins-guide.md")
+assert_match(docs, "| Nix | alejandra |", "plugin guide should document Nix formatting")
+assert_match(docs, "| Shell %(sh/bash/zsh%) | shfmt |", "plugin guide should document shell formatting")
 
 print("nvim nix and shell support tests passed")

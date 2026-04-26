@@ -200,12 +200,14 @@ func(a, b, c)
 | JSON | biome |
 | HTML/CSS/SCSS | prettier |
 | YAML/Markdown | prettier |
+| Nix | alejandra |
+| Shell (sh/bash/zsh) | shfmt |
 | Rust | LSP (rust_analyzer → rustfmt) |
 | Python | LSP (ruff) |
 | Go | LSP (gopls → gofumpt) |
 | C/C++ | clang-format |
 
-**動作**: conform.nvim に設定されている言語はそのフォーマッターを使用、それ以外はLSPにフォールバック。
+**動作**: conform.nvim に設定されている言語はそのフォーマッターを使用、それ以外はLSPにフォールバック。Web系と `nix` / shell は保存時にも自動フォーマット。
 
 ### Rust 補助: bacon
 
