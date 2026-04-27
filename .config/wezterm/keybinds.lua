@@ -1,8 +1,8 @@
 local wezterm = require("wezterm")
 local act = wezterm.action
 
-local default_opacity = 0.60
-local opacity_mid = 0.80
+local default_opacity = 0.80
+local opacity_mid = 0.90
 local opacity_max = 1.00
 local inactive_contrast_on = { saturation = 1.00, brightness = 0.30 }
 local inactive_contrast_off = { saturation = 1.00, brightness = 1.00 }
@@ -10,7 +10,7 @@ local inactive_contrast_off = { saturation = 1.00, brightness = 1.00 }
 local function toggle_window_opacity(window)
   local overrides = window:get_config_overrides() or {}
   local current = overrides.window_background_opacity or default_opacity
-  if current < 0.80 then
+  if current < 0.85 then
     overrides.window_background_opacity = opacity_mid
   elseif current < 0.95 then
     overrides.window_background_opacity = opacity_max
