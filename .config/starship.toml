@@ -1,7 +1,6 @@
 add_newline = true
 
 format = """
-${custom.userhost}\
 $directory  \
 $git_branch\
 $docker_context\
@@ -22,24 +21,14 @@ $time\
 
 [python]
 format = """
-[](fg:#ffcb6b)\
-[$virtualenv]($style)\
-[](fg:#ffcb6b)\
+[](fg:#0f6f9c)\
+[ $virtualenv ]($style)\
+[](fg:#0f6f9c)\
 """
-style = "bold fg:#313244 bg:#ffcb6b"
+style = "bold fg:#eaf7ff bg:#0f6f9c"
 
 [fill]
 symbol = "─"
-
-[custom.userhost]
-command = "printf '%s@%s' \"$USER\" \"$(hostname -s)\""
-when = "true"
-format = """
-[](fg:#d66f4a)\
-[$output]($style)\
-[](fg:#d66f4a bg:#f6e58d)\
-"""
-style = "bold fg:#fff8f1 bg:#d66f4a"
 
 [directory]
 truncation_length = 6
@@ -48,41 +37,41 @@ truncate_to_repo = false
 home_symbol = "~"
 read_only = " 󰌾 "
 format = """
-[ ](bg:#f6e58d)\
-[$path]($style)\
+[](fg:#0e6a96)\
+[ $path ]($style)\
 [$read_only]($read_only_style)\
-[](fg:#f6e58d)\
+[](fg:#0e6a96)\
 """
-style = "bold fg:#4f3b00 bg:#f6e58d"
-read_only_style = "bold fg:#4f3b00 bg:#f6e58d"
+style = "bold fg:#eef8ff bg:#0e6a96"
+read_only_style = "bold fg:#eef8ff bg:#0e6a96"
 
 [direnv]
 disabled = false
 format = """
-[](fg:#89dceb)\
-[$symbol$allowed]($style)\
-[](fg:#89dceb)\
+[](fg:#1379a7)\
+[ $symbol$allowed ]($style)\
+[](fg:#1379a7)\
 """
-style = "bold fg:#313244 bg:#89dceb"
+style = "bold fg:#eef8ff bg:#1379a7"
 
 [git_branch]
 symbol = ""
-style = "bold fg:#eef7ff bg:#4f8fba"
+style = "bold fg:#eef8ff bg:#117eaF"
 format = """
-[](fg:#4f8fba)\
-[$symbol $branch]($style)\
-[](fg:#4f8fba bg:#2f3e4e)\
+[](fg:#117eaf)\
+[ $symbol $branch ]($style)\
+[](fg:#117eaf)\
 """
 
 [docker_context]
 only_with_files = true
 detect_files = ["Dockerfile", "docker-compose.yml", "docker-compose.yaml", "compose.yml", "compose.yaml"]
 symbol = ""
-style = "bold fg:#e9f7ff bg:#3f7ea6"
+style = "bold fg:#eef8ff bg:#106f9d"
 format = """
-[ ](bg:#3f7ea6)\
-[$symbol $context]($style)\
-[](fg:#3f7ea6 bg:#2f3e4e)\
+[](fg:#106f9d)\
+[ $symbol $context ]($style)\
+[](fg:#106f9d)\
 """
 
 [kubernetes]
@@ -90,11 +79,11 @@ disabled = false
 symbol = "☸"
 detect_files = ["k8s.yaml", "k8s.yml", "kustomization.yaml", "kustomization.yml", "Chart.yaml", "helmfile.yaml", "helmfile.yml"]
 detect_folders = ["k8s", "kubernetes", "helm", "charts"]
-style = "bold fg:#eef7ff bg:#4f6fb8"
+style = "bold fg:#eef8ff bg:#1177a4"
 format = """
-[ ](bg:#4f6fb8)\
-[$symbol $context( \\($namespace\\))]($style)\
-[](fg:#4f6fb8 bg:#2f3e4e)\
+[](fg:#1177a4)\
+[ $symbol $context( \\($namespace\\)) ]($style)\
+[](fg:#1177a4)\
 """
 
 [terraform]
@@ -102,11 +91,11 @@ symbol = "󱁢"
 detect_extensions = ["tf", "tfplan", "tfstate"]
 detect_files = [".terraform.lock.hcl"]
 detect_folders = [".terraform"]
-style = "bold fg:#f2ecff bg:#7b5db6"
+style = "bold fg:#eef8ff bg:#0d678f"
 format = """
-[ ](bg:#7b5db6)\
-[$symbol $workspace]($style)\
-[](fg:#7b5db6 bg:#2f3e4e)\
+[](fg:#0d678f)\
+[ $symbol $workspace ]($style)\
+[](fg:#0d678f)\
 """
 
 [git_status]
@@ -118,17 +107,21 @@ format = """
 
 [cmd_duration]
 min_time = 1
-style = "fg:#e0af68"
-format = "[ $duration]($style)"
+style = "bold fg:#e3f6ff bg:#085780"
+format = """
+[](fg:#085780)\
+[ $duration ]($style)\
+[](fg:#085780)\
+"""
 
 [time]
 disabled = false
 time_format = "%R"
-style = "bold fg:#eef6ff bg:#2f3e4e"
+style = "bold fg:#e6f7ff bg:#074766"
 format = """
-[ ](bg:#2f3e4e)\
-[ $time]($style)\
-[](fg:#2f3e4e)\
+[](fg:#074766)\
+[  $time ]($style)\
+[](fg:#074766)\
 """
 
 [character]
