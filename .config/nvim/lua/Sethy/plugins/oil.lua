@@ -7,7 +7,9 @@ return {
             columns = { },
             keymaps = {
                 ["<C-h>"] = false,
+                ["<C-l>"] = false,
                 ["<C-c>"] = false, -- prevents ctrl c from closing out of oil
+                ["g<C-l>"] = "actions.refresh",
                 ["<M-h>"] = "actions.select_split",
                 ["q"] = "actions.close",
             },
