@@ -3,8 +3,10 @@ add_newline = true
 format = """
 
 
+$hostname\
 $directory  \
 $git_branch\
+$git_status\
 $docker_context\
 $kubernetes\
 $terraform\
@@ -31,6 +33,15 @@ style = "bold fg:#1a1b26 bg:#f2f7ff"
 
 [fill]
 symbol = "─"
+
+[hostname]
+ssh_only = true
+format = """
+[](fg:#d7e6ff)\
+[ $hostname ]($style)\
+[](fg:#d7e6ff)\
+"""
+style = "bold fg:#1a1b26 bg:#d7e6ff"
 
 [directory]
 truncation_length = 6
@@ -101,10 +112,23 @@ format = """
 """
 
 [git_status]
-style = "fg:#769ff0 bg:#1d2230"
+conflicted = "="
+ahead = "⇡"
+behind = "⇣"
+diverged = "⇕"
+up_to_date = ""
+untracked = "?"
+stashed = "$"
+modified = "!"
+staged = "+"
+renamed = "»"
+deleted = "✘"
+typechanged = ""
+style = "bold fg:#eef4ff bg:#3b63d1"
 format = """
-[$all_status$ahead_behind]($style)\
-[](fg:#1d2230)\
+[](fg:#3b63d1)\
+[ $all_status$ahead_behind ]($style)\
+[](fg:#3b63d1)\
 """
 
 [cmd_duration]
