@@ -123,6 +123,13 @@ assert_match(colorscheme, "local transparent = false", "tokyonight day preset sh
 assert_no_match(colorscheme, 'colors%.bg = transparent and colors%.none or bg',
   "tokyonight day preset should not leave the main background transparent")
 
+local options = read(".config/nvim/lua/Sethy/core/options.lua")
+assert_match(options, 'vim%.opt%.background = "light"', "light theme setup should declare a light background")
+assert_no_match(options, 'highlight Normal guibg=NONE ctermbg=NONE',
+  "core options should not force the main background back to transparent")
+assert_no_match(options, 'highlight NormalNC guibg=NONE ctermbg=NONE',
+  "core options should not force inactive windows back to transparent")
+
 local tailwind = read(".config/nvim/lua/Sethy/plugins/tailwind-tools.lua")
 assert_match(tailwind, '"javascriptreact"', "tailwind colorizer should support javascriptreact")
 assert_match(tailwind, '"typescriptreact"', "tailwind colorizer should support typescriptreact")

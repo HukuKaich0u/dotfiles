@@ -27,13 +27,11 @@ vim.opt.smartcase = true
 
 -- UI
 vim.opt.termguicolors = true
-vim.opt.background = "dark"
+vim.opt.background = "light"
 vim.opt.scrolloff = 8
 vim.opt.signcolumn = "yes"
 
 vim.cmd([[
-  highlight Normal guibg=NONE ctermbg=NONE
-  highlight NormalNC guibg=NONE ctermbg=NONE
   highlight Visual guibg=#2a2a2a guifg=NONE
 ]])
 
