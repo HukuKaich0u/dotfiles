@@ -117,6 +117,12 @@ assert_match(conform, 'astro = { "prettier" }', "astro should format with pretti
 assert_match(conform, 'svelte = { "prettier" }', "svelte should format with prettier")
 assert_match(conform, "format_on_save", "web files should format on save")
 
+local colorscheme = read(".config/nvim/lua/Sethy/plugins/colorscheme.lua")
+assert_match(colorscheme, 'style = "day"', "tokyonight should use the day style for the light preset")
+assert_match(colorscheme, "local transparent = false", "tokyonight day preset should disable transparency")
+assert_no_match(colorscheme, 'colors%.bg = transparent and colors%.none or bg',
+  "tokyonight day preset should not leave the main background transparent")
+
 local tailwind = read(".config/nvim/lua/Sethy/plugins/tailwind-tools.lua")
 assert_match(tailwind, '"javascriptreact"', "tailwind colorizer should support javascriptreact")
 assert_match(tailwind, '"typescriptreact"', "tailwind colorizer should support typescriptreact")
