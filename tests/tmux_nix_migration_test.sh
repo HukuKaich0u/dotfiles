@@ -50,6 +50,10 @@ assert_contains "$tmux_nix_conf" "@sessionx-bind 'o'" \
     "tmux config should keep sessionx settings"
 assert_contains "$tmux_nix_conf" "@catppuccin_flavor 'macchiato'" \
     "tmux config should keep catppuccin settings"
+assert_contains "$tmux_nix_conf" "setw -g pane-border-lines heavy" \
+    "tmux config should use heavy pane border lines"
+assert_contains "$tmux_nix_conf" "setw -g pane-active-border-style \"fg=#{@thm_yellow},bold\"" \
+    "tmux config should strongly highlight the active pane border"
 assert_not_contains "$tmux_nix_conf" "@plugin '" \
     "tmux nix config should not declare plugins through TPM syntax"
 assert_contains "$tmux_nix_conf" "__TMUX_PLUGIN_RESURRECT_TMUX__" \
