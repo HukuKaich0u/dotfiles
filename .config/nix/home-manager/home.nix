@@ -40,7 +40,6 @@
   #  /etc/profiles/per-user/KokiAoyagi/etc/profile.d/hm-session-vars.sh
   #
   home.sessionVariables = {
-    # EDITOR = "emacs";
   };
 
   programs.tmux = {
