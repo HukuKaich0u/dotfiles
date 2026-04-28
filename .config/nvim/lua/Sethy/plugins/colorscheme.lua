@@ -307,6 +307,33 @@ return {
             })
         end
     },
+    -- NOTE: github
+    {
+        "projekt0n/github-nvim-theme",
+        name = "github-theme",
+        config = function()
+            require("github-theme").setup({
+                options = {
+                    transparent = false,
+                    hide_end_of_buffer = true,
+                    hide_nc_statusline = true,
+                    terminal_colors = true,
+                    dim_inactive = false,
+                    styles = {
+                        comments = "NONE",
+                        keywords = "NONE",
+                    },
+                    darken = {
+                        floats = true,
+                        sidebars = {
+                            enable = true,
+                            list = {},
+                        },
+                    },
+                },
+            })
+        end,
+    },
     -- NOTE : tokyonight
     {
         "folke/tokyonight.nvim",

@@ -118,10 +118,14 @@ assert_match(conform, 'svelte = { "prettier" }', "svelte should format with pret
 assert_match(conform, "format_on_save", "web files should format on save")
 
 local colorscheme = read(".config/nvim/lua/Sethy/plugins/colorscheme.lua")
+assert_match(colorscheme, '"projekt0n/github%-nvim%-theme"', "colorscheme config should install github-nvim-theme")
 assert_match(colorscheme, 'style = "day"', "tokyonight should use the day style for the light preset")
 assert_match(colorscheme, "local transparent = false", "tokyonight day preset should disable transparency")
 assert_no_match(colorscheme, 'colors%.bg = transparent and colors%.none or bg',
   "tokyonight day preset should not leave the main background transparent")
+
+local current_theme = read(".config/nvim/lua/current-theme.lua")
+assert_match(current_theme, 'colorscheme github_light', "current theme selector should point at github_light")
 
 local options = read(".config/nvim/lua/Sethy/core/options.lua")
 assert_match(options, 'vim%.opt%.background = "light"', "light theme setup should declare a light background")

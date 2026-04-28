@@ -13,6 +13,7 @@
 # nvim
 .nvimlog
 nvim.log
+.tmp/
 
 # zsh
 .config/zsh/.zsh_history
