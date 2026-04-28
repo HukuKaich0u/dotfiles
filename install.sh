@@ -19,6 +19,7 @@ EXPLICIT_LINKS=(
     ".codex/AGENTS.md:$HOME/.codex/AGENTS.md"
     ".claude/CLAUDE.md:$HOME/.claude/CLAUDE.md"
 )
+SKIP_CONFIG_DIRS="tmux"
 
 ensure_parent_dir() {
     local target="$1"
@@ -115,17 +116,26 @@ cleanup_legacy_ai_links() {
 
 install_config_tree() {
     local source=""
+    local name=""
 
     mkdir -p "$HOME_CONFIG_DIR"
 
     for source in "$REPO_CONFIG_DIR"/*; do
+        name="$(basename "$source")"
+
+        case " $SKIP_CONFIG_DIRS " in
+            *" $name "*)
+                continue
+                ;;
+        esac
+
         if [ -d "$source" ]; then
-            link_config_dir "$(basename "$source")"
+            link_config_dir "$name"
             continue
         fi
 
         if [ -f "$source" ]; then
-            link_config_file "$(basename "$source")"
+            link_config_file "$name"
         fi
     done
 }

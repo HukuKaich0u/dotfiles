@@ -46,3 +46,4 @@ assert_absent() {
 assert_absent "$home_dir/.gitconfig"
 assert_absent "$home_dir/.gitconfig-personal"
 assert_absent "$home_dir/.gitconfig-university"
+assert_absent "$home_dir/.config/tmux"
