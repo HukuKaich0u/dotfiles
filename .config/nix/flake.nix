@@ -15,6 +15,7 @@
   };
 
   outputs = {
+    self,
     nixpkgs,
     home-manager,
     nix-darwin,
@@ -35,6 +36,7 @@
     };
 
     darwinConfigurations."aoyagikoukinoMacBook-Air" = nix-darwin.lib.darwinSystem {
+      specialArgs = {inherit self;};
       modules = [./nix-darwin/configuration.nix];
     };
   };
