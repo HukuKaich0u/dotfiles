@@ -42,5 +42,7 @@ assert_match(typos_block, 'config = vim%.fn%.stdpath%("config"%) %.%. "/typos%.t
 
 local typos_toml = read(".config/nvim/typos.toml")
 assert_match(typos_toml, "%[default%.extend%-words%]", "global typos config should define extend-words")
+assert_match(typos_toml, "%[default%.extend%-identifiers%]",
+  "global typos config should define extend-identifiers for case-sensitive allowlists")
 
 print("nvim typos lsp tests passed")

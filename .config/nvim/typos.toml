@@ -1,11 +1,19 @@
 [default.extend-words]
-# Add personal or cross-repo spellings here.
+# Add lowercased words that should be accepted across projects.
 # Example:
 # teh = "teh"
 # nd = "nd"
 teh = "teh"
 koki = "koki"
 hukukaich0u = "hukukaich0u"
+
+[default.extend-identifiers]
+# Add case-sensitive identifiers, product names, or symbols here.
+# Example:
+# GitHubNvim = "GitHubNvim"
+# LuaSnip = "LuaSnip"
+GitHub = "GitHub"
+Neovim = "Neovim"
 
 [files]
 extend-exclude = [
