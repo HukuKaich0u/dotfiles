@@ -10,7 +10,12 @@
   system.primaryUser = "KokiAoyagi";
 
   # ホームディレクトリを指定
-  users.users.KokiAoyagi.home = "/Users/KokiAoyagi/";
+  users.users.KokiAoyagi.home = "/Users/KokiAoyagi";
+
+  imports = [
+    ../common/nixpkgs.nix
+    ./home_manager.nix
+  ];
 
   # nix-darwinによる Nix の管理を無効化
   nix.enable = false;
