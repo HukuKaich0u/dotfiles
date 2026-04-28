@@ -14,6 +14,7 @@ hukukaich0u = "hukukaich0u"
 # LuaSnip = "LuaSnip"
 GitHub = "GitHub"
 Neovim = "Neovim"
+noice = "noice"
 
 [files]
 extend-exclude = [
