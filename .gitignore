@@ -19,6 +19,7 @@ nvim.log
 
 # tmux plugins managed by TPM
 .config/tmux/plugins/
+result
 
 # AI CLI local state
 .claude.json
