@@ -5,26 +5,10 @@ return {
         { "antosha417/nvim-lsp-file-operations", config = true },
         "mfussenegger/nvim-dap",
         "MunifTanjim/nui.nvim",
-        "nvim-java/nvim-java",
         "Saghen/blink.cmp",
     },
     config = function()
         local capabilities = require("blink.cmp").get_lsp_capabilities()
-
-        require("java").setup({
-            jdk = {
-                auto_install = false,
-            },
-            java_test = {
-                enable = true,
-            },
-            java_debug_adapter = {
-                enable = true,
-            },
-            spring_boot_tools = {
-                enable = false,
-            },
-        })
 
         -- NOTE: LSP Keybinds
         vim.api.nvim_create_autocmd("LspAttach", {
@@ -78,65 +62,6 @@ return {
                     vim.lsp.buf.signature_help()
                 end, opts)
 
-                if client.name == "jdtls" then
-                    opts.desc = "Java organize imports"
-                    vim.keymap.set("n", "<leader>jo", function()
-                        vim.lsp.buf.code_action({
-                            apply = true,
-                            context = {
-                                only = { "source.organizeImports" },
-                            },
-                        })
-                    end, opts)
-
-                    local ok, java = pcall(require, "java")
-                    if ok then
-                        opts.desc = "Java run main class"
-                        vim.keymap.set("n", "<leader>jr", function()
-                            java.runner.built_in.run_app()
-                        end, opts)
-
-                        opts.desc = "Java stop app"
-                        vim.keymap.set("n", "<leader>jS", function()
-                            java.runner.built_in.stop_app()
-                        end, opts)
-
-                        opts.desc = "Java run nearest test"
-                        vim.keymap.set("n", "<leader>jt", function()
-                            java.test.run_current_method()
-                        end, opts)
-
-                        opts.desc = "Java run test class"
-                        vim.keymap.set("n", "<leader>jT", function()
-                            java.test.run_current_class()
-                        end, opts)
-
-                        opts.desc = "Java debug nearest test"
-                        vim.keymap.set("n", "<leader>jd", function()
-                            java.test.debug_current_method()
-                        end, opts)
-
-                        opts.desc = "Java debug test class"
-                        vim.keymap.set("n", "<leader>jD", function()
-                            java.test.debug_current_class()
-                        end, opts)
-
-                        opts.desc = "Java build workspace"
-                        vim.keymap.set("n", "<leader>jb", function()
-                            java.build.build_workspace()
-                        end, opts)
-
-                        opts.desc = "Java last test report"
-                        vim.keymap.set("n", "<leader>jv", function()
-                            java.test.view_last_report()
-                        end, opts)
-
-                        opts.desc = "Java choose runtime"
-                        vim.keymap.set("n", "<leader>jR", function()
-                            java.settings.change_runtime()
-                        end, opts)
-                    end
-                end
             end,
         })
 
@@ -328,51 +253,6 @@ return {
             },
         })
 
-        -- jdtls (Java)
-        vim.lsp.config("jdtls", {
-            capabilities = capabilities,
-            settings = {
-                java = {
-                    eclipse = {
-                        downloadSources = true,
-                    },
-                    maven = {
-                        downloadSources = true,
-                    },
-                    configuration = {
-                        updateBuildConfiguration = "interactive",
-                    },
-                    references = {
-                        includeDecompiledSources = true,
-                    },
-                    implementationsCodeLens = {
-                        enabled = true,
-                    },
-                    referencesCodeLens = {
-                        enabled = true,
-                    },
-                    format = {
-                        enabled = true,
-                    },
-                    signatureHelp = {
-                        enabled = true,
-                    },
-                    saveActions = {
-                        organizeImports = true,
-                    },
-                    contentProvider = {
-                        preferred = "fernflower",
-                    },
-                    sources = {
-                        organizeImports = {
-                            starThreshold = 9999,
-                            staticStarThreshold = 9999,
-                        },
-                    },
-                },
-            },
-        })
-
         -- zls (Zig)
         vim.lsp.config("zls", {
             capabilities = capabilities,
@@ -406,7 +286,6 @@ return {
         vim.lsp.enable("pyright")    -- Python (types)
         vim.lsp.enable("ruff")       -- Python (lint/format)
         vim.lsp.enable("clangd")     -- C/C++
-        vim.lsp.enable("jdtls")      -- Java
         vim.lsp.enable("zls")        -- Zig
         vim.lsp.enable("nil_ls")     -- Nix
         vim.lsp.enable("bashls")     -- shell
