@@ -43,5 +43,31 @@
     # EDITOR = "emacs";
   };
 
+  programs.tmux = {
+    enable = true;
+    sensibleOnTop = false;
+    extraConfig =
+      builtins.replaceStrings
+      [
+        "__TMUX_PLUGIN_CATPPUCCIN_TMUX__"
+        "__TMUX_PLUGIN_SESSIONX_TMUX__"
+        "__TMUX_PLUGIN_RESURRECT_TMUX__"
+        "__TMUX_PLUGIN_CONTINUUM_TMUX__"
+        "__TMUX_PLUGIN_BATTERY_TMUX__"
+        "__TMUX_PLUGIN_ONLINE_STATUS_TMUX__"
+        "__TMUX_PLUGIN_RESURRECT_SAVE_SCRIPT__"
+      ]
+      [
+        "${pkgs.tmuxPlugins.catppuccin}/share/tmux-plugins/catppuccin/catppuccin.tmux"
+        "${pkgs.tmuxPlugins.tmux-sessionx}/share/tmux-plugins/sessionx/sessionx.tmux"
+        "${pkgs.tmuxPlugins.resurrect}/share/tmux-plugins/resurrect/resurrect.tmux"
+        "${pkgs.tmuxPlugins.continuum}/share/tmux-plugins/continuum/continuum.tmux"
+        "${pkgs.tmuxPlugins.battery}/share/tmux-plugins/battery/battery.tmux"
+        "${pkgs.tmuxPlugins.online-status}/share/tmux-plugins/online-status/online_status.tmux"
+        "${pkgs.tmuxPlugins.resurrect}/share/tmux-plugins/resurrect/scripts/save.sh"
+      ]
+      (builtins.readFile ./tmux/tmux.conf);
+  };
+
   programs.home-manager.enable = true;
 }
