@@ -45,27 +45,22 @@
   programs.tmux = {
     enable = true;
     sensibleOnTop = false;
-    extraConfig =
-      builtins.replaceStrings
-      [
-        "__TMUX_PLUGIN_CATPPUCCIN_TMUX__"
-        "__TMUX_PLUGIN_SESSIONX_TMUX__"
-        "__TMUX_PLUGIN_RESURRECT_TMUX__"
-        "__TMUX_PLUGIN_CONTINUUM_TMUX__"
-        "__TMUX_PLUGIN_BATTERY_TMUX__"
-        "__TMUX_PLUGIN_ONLINE_STATUS_TMUX__"
-        "__TMUX_PLUGIN_RESURRECT_SAVE_SCRIPT__"
-      ]
-      [
-        "${pkgs.tmuxPlugins.catppuccin}/share/tmux-plugins/catppuccin/catppuccin.tmux"
-        "${pkgs.tmuxPlugins.tmux-sessionx}/share/tmux-plugins/sessionx/sessionx.tmux"
-        "${pkgs.tmuxPlugins.resurrect}/share/tmux-plugins/resurrect/resurrect.tmux"
-        "${pkgs.tmuxPlugins.continuum}/share/tmux-plugins/continuum/continuum.tmux"
-        "${pkgs.tmuxPlugins.battery}/share/tmux-plugins/battery/battery.tmux"
-        "${pkgs.tmuxPlugins.online-status}/share/tmux-plugins/online-status/online_status.tmux"
-        "${pkgs.tmuxPlugins.resurrect}/share/tmux-plugins/resurrect/scripts/save.sh"
-      ]
-      (builtins.readFile ./tmux/tmux.conf);
+    plugins = with pkgs.tmuxPlugins; [
+      catppuccin
+      tmux-sessionx
+      {
+        plugin = resurrect;
+        extraConfig = ''
+          # tmux 起動直後や最後の session close では、空の状態で resurrect の
+          # last を上書きしないよう created/closed では即時保存しない
+          set-hook -g session-renamed 'run-shell "${resurrect}/share/tmux-plugins/resurrect/scripts/save.sh quiet"'
+        '';
+      }
+      continuum
+      battery
+      online-status
+    ];
+    extraConfig = builtins.readFile ./tmux/tmux.conf;
   };
 
   programs.home-manager.enable = true;
