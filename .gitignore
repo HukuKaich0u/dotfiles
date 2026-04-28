@@ -17,6 +17,7 @@ nvim.log
 
 # zsh
 .config/zsh/.zsh_history
+.config/zsh/.zcompdump*
 
 # tmux plugins managed by TPM
 .config/tmux/plugins/
