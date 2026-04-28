@@ -1,4 +1,4 @@
-add_newline = false
+add_newline = true
 
 format = """$hostname\
 $directory  \
@@ -12,7 +12,6 @@ $fill\
 $cmd_duration\
 $time\
 \n$character\
-\n\
 """
 
 # Enable if it appears on the same line as the command
