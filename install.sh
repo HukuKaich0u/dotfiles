@@ -9,7 +9,7 @@ set -euo pipefail
 DOTFILES_DIR="$(cd "$(dirname "$0")" && pwd)"
 REPO_CONFIG_DIR="$DOTFILES_DIR/.config"
 HOME_CONFIG_DIR="$HOME/.config"
-HOME_DOTFILES=".zshenv .zshrc .zprofile"
+HOME_DOTFILES=""
 TERMINFO_SOURCE_DIR="$DOTFILES_DIR/terminfo"
 EXPLICIT_LINKS=(
     ".agents/AGENTS.md:$HOME/AGENTS.md"
@@ -19,7 +19,7 @@ EXPLICIT_LINKS=(
     ".codex/AGENTS.md:$HOME/.codex/AGENTS.md"
     ".claude/CLAUDE.md:$HOME/.claude/CLAUDE.md"
 )
-SKIP_CONFIG_DIRS="tmux"
+SKIP_CONFIG_DIRS="tmux zsh"
 
 ensure_parent_dir() {
     local target="$1"

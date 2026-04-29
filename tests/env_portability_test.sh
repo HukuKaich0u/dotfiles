@@ -13,9 +13,9 @@ output="$(
   HOME="$tmp_home" \
   PATH="/usr/bin:/bin:/usr/sbin:/sbin" \
   XDG_STATE_HOME="$tmp_home/.local/state" \
-  ZSH_CONFIG_DIR="$repo_root/.config/zsh" \
+  ZDOTDIR="$repo_root/.config/nix/home-manager/zsh" \
   zsh -c '
-    source "$ZSH_CONFIG_DIR/env.zsh"
+    source "$ZDOTDIR/env.zsh"
     printf "PATH=%s\n" "$PATH"
     printf "HISTFILE=%s\n" "$HISTFILE"
     printf "JAVA_HOME=%s\n" "${JAVA_HOME-}"

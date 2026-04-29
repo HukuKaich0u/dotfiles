@@ -1,4 +1,4 @@
-source "$ZSH_CONFIG_DIR/homebrew.zsh"
+source "$ZDOTDIR/homebrew.zsh"
 
 path_prepend_if_dir() {
   if [ -d "$1" ]; then
@@ -68,6 +68,6 @@ if [ -f "$HOME/google-cloud-sdk/path.zsh.inc" ]; then . "$HOME/google-cloud-sdk/
 # The next line enables shell command completion for gcloud.
 if [ -f "$HOME/google-cloud-sdk/completion.zsh.inc" ]; then . "$HOME/google-cloud-sdk/completion.zsh.inc"; fi
 
-if [ -f "$ZSH_CONFIG_DIR/local.zsh" ]; then
-  . "$ZSH_CONFIG_DIR/local.zsh"
+if [ -f "$ZDOTDIR/local.zsh" ]; then
+  . "$ZDOTDIR/local.zsh"
 fi
