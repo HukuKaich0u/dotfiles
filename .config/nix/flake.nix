@@ -16,7 +16,6 @@
 
   outputs = {
     self,
-    nixpkgs,
     home-manager,
     nix-darwin,
     ...
