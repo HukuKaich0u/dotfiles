@@ -26,13 +26,6 @@ in {
     syntaxHighlighting.enable = true;
     history.path = "${config.home.homeDirectory}/.local/state/zsh/.zsh_history";
     shellAliases = {
-      gotest = ''oj t -c "go run main.go" -d tests'';
-      gobuild = "go build -o main.out main.go";
-      gobintest = ''ojt -c "main/a.out"'';
-      pytest = ''oj t -c "python3 main.py" -d tests'';
-      rstest = ''oj t -c "rustc main.rs && ./main" -d tests'';
-      rsbuild = "rustc main.rs";
-      rsbintest = ''oj t -c "./main" -d tests'';
       nv = "nvim";
       tm = "tmux";
       codex = "codex --no-alt-screen";
