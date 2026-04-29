@@ -16,15 +16,18 @@
 
   outputs = {
     self,
+    nixpkgs,
     home-manager,
-    nix-darwin,
     ...
   }: {
-    darwinConfigurations."aoyagikoukinoMacBook-Air" = nix-darwin.lib.darwinSystem {
-      specialArgs = {inherit self;};
+    homeConfigurations."KokiAoyagi" = home-manager.lib.homeManagerConfiguration {
+      pkgs = import nixpkgs {
+        system = "aarch64-darwin";
+        config.allowUnfree = true;
+      };
+      extraSpecialArgs = {inherit self;};
       modules = [
-        ./nix-darwin/configuration.nix
-        home-manager.darwinModules.home-manager
+        ./home-manager/home.nix
       ];
     };
   };
