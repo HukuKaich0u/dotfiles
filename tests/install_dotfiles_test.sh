@@ -46,6 +46,7 @@ assert_absent() {
 assert_absent "$home_dir/.gitconfig"
 assert_absent "$home_dir/.gitconfig-personal"
 assert_absent "$home_dir/.gitconfig-university"
+assert_absent "$home_dir/.config/starship.toml"
 assert_absent "$home_dir/.config/tmux"
 assert_absent "$home_dir/.config/zsh"
 assert_absent "$home_dir/.zshenv"

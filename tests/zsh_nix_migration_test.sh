@@ -43,14 +43,16 @@ assert_contains "$zsh_nix" 'dotDir = zshDotDir;' \
   "zsh.nix should route zsh through dotDir"
 assert_contains "$zsh_nix" 'programs.starship.enable = true;' \
   "zsh.nix should manage starship through Home Manager"
+assert_contains "$zsh_nix" 'home.file.".config/starship.toml".source = ../../starship.toml;' \
+  "zsh.nix should ship starship.toml through Home Manager"
 assert_contains "$zsh_nix" 'autosuggestion.enable = true;' \
   "zsh.nix should enable autosuggestions through Home Manager"
 assert_contains "$zsh_nix" 'syntaxHighlighting.enable = true;' \
   "zsh.nix should enable syntax highlighting through Home Manager"
 assert_contains "$zsh_nix" 'shellAliases = {' \
   "zsh.nix should manage aliases through programs.zsh.shellAliases"
-assert_contains "$zsh_nix" 'gotest = ' \
-  "zsh.nix should keep competitive programming aliases"
+assert_contains "$zsh_nix" 'nv = "nvim";' \
+  "zsh.nix should keep core shell aliases"
 assert_contains "$zsh_nix" 'autoload -Uz compinit' \
   "zsh.nix should inline completion initialization"
 assert_contains "$zsh_nix" "bindkey '^[^M' self-insert-unmeta" \
@@ -70,8 +72,8 @@ fi
 
 assert_contains "$install_script" 'HOME_DOTFILES=""' \
   "install.sh should stop linking zsh dotfiles"
-assert_contains "$install_script" 'SKIP_CONFIG_DIRS="tmux zsh"' \
-  "install.sh should stop linking .config/zsh"
+assert_contains "$install_script" 'SKIP_CONFIG_DIRS="tmux zsh starship.toml"' \
+  "install.sh should stop linking .config/zsh and starship.toml"
 
 assert_missing "$repo_root/.zshenv" \
   "repo root should not keep a hand-managed .zshenv entrypoint"

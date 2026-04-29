@@ -19,7 +19,7 @@ EXPLICIT_LINKS=(
     ".codex/AGENTS.md:$HOME/.codex/AGENTS.md"
     ".claude/CLAUDE.md:$HOME/.claude/CLAUDE.md"
 )
-SKIP_CONFIG_DIRS="tmux zsh"
+SKIP_CONFIG_DIRS="tmux zsh starship.toml"
 
 ensure_parent_dir() {
     local target="$1"
