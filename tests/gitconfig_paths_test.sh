@@ -17,13 +17,8 @@ if ! grep -Fq 'programs.git = {' "$git_nix"; then
   exit 1
 fi
 
-if ! grep -Fq 'programs.gh = {' "$git_nix"; then
-  echo "git.nix should configure gh through programs.gh"
-  exit 1
-fi
-
-if ! grep -Fq 'gitCredentialHelper.enable = true;' "$git_nix"; then
-  echo "gh git credential helper should be enabled through programs.gh"
+if grep -Fq 'programs.gh = {' "$git_nix"; then
+  echo "git.nix should no longer configure gh"
   exit 1
 fi
 

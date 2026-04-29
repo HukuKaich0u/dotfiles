@@ -5,6 +5,7 @@
 {
   imports = [
     ./git.nix
+    ./gh.nix
     ./tmux.nix
     ./zsh.nix
   ];

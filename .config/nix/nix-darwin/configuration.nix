@@ -20,9 +20,6 @@
   # nix-darwinによる Nix の管理を無効化
   nix.enable = false;
 
-  # 利用するシェルを指定する
-  programs.zsh.enable = true;
-
   system.defaults = {
     NSGlobalDomain = {
       # マウス・トラックパッド

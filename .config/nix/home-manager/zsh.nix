@@ -6,6 +6,7 @@
   zshDotDir = "${config.home.homeDirectory}/.config/zsh";
 in {
   home.file.".config/starship.toml".source = ../../starship.toml;
+  home.file.".config/starship.toml".force = true;
   home.file.".config/zsh/env.zsh".source = ./zsh/env.zsh;
   home.file.".config/zsh/homebrew.zsh".source = ./zsh/homebrew.zsh;
 
@@ -42,6 +43,10 @@ in {
     '';
     profileExtra = ''
       source "$ZDOTDIR/homebrew.zsh"
+
+      if [ -e "/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh" ]; then
+        source "/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh"
+      fi
     '';
     initContent = lib.mkMerge [
       (lib.mkOrder 550 ''

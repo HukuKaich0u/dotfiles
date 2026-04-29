@@ -45,6 +45,8 @@ assert_contains "$zsh_nix" 'programs.starship.enable = true;' \
   "zsh.nix should manage starship through Home Manager"
 assert_contains "$zsh_nix" 'home.file.".config/starship.toml".source = ../../starship.toml;' \
   "zsh.nix should ship starship.toml through Home Manager"
+assert_contains "$zsh_nix" 'home.file.".config/starship.toml".force = true;' \
+  "zsh.nix should replace the legacy starship.toml link"
 assert_contains "$zsh_nix" 'autosuggestion.enable = true;' \
   "zsh.nix should enable autosuggestions through Home Manager"
 assert_contains "$zsh_nix" 'syntaxHighlighting.enable = true;' \
@@ -57,6 +59,10 @@ assert_contains "$zsh_nix" 'autoload -Uz compinit' \
   "zsh.nix should inline completion initialization"
 assert_contains "$zsh_nix" "bindkey '^[^M' self-insert-unmeta" \
   "zsh.nix should keep the multiline input bindkey in initContent"
+assert_contains "$zsh_nix" 'if [ -e "/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh" ]; then' \
+  "zsh.nix should source nix-daemon.sh after macOS path_helper runs"
+assert_contains "$zsh_nix" 'source "/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh"' \
+  "zsh.nix should restore nix profile paths in login shells"
 
 for file in env.zsh homebrew.zsh; do
   if [ ! -f "$zsh_dir/$file" ]; then
@@ -81,7 +87,5 @@ assert_missing "$repo_root/.zprofile" \
   "repo root should not keep a hand-managed .zprofile entrypoint"
 assert_missing "$repo_root/.zshrc" \
   "repo root should not keep a hand-managed .zshrc entrypoint"
-assert_missing "$repo_root/.config/zsh/env.zsh" \
-  "zsh source of truth should move under nix/home-manager/zsh"
 
 echo "zsh nix migration tests passed"

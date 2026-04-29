@@ -20,10 +20,5 @@
     ];
   };
 
-  programs.gh = {
-    enable = true;
-    gitCredentialHelper.enable = true;
-  };
-
   xdg.configFile."git/config-university".source = ./git/config-university;
 }
