@@ -49,11 +49,13 @@ assert_contains "$tmux_nix" "builtins.readFile ./tmux/tmux.conf" \
     "home-manager should read tmux config from nix-managed file"
 assert_contains "$tmux_nix" "catppuccin" \
     "home-manager should source tmux plugins from nixpkgs"
+assert_contains "$tmux_nix" "plugin = tmux-sessionx;" \
+    "home-manager should configure sessionx through a plugin attrset"
+assert_contains "$tmux_nix" "@sessionx-bind 'o'" \
+    "sessionx bind should be configured before the plugin loads"
 assert_not_contains "$tmux_nix" "builtins.replaceStrings" \
     "home-manager should not inject tmux plugin paths manually"
 
-assert_contains "$tmux_nix_conf" "@sessionx-bind 'o'" \
-    "tmux config should keep sessionx settings"
 assert_contains "$tmux_nix_conf" "@catppuccin_flavor 'macchiato'" \
     "tmux config should keep catppuccin settings"
 assert_contains "$tmux_nix_conf" "setw -g pane-border-lines heavy" \
@@ -66,6 +68,8 @@ assert_not_contains "$tmux_nix_conf" "__TMUX_PLUGIN_" \
     "tmux config should not keep nix plugin placeholders once plugins are managed by Home Manager"
 assert_not_contains "$tmux_nix_conf" "TMUX_PLUGIN_MANAGER_PATH" \
     "tmux nix config should not keep TPM path"
+assert_not_contains "$tmux_nix_conf" "@sessionx-bind 'o'" \
+    "sessionx bind should not live in extraConfig after plugin migration"
 assert_not_contains "$tmux_nix_conf" "run '~/.config/tmux/plugins/tpm/tpm'" \
     "tmux nix config should not bootstrap TPM"
 assert_not_contains "$tmux_nix_conf" "~/.config/tmux/plugins/tmux-resurrect/scripts/save.sh" \

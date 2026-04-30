@@ -6,7 +6,24 @@
     sensibleOnTop = false;
     plugins = with pkgs.tmuxPlugins; [
       catppuccin
-      tmux-sessionx
+      {
+        plugin = tmux-sessionx;
+        extraConfig = ''
+          set-option -g @sessionx-bind 'o'
+          set-option -g @sessionx-filter-current 'false'
+          set-option -g @sessionx-preview-enabled 'true'
+          set-option -g @sessionx-window-height '72%'
+          set-option -g @sessionx-window-width '60%'
+          set-option -g @sessionx-preview-location 'down'
+          set-option -g @sessionx-preview-ratio '70%'
+          set-option -g @sessionx-layout 'reverse'
+          set-option -g @sessionx-prompt ' '
+          set-option -g @sessionx-pointer '▌ '
+
+          # fzf 0.53+ では builtin tmux popup を使える
+          set-option -g @sessionx-fzf-builtin-tmux 'on'
+        '';
+      }
       {
         plugin = resurrect;
         extraConfig = ''
