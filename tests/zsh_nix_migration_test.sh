@@ -4,6 +4,7 @@ set -eu
 
 repo_root="$(CDPATH= cd -- "$(dirname "$0")/.." && pwd)"
 home_nix="$repo_root/.config/nix/home-manager/home.nix"
+starship_nix="$repo_root/.config/nix/home-manager/starship.nix"
 zsh_nix="$repo_root/.config/nix/home-manager/zsh.nix"
 zsh_dir="$repo_root/.config/nix/home-manager/zsh"
 install_script="$repo_root/install.sh"
@@ -31,6 +32,13 @@ assert_missing() {
 
 assert_contains "$home_nix" "./zsh.nix" \
   "home.nix should import zsh.nix"
+assert_contains "$home_nix" "./starship.nix" \
+  "home.nix should import starship.nix"
+
+if [ ! -f "$starship_nix" ]; then
+  echo "starship.nix should exist"
+  exit 1
+fi
 
 if [ ! -f "$zsh_nix" ]; then
   echo "zsh.nix should exist"
@@ -41,12 +49,6 @@ assert_contains "$zsh_nix" 'programs.zsh = {' \
   "zsh.nix should configure programs.zsh"
 assert_contains "$zsh_nix" 'dotDir = zshDotDir;' \
   "zsh.nix should route zsh through dotDir"
-assert_contains "$zsh_nix" 'programs.starship.enable = true;' \
-  "zsh.nix should manage starship through Home Manager"
-assert_contains "$zsh_nix" 'home.file.".config/starship.toml".source = ../../starship.toml;' \
-  "zsh.nix should ship starship.toml through Home Manager"
-assert_contains "$zsh_nix" 'home.file.".config/starship.toml".force = true;' \
-  "zsh.nix should replace the legacy starship.toml link"
 assert_contains "$zsh_nix" 'autosuggestion.enable = true;' \
   "zsh.nix should enable autosuggestions through Home Manager"
 assert_contains "$zsh_nix" 'syntaxHighlighting.enable = true;' \
@@ -63,6 +65,16 @@ assert_contains "$zsh_nix" 'if [ -e "/nix/var/nix/profiles/default/etc/profile.d
   "zsh.nix should source nix-daemon.sh after macOS path_helper runs"
 assert_contains "$zsh_nix" 'source "/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh"' \
   "zsh.nix should restore nix profile paths in login shells"
+assert_contains "$starship_nix" 'programs.starship = {' \
+  "starship.nix should configure programs.starship"
+assert_contains "$starship_nix" 'enable = true;' \
+  "starship.nix should enable starship through Home Manager"
+assert_contains "$starship_nix" 'settings = {' \
+  "starship.nix should generate starship config from settings"
+assert_contains "$starship_nix" 'docker_context = {' \
+  "starship.nix should keep the custom docker context module"
+assert_missing "$repo_root/.config/starship.toml" \
+  "repo root should not keep a hand-managed starship.toml source"
 
 for file in env.zsh homebrew.zsh; do
   if [ ! -f "$zsh_dir/$file" ]; then

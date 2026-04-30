@@ -5,7 +5,6 @@ set -eu
 repo_root="$(CDPATH= cd -- "$(dirname "$0")/.." && pwd)"
 home_nix="$repo_root/.config/nix/home-manager/home.nix"
 git_nix="$repo_root/.config/nix/home-manager/git.nix"
-gitconfig_university="$repo_root/.config/nix/home-manager/git/config-university"
 
 if ! grep -Fq './git.nix' "$home_nix"; then
   echo "home.nix should import git.nix"
@@ -27,8 +26,8 @@ if ! grep -Fq 'condition = "gitdir:~/Documents/repos/university/";' "$git_nix"; 
   exit 1
 fi
 
-if ! grep -Fq 'path = "~/.config/git/config-university";' "$git_nix"; then
-  echo "university includeIf should point at ~/.config/git/config-university"
+if ! grep -Fq 'contents = {' "$git_nix"; then
+  echo "university includeIf should inline contents in git.nix"
   exit 1
 fi
 
@@ -37,8 +36,18 @@ if grep -Fq 'gitdir:~/Documents/repos/personal/' "$git_nix"; then
   exit 1
 fi
 
-if [ ! -f "$gitconfig_university" ]; then
-  echo "config-university should exist"
+if ! grep -Fq 'name = "s1f102402697";' "$git_nix"; then
+  echo "university includeIf should keep the university git user name"
+  exit 1
+fi
+
+if ! grep -Fq 'email = "s1f102402697@iniad.org";' "$git_nix"; then
+  echo "university includeIf should keep the university git email"
+  exit 1
+fi
+
+if [ -e "$repo_root/.config/nix/home-manager/git/config-university" ]; then
+  echo "config-university should be absorbed into git.nix"
   exit 1
 fi
 

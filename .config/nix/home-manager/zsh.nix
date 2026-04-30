@@ -5,12 +5,8 @@
 }: let
   zshDotDir = "${config.home.homeDirectory}/.config/zsh";
 in {
-  home.file.".config/starship.toml".source = ../../starship.toml;
-  home.file.".config/starship.toml".force = true;
   home.file.".config/zsh/env.zsh".source = ./zsh/env.zsh;
   home.file.".config/zsh/homebrew.zsh".source = ./zsh/homebrew.zsh;
-
-  programs.starship.enable = true;
 
   programs.zsh = {
     enable = true;

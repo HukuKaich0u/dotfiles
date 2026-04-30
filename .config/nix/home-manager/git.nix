@@ -15,10 +15,13 @@
     includes = [
       {
         condition = "gitdir:~/Documents/repos/university/";
-        path = "~/.config/git/config-university";
+        contents = {
+          user = {
+            name = "s1f102402697";
+            email = "s1f102402697@iniad.org";
+          };
+        };
       }
     ];
   };
-
-  xdg.configFile."git/config-university".source = ./git/config-university;
 }
