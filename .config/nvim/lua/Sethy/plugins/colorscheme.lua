@@ -1,3 +1,38 @@
+local function get_highlight(name)
+    local ok, highlight = pcall(vim.api.nvim_get_hl, 0, { name = name, link = false })
+    return ok and highlight or {}
+end
+
+local function merge_highlight(name, opts)
+    vim.api.nvim_set_hl(0, name, vim.tbl_extend("force", get_highlight(name), opts))
+end
+
+local function apply_snacks_picker_highlights(colors)
+    local normal = get_highlight("Normal")
+    local comment = get_highlight("Comment")
+    local search = get_highlight("Search")
+    local cursorline = get_highlight("CursorLine")
+
+    local file_fg = colors and colors.fg_bright or normal.fg
+    local dir_fg = colors and colors.fg or comment.fg or normal.fg
+    local muted_fg = colors and colors.muted or comment.fg or dir_fg
+    local selection_bg = colors and colors.search or search.bg or cursorline.bg
+    local selection_fg = colors and colors.fg_bright or search.fg or normal.fg
+
+    local highlights = {
+        SnacksPickerFile = { fg = file_fg },
+        SnacksPickerDirectory = { fg = dir_fg },
+        SnacksPickerDir = { fg = dir_fg },
+        SnacksPickerPathHidden = { fg = muted_fg },
+        SnacksPickerPathIgnored = { fg = muted_fg },
+        SnacksPickerListCursorLine = { bg = selection_bg, fg = selection_fg },
+    }
+
+    for group, opts in pairs(highlights) do
+        merge_highlight(group, opts)
+    end
+end
+
 return {
     -- NOTE: NVCode color schemes
     {
@@ -28,12 +63,8 @@ return {
 
             local function apply_nvcode_highlights()
                 if not transparent_themes[vim.g.colors_name] then
+                    apply_snacks_picker_highlights()
                     return
-                end
-
-                local function merge_highlight(name, opts)
-                    local ok, current = pcall(vim.api.nvim_get_hl, 0, { name = name, link = false })
-                    vim.api.nvim_set_hl(0, name, vim.tbl_extend("force", ok and current or {}, opts))
                 end
 
                 local highlights = {
@@ -78,6 +109,8 @@ return {
                 for group, opts in pairs(highlights) do
                     merge_highlight(group, opts)
                 end
+
+                apply_snacks_picker_highlights(palette)
             end
 
             local group = vim.api.nvim_create_augroup("SethyNvcodeHighlights", { clear = true })
