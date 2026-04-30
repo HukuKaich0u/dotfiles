@@ -1,1 +1,1 @@
-vim.cmd("colorscheme nvcode")
+vim.cmd("colorscheme github_light_tritanopia")
