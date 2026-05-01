@@ -32,6 +32,8 @@ assert_contains "$home_nix" './yazi.nix' \
   "home-manager should import yazi.nix"
 assert_contains "$yazi_nix" 'programs.yazi = {' \
   "yazi.nix should configure programs.yazi"
+assert_contains "$yazi_nix" 'shellWrapperName = "yy";' \
+  "yazi.nix should pin the legacy shell wrapper name to avoid build warnings"
 assert_contains "$install_sh" 'SKIP_CONFIG_DIRS="tmux zsh starship.toml yazi"' \
   "install.sh should skip yazi after the home-manager migration"
 assert_not_exists "$repo_root/.config/yazi/yazi.toml" \
