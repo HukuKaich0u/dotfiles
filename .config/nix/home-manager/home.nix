@@ -8,6 +8,7 @@
     ./gh.nix
     ./starship.nix
     ./tmux.nix
+    ./yazi.nix
     ./zsh.nix
   ];
 
