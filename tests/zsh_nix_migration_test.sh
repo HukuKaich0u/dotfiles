@@ -76,6 +76,10 @@ assert_contains "$zsh_nix" 'if [ -e "/nix/var/nix/profiles/default/etc/profile.d
   "zsh.nix should source nix-daemon.sh after macOS path_helper runs"
 assert_contains "$zsh_nix" 'source "/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh"' \
   "zsh.nix should restore nix profile paths in login shells"
+assert_contains "$zsh_nix" 'for brew_bin in /opt/homebrew/bin/brew /usr/local/bin/brew; do' \
+  "zsh.nix should inline Homebrew shellenv lookup"
+assert_contains "$zsh_nix" 'if [ -f "$HOME/.cargo/env" ]; then' \
+  "zsh.nix should own cargo PATH initialization"
 assert_contains "$zsh_nix" 'path_prepend_if_dir "$HOME/.npm-global/bin"' \
   "zsh.nix should own the npm-global base path layer"
 assert_contains "$zsh_nix" 'path_prepend_if_dir "/opt/homebrew/opt/postgresql@17/bin"' \
@@ -84,6 +88,14 @@ assert_contains "$zsh_nix" 'path_prepend_if_dir "$HOME/.local/bin"' \
   "zsh.nix should own the user local bin layer"
 assert_contains "$zsh_nix" 'path_append_if_dir "/usr/local/bin"' \
   "zsh.nix should append /usr/local/bin as a low-priority fallback"
+assert_contains "$zsh_nix" 'if [ -d "$HOME/Library/pnpm" ]; then' \
+  "zsh.nix should own pnpm PATH initialization"
+assert_contains "$zsh_nix" 'if [ -x "$HOME/miniconda3/bin/conda" ]; then' \
+  "zsh.nix should own conda PATH initialization"
+assert_contains "$zsh_nix" 'if [ -f "$HOME/google-cloud-sdk/path.zsh.inc" ]; then . "$HOME/google-cloud-sdk/path.zsh.inc"; fi' \
+  "zsh.nix should own gcloud PATH initialization"
+assert_not_contains "$zsh_nix" 'source "$ZDOTDIR/homebrew.zsh"' \
+  "zsh.nix should not depend on a separate homebrew.zsh file anymore"
 assert_contains "$starship_nix" 'programs.starship = {' \
   "starship.nix should configure programs.starship"
 assert_contains "$starship_nix" 'enable = true;' \
@@ -95,15 +107,24 @@ assert_contains "$starship_nix" 'docker_context = {' \
 assert_missing "$repo_root/.config/starship.toml" \
   "repo root should not keep a hand-managed starship.toml source"
 
-for file in env.zsh homebrew.zsh; do
-  if [ ! -f "$zsh_dir/$file" ]; then
-    echo "missing zsh split file: $file"
-    exit 1
-  fi
-done
+if [ ! -f "$zsh_dir/env.zsh" ]; then
+  echo "missing zsh split file: env.zsh"
+  exit 1
+fi
 
-assert_not_contains "$zsh_dir/env.zsh" 'source "$ZDOTDIR/homebrew.zsh"' \
-  "env.zsh should not source homebrew.zsh after path responsibility cleanup"
+assert_missing "$zsh_dir/homebrew.zsh" \
+  "homebrew.zsh should be removed once zsh.nix owns all PATH setup"
+
+assert_not_contains "$zsh_dir/env.zsh" 'export PATH=' \
+  "env.zsh should not mutate PATH after path centralization"
+assert_not_contains "$zsh_dir/env.zsh" 'conda' \
+  "env.zsh should not own conda PATH setup after path centralization"
+assert_not_contains "$zsh_dir/env.zsh" 'google-cloud-sdk/path.zsh.inc' \
+  "env.zsh should not own gcloud PATH setup after path centralization"
+assert_not_contains "$zsh_dir/env.zsh" '$HOME/.local/bin/env' \
+  "env.zsh should not source local env scripts that may mutate PATH"
+assert_not_contains "$zsh_dir/env.zsh" 'local.zsh' \
+  "env.zsh should not source local.zsh after path centralization"
 assert_not_contains "$zsh_dir/env.zsh" '${GOPATH:-$HOME/go}/bin' \
   "env.zsh should not keep the legacy GOPATH bin path"
 

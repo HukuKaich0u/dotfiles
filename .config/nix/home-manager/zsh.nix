@@ -6,7 +6,6 @@
   zshDotDir = "${config.home.homeDirectory}/.config/zsh";
 in {
   home.file.".config/zsh/env.zsh".source = ./zsh/env.zsh;
-  home.file.".config/zsh/homebrew.zsh".source = ./zsh/homebrew.zsh;
 
   programs.zsh = {
     enable = true;
@@ -32,13 +31,13 @@ in {
       tma = "tmux a -t";
       tmnew = "tmux new -s";
     };
-    envExtra = ''
-      if [ -f "$HOME/.cargo/env" ]; then
-        . "$HOME/.cargo/env"
-      fi
-    '';
     profileExtra = ''
-      source "$ZDOTDIR/homebrew.zsh"
+      for brew_bin in /opt/homebrew/bin/brew /usr/local/bin/brew; do
+        if [ -x "$brew_bin" ]; then
+          eval "$("$brew_bin" shellenv)"
+          break
+        fi
+      done
 
       if [ -e "/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh" ]; then
         source "/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh"
@@ -64,9 +63,52 @@ in {
         path_prepend_if_dir "$HOME/.local/bin"
         path_append_if_dir "/usr/local/bin"
         path_append_if_dir "/usr/.local/bin"
+
+        if [ -d "/opt/homebrew/opt/openjdk" ]; then
+          path_prepend_if_dir "/opt/homebrew/opt/openjdk/bin"
+        fi
+
+        if [ -f "$HOME/.cargo/env" ]; then
+          . "$HOME/.cargo/env"
+        fi
+
+        if [ -d "$HOME/Library/pnpm" ]; then
+          case ":$PATH:" in
+            *":$HOME/Library/pnpm:"*) ;;
+            *) export PATH="$HOME/Library/pnpm:$PATH" ;;
+          esac
+        fi
+
+        if [ -f "$HOME/.local/bin/env" ]; then
+          . "$HOME/.local/bin/env"
+        fi
+
+        # >>> conda initialize >>>
+        # !! Contents within this block are managed by 'conda init' !!
+        if [ -x "$HOME/miniconda3/bin/conda" ]; then
+          __conda_setup="$("$HOME/miniconda3/bin/conda" 'shell.zsh' 'hook' 2> /dev/null)"
+          if [ $? -eq 0 ]; then
+              eval "$__conda_setup"
+          else
+              if [ -f "$HOME/miniconda3/etc/profile.d/conda.sh" ]; then
+                  . "$HOME/miniconda3/etc/profile.d/conda.sh"
+              else
+                  export PATH="$HOME/miniconda3/bin:$PATH"
+              fi
+          fi
+          unset __conda_setup
+        fi
+        # <<< conda initialize <<<
+
+        if [ -f "$HOME/google-cloud-sdk/path.zsh.inc" ]; then . "$HOME/google-cloud-sdk/path.zsh.inc"; fi
       '')
       (lib.mkOrder 550 ''
         source "$ZDOTDIR/env.zsh"
+      '')
+      (lib.mkOrder 600 ''
+        if [ -f "$ZDOTDIR/local.zsh" ]; then
+          . "$ZDOTDIR/local.zsh"
+        fi
       '')
       (lib.mkOrder 1000 ''
         # Shift+Enter が Esc+Enter として届く端末でも、複数行入力の改行として扱いやすくする。
