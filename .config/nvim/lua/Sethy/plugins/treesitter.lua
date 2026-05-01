@@ -32,9 +32,6 @@ return {
 				"zig",
 				"c",
 				"cpp",
-				"scheme",
-				"racket",
-
 				-- infra
 				"dockerfile",
 				"terraform",

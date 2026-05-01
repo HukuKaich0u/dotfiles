@@ -268,16 +268,6 @@ return {
             capabilities = capabilities,
         })
 
-        -- racket_langserver
-        vim.lsp.config("racket_langserver", {
-            capabilities = capabilities,
-            cmd = { "racket", "--lib", "racket-langserver" },
-            filetypes = {
-                "racket",
-                "scheme",
-            },
-        })
-
         -- Enable LSP servers
         -- lua
         vim.lsp.enable("lua_ls")
@@ -299,6 +289,5 @@ return {
         vim.lsp.enable("zls")        -- Zig
         vim.lsp.enable("nil_ls")     -- Nix
         vim.lsp.enable("bashls")     -- shell
-        vim.lsp.enable("racket_langserver")
     end,
 }

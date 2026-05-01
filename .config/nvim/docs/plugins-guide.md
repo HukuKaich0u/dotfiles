@@ -235,15 +235,6 @@ listen = true
 
 `bacon` を別 pane や `<leader>lb` で起動しておくと、診断結果が quickfix に反映され、`Trouble quickfix` (`<leader>xq`) から一覧確認もできる。
 
-### Scheme / Racket
-
-- `Conjure` で Racket / Scheme の REPL 駆動開発を行う。
-- `.rkt` は `racket-langserver` による LSP を前提にする。
-- ネストの深いフォームは rainbow delimiters で追いやすくする。
-- 外部依存として `racket` 本体と `raco pkg install racket-langserver` が必要。
-
----
-
 ## 7. Markdown
 
 ### render-markdown.nvim
