@@ -26,7 +26,7 @@
 - [`env.zsh`](/Users/KokiAoyagi/Documents/repos/personal/dotfiles/.config/nix/home-manager/zsh/env.zsh:1) でも `homebrew.zsh` を再度読む
 - [`env.zsh`](/Users/KokiAoyagi/Documents/repos/personal/dotfiles/.config/nix/home-manager/zsh/env.zsh:19) が PATH の骨格、環境変数、外部ツール初期化、ローカル override をまとめて持っている
 
-この状態だと「PATH の順番はどこで決まるのか」「Homebrew を有効化する責務はどこか」が追いづらい。
+この状態だと「PATH の順番はどこで決まるのか」「`nix > homebrew` の優先順をどこで担保するのか」「Homebrew を有効化する責務はどこか」が追いづらい。
 
 ## 選択肢
 
@@ -62,7 +62,7 @@ Option 1。
 - PATH の骨格定義
 - `homebrew.zsh` と `nix-daemon.sh` の読み込み
 
-このファイルでは「どのレイヤの PATH が先に来るか」が読める状態を目指す。
+このファイルでは「どのレイヤの PATH が先に来るか」が読める状態を目指す。特に、基礎レイヤでは `nix > homebrew` を明示する。
 
 想定する対象:
 - `homebrew.zsh`
@@ -105,10 +105,21 @@ Option 1。
 
 1. `zsh.nix` が login shell 用の基礎初期化を組み立てる
 2. その中で `homebrew.zsh` を 1 回だけ読む
-3. 続けて `nix-daemon.sh` を読み、Nix 系 PATH を足す
+3. 続けて `nix-daemon.sh` を読み、Nix 系 PATH が Homebrew より優先されるようにする
 4. `zsh.nix` が管理する基礎 PATH を追加する
 5. interactive shell で `env.zsh` を読み、環境変数や外部ツール初期化を行う
 6. 必要なら `local.zsh` で最終 override を行う
+
+## PATH 優先順
+
+この整理では、PATH の基礎優先順を次の考え方で扱う。
+
+1. Nix 系
+2. Homebrew 系
+3. ユーザー管理の追加 PATH
+4. `env.zsh` や `local.zsh` による動的な最終微調整
+
+少なくとも基礎レイヤでは `nix > homebrew` を維持し、`env.zsh` はその前提を壊さない範囲でのみ追加調整を行う。
 
 ## 具体的な整理内容
 
@@ -125,7 +136,7 @@ Option 1。
 
 ## テスト方針
 
-1. 新しい shell で `echo $PATH` を見て順序が大きく崩れていないことを確認する
+1. 新しい shell で `echo $PATH` を見て `nix > homebrew` を含む順序が大きく崩れていないことを確認する
 2. `command -v brew` `command -v nix` `command -v pnpm` を確認する
 3. `echo $JAVA_HOME` と `echo $PNPM_HOME` を確認する
 4. `conda` と `gcloud` が従来どおり利用可能か確認する
@@ -134,6 +145,7 @@ Option 1。
 ## 成功条件
 
 - PATH の骨格を見る場所が `zsh.nix` に寄る
+- 基礎 PATH の優先順が `nix > homebrew` で一貫する
 - `homebrew.zsh` の読み込み責務が 1 箇所にまとまる
 - `env.zsh` が動的調整用ファイルとして理解しやすくなる
 - `~/go/bin` 依存が消える
