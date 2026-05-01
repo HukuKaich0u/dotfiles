@@ -5,8 +5,6 @@
 }: let
   zshDotDir = "${config.home.homeDirectory}/.config/zsh";
 in {
-  home.file.".config/zsh/env.zsh".source = ./zsh/env.zsh;
-
   programs.zsh = {
     enable = true;
     dotDir = zshDotDir;
@@ -101,9 +99,24 @@ in {
         # <<< conda initialize <<<
 
         if [ -f "$HOME/google-cloud-sdk/path.zsh.inc" ]; then . "$HOME/google-cloud-sdk/path.zsh.inc"; fi
-      '')
-      (lib.mkOrder 550 ''
-        source "$ZDOTDIR/env.zsh"
+
+        export ZSH_STATE_DIR="${XDG_STATE_HOME:-$HOME/.local/state}/zsh"
+        mkdir -p "$ZSH_STATE_DIR"
+        export HISTFILE="$ZSH_STATE_DIR/.zsh_history"
+
+        if [ -d "/opt/homebrew/opt/openjdk" ]; then
+          export JAVA_HOME="/opt/homebrew/opt/openjdk"
+        fi
+
+        if [ -d "$HOME/include" ]; then
+          export CPLUS_INCLUDE_PATH="${CPLUS_INCLUDE_PATH:+$CPLUS_INCLUDE_PATH:}$HOME/include"
+        fi
+
+        if [ -d "$HOME/Library/pnpm" ]; then
+          export PNPM_HOME="$HOME/Library/pnpm"
+        fi
+
+        if [ -f "$HOME/google-cloud-sdk/completion.zsh.inc" ]; then . "$HOME/google-cloud-sdk/completion.zsh.inc"; fi
       '')
       (lib.mkOrder 600 ''
         if [ -f "$ZDOTDIR/local.zsh" ]; then

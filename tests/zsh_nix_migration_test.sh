@@ -60,6 +60,8 @@ assert_contains "$zsh_nix" 'programs.zsh = {' \
   "zsh.nix should configure programs.zsh"
 assert_contains "$zsh_nix" 'dotDir = zshDotDir;' \
   "zsh.nix should route zsh through dotDir"
+assert_not_contains "$zsh_nix" 'home.file.".config/zsh/env.zsh"' \
+  "zsh.nix should not materialize a separate env.zsh file anymore"
 assert_contains "$zsh_nix" 'autosuggestion.enable = true;' \
   "zsh.nix should enable autosuggestions through Home Manager"
 assert_contains "$zsh_nix" 'syntaxHighlighting.enable = true;' \
@@ -94,8 +96,22 @@ assert_contains "$zsh_nix" 'if [ -x "$HOME/miniconda3/bin/conda" ]; then' \
   "zsh.nix should own conda PATH initialization"
 assert_contains "$zsh_nix" 'if [ -f "$HOME/google-cloud-sdk/path.zsh.inc" ]; then . "$HOME/google-cloud-sdk/path.zsh.inc"; fi' \
   "zsh.nix should own gcloud PATH initialization"
+assert_contains "$zsh_nix" 'export ZSH_STATE_DIR="${XDG_STATE_HOME:-$HOME/.local/state}/zsh"' \
+  "zsh.nix should own the zsh state directory setup"
+assert_contains "$zsh_nix" 'export HISTFILE="$ZSH_STATE_DIR/.zsh_history"' \
+  "zsh.nix should own the zsh history file setup"
+assert_contains "$zsh_nix" 'export JAVA_HOME="/opt/homebrew/opt/openjdk"' \
+  "zsh.nix should own JAVA_HOME initialization"
+assert_contains "$zsh_nix" 'export CPLUS_INCLUDE_PATH="${CPLUS_INCLUDE_PATH:+$CPLUS_INCLUDE_PATH:}$HOME/include"' \
+  "zsh.nix should own CPLUS_INCLUDE_PATH initialization"
+assert_contains "$zsh_nix" 'export PNPM_HOME="$HOME/Library/pnpm"' \
+  "zsh.nix should own PNPM_HOME initialization"
+assert_contains "$zsh_nix" 'if [ -f "$HOME/google-cloud-sdk/completion.zsh.inc" ]; then . "$HOME/google-cloud-sdk/completion.zsh.inc"; fi' \
+  "zsh.nix should own gcloud completion initialization"
 assert_not_contains "$zsh_nix" 'source "$ZDOTDIR/homebrew.zsh"' \
   "zsh.nix should not depend on a separate homebrew.zsh file anymore"
+assert_not_contains "$zsh_nix" 'source "$ZDOTDIR/env.zsh"' \
+  "zsh.nix should not depend on a separate env.zsh file anymore"
 assert_contains "$starship_nix" 'programs.starship = {' \
   "starship.nix should configure programs.starship"
 assert_contains "$starship_nix" 'enable = true;' \
@@ -107,26 +123,10 @@ assert_contains "$starship_nix" 'docker_context = {' \
 assert_missing "$repo_root/.config/starship.toml" \
   "repo root should not keep a hand-managed starship.toml source"
 
-if [ ! -f "$zsh_dir/env.zsh" ]; then
-  echo "missing zsh split file: env.zsh"
-  exit 1
-fi
-
+assert_missing "$zsh_dir/env.zsh" \
+  "env.zsh should be removed once zsh.nix owns all zsh environment setup"
 assert_missing "$zsh_dir/homebrew.zsh" \
   "homebrew.zsh should be removed once zsh.nix owns all PATH setup"
-
-assert_not_contains "$zsh_dir/env.zsh" 'export PATH=' \
-  "env.zsh should not mutate PATH after path centralization"
-assert_not_contains "$zsh_dir/env.zsh" 'conda' \
-  "env.zsh should not own conda PATH setup after path centralization"
-assert_not_contains "$zsh_dir/env.zsh" 'google-cloud-sdk/path.zsh.inc' \
-  "env.zsh should not own gcloud PATH setup after path centralization"
-assert_not_contains "$zsh_dir/env.zsh" '$HOME/.local/bin/env' \
-  "env.zsh should not source local env scripts that may mutate PATH"
-assert_not_contains "$zsh_dir/env.zsh" 'local.zsh' \
-  "env.zsh should not source local.zsh after path centralization"
-assert_not_contains "$zsh_dir/env.zsh" '${GOPATH:-$HOME/go}/bin' \
-  "env.zsh should not keep the legacy GOPATH bin path"
 
 if [ -e "$zsh_dir/aliases.zsh" ] || [ -e "$zsh_dir/completion.zsh" ]; then
   echo "aliases and completion should be managed directly in zsh.nix"
