@@ -45,6 +45,26 @@ in {
       fi
     '';
     initContent = lib.mkMerge [
+      (lib.mkOrder 500 ''
+        path_prepend_if_dir() {
+          if [ -d "$1" ]; then
+            export PATH="$1:$PATH"
+          fi
+        }
+
+        path_append_if_dir() {
+          if [ -d "$1" ]; then
+            export PATH="$PATH:$1"
+          fi
+        }
+
+        # Keep the base toolchain layer ordered as nix > homebrew.
+        path_prepend_if_dir "$HOME/.npm-global/bin"
+        path_prepend_if_dir "/opt/homebrew/opt/postgresql@17/bin"
+        path_prepend_if_dir "$HOME/.local/bin"
+        path_append_if_dir "/usr/local/bin"
+        path_append_if_dir "/usr/.local/bin"
+      '')
       (lib.mkOrder 550 ''
         source "$ZDOTDIR/env.zsh"
       '')

@@ -1,30 +1,9 @@
-source "$ZDOTDIR/homebrew.zsh"
-
-path_prepend_if_dir() {
-  if [ -d "$1" ]; then
-    export PATH="$1:$PATH"
-  fi
-}
-
-path_append_if_dir() {
-  if [ -d "$1" ]; then
-    export PATH="$PATH:$1"
-  fi
-}
-
 export ZSH_STATE_DIR="${XDG_STATE_HOME:-$HOME/.local/state}/zsh"
 mkdir -p "$ZSH_STATE_DIR"
 export HISTFILE="$ZSH_STATE_DIR/.zsh_history"
 
-path_prepend_if_dir "$HOME/.npm-global/bin"
-path_prepend_if_dir "${GOPATH:-$HOME/go}/bin"
-path_prepend_if_dir "/opt/homebrew/opt/postgresql@17/bin"
-path_prepend_if_dir "$HOME/.local/bin"
-path_append_if_dir "/usr/local/bin"
-path_append_if_dir "/usr/.local/bin"
-
 if [ -d "/opt/homebrew/opt/openjdk" ]; then
-  path_prepend_if_dir "/opt/homebrew/opt/openjdk/bin"
+  export PATH="/opt/homebrew/opt/openjdk/bin:$PATH"
   export JAVA_HOME="/opt/homebrew/opt/openjdk"
 fi
 

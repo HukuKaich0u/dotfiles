@@ -20,6 +20,17 @@ assert_contains() {
   fi
 }
 
+assert_not_contains() {
+  file="$1"
+  pattern="$2"
+  message="$3"
+
+  if grep -Fq "$pattern" "$file"; then
+    echo "$message"
+    exit 1
+  fi
+}
+
 assert_missing() {
   path="$1"
   message="$2"
@@ -65,6 +76,14 @@ assert_contains "$zsh_nix" 'if [ -e "/nix/var/nix/profiles/default/etc/profile.d
   "zsh.nix should source nix-daemon.sh after macOS path_helper runs"
 assert_contains "$zsh_nix" 'source "/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh"' \
   "zsh.nix should restore nix profile paths in login shells"
+assert_contains "$zsh_nix" 'path_prepend_if_dir "$HOME/.npm-global/bin"' \
+  "zsh.nix should own the npm-global base path layer"
+assert_contains "$zsh_nix" 'path_prepend_if_dir "/opt/homebrew/opt/postgresql@17/bin"' \
+  "zsh.nix should own the shared PostgreSQL path layer"
+assert_contains "$zsh_nix" 'path_prepend_if_dir "$HOME/.local/bin"' \
+  "zsh.nix should own the user local bin layer"
+assert_contains "$zsh_nix" 'path_append_if_dir "/usr/local/bin"' \
+  "zsh.nix should append /usr/local/bin as a low-priority fallback"
 assert_contains "$starship_nix" 'programs.starship = {' \
   "starship.nix should configure programs.starship"
 assert_contains "$starship_nix" 'enable = true;' \
@@ -83,6 +102,11 @@ for file in env.zsh homebrew.zsh; do
   fi
 done
 
+assert_not_contains "$zsh_dir/env.zsh" 'source "$ZDOTDIR/homebrew.zsh"' \
+  "env.zsh should not source homebrew.zsh after path responsibility cleanup"
+assert_not_contains "$zsh_dir/env.zsh" '${GOPATH:-$HOME/go}/bin' \
+  "env.zsh should not keep the legacy GOPATH bin path"
+
 if [ -e "$zsh_dir/aliases.zsh" ] || [ -e "$zsh_dir/completion.zsh" ]; then
   echo "aliases and completion should be managed directly in zsh.nix"
   exit 1
@@ -90,7 +114,7 @@ fi
 
 assert_contains "$install_script" 'HOME_DOTFILES=""' \
   "install.sh should stop linking zsh dotfiles"
-assert_contains "$install_script" 'SKIP_CONFIG_DIRS="tmux zsh starship.toml"' \
+assert_contains "$install_script" 'SKIP_CONFIG_DIRS="tmux zsh starship.toml yazi"' \
   "install.sh should stop linking .config/zsh and starship.toml"
 
 assert_missing "$repo_root/.zshenv" \

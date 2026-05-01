@@ -34,3 +34,8 @@ if ! printf '%s' "$output" | grep -q "HISTFILE=$tmp_home/.local/state/zsh/.zsh_h
   echo "env.zsh did not relocate HISTFILE under temporary HOME"
   exit 1
 fi
+
+if ! printf '%s' "$output" | grep -q '^PATH=/usr/bin:/bin:/usr/sbin:/sbin$'; then
+  echo "env.zsh should not own the base PATH layer by itself"
+  exit 1
+fi
