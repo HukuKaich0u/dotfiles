@@ -56,6 +56,11 @@ if [ ! -f "$zsh_nix" ]; then
   exit 1
 fi
 
+if ! nix-instantiate --parse "$zsh_nix" >/dev/null; then
+  echo "zsh.nix should parse as valid Nix"
+  exit 1
+fi
+
 assert_contains "$zsh_nix" 'programs.zsh = {' \
   "zsh.nix should configure programs.zsh"
 assert_contains "$zsh_nix" 'dotDir = zshDotDir;' \
@@ -96,13 +101,13 @@ assert_contains "$zsh_nix" 'if [ -x "$HOME/miniconda3/bin/conda" ]; then' \
   "zsh.nix should own conda PATH initialization"
 assert_contains "$zsh_nix" 'if [ -f "$HOME/google-cloud-sdk/path.zsh.inc" ]; then . "$HOME/google-cloud-sdk/path.zsh.inc"; fi' \
   "zsh.nix should own gcloud PATH initialization"
-assert_contains "$zsh_nix" 'export ZSH_STATE_DIR="${XDG_STATE_HOME:-$HOME/.local/state}/zsh"' \
+assert_contains "$zsh_nix" 'export ZSH_STATE_DIR="'"''"'${XDG_STATE_HOME:-$HOME/.local/state}/zsh"' \
   "zsh.nix should own the zsh state directory setup"
 assert_contains "$zsh_nix" 'export HISTFILE="$ZSH_STATE_DIR/.zsh_history"' \
   "zsh.nix should own the zsh history file setup"
 assert_contains "$zsh_nix" 'export JAVA_HOME="/opt/homebrew/opt/openjdk"' \
   "zsh.nix should own JAVA_HOME initialization"
-assert_contains "$zsh_nix" 'export CPLUS_INCLUDE_PATH="${CPLUS_INCLUDE_PATH:+$CPLUS_INCLUDE_PATH:}$HOME/include"' \
+assert_contains "$zsh_nix" 'export CPLUS_INCLUDE_PATH="'"''"'${CPLUS_INCLUDE_PATH:+$CPLUS_INCLUDE_PATH:}$HOME/include"' \
   "zsh.nix should own CPLUS_INCLUDE_PATH initialization"
 assert_contains "$zsh_nix" 'export PNPM_HOME="$HOME/Library/pnpm"' \
   "zsh.nix should own PNPM_HOME initialization"

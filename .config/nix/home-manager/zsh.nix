@@ -100,7 +100,7 @@ in {
 
         if [ -f "$HOME/google-cloud-sdk/path.zsh.inc" ]; then . "$HOME/google-cloud-sdk/path.zsh.inc"; fi
 
-        export ZSH_STATE_DIR="${XDG_STATE_HOME:-$HOME/.local/state}/zsh"
+        export ZSH_STATE_DIR="''${XDG_STATE_HOME:-$HOME/.local/state}/zsh"
         mkdir -p "$ZSH_STATE_DIR"
         export HISTFILE="$ZSH_STATE_DIR/.zsh_history"
 
@@ -109,7 +109,7 @@ in {
         fi
 
         if [ -d "$HOME/include" ]; then
-          export CPLUS_INCLUDE_PATH="${CPLUS_INCLUDE_PATH:+$CPLUS_INCLUDE_PATH:}$HOME/include"
+          export CPLUS_INCLUDE_PATH="''${CPLUS_INCLUDE_PATH:+$CPLUS_INCLUDE_PATH:}$HOME/include"
         fi
 
         if [ -d "$HOME/Library/pnpm" ]; then
