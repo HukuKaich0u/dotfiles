@@ -41,6 +41,12 @@ assert_missing() {
   fi
 }
 
+first_lineno() {
+  file="$1"
+  pattern="$2"
+  grep -nF "$pattern" "$file" | head -n 1 | cut -d: -f1
+}
+
 assert_contains "$home_nix" "./zsh.nix" \
   "home.nix should import zsh.nix"
 assert_contains "$home_nix" "./starship.nix" \
@@ -85,12 +91,12 @@ assert_contains "$zsh_nix" 'source "/nix/var/nix/profiles/default/etc/profile.d/
   "zsh.nix should restore nix profile paths in login shells"
 assert_contains "$zsh_nix" 'for brew_bin in /opt/homebrew/bin/brew /usr/local/bin/brew; do' \
   "zsh.nix should inline Homebrew shellenv lookup"
+assert_contains "$zsh_nix" "profileExtra = ''" \
+  "zsh.nix should keep environment initialization in profileExtra"
 assert_contains "$zsh_nix" 'if [ -f "$HOME/.cargo/env" ]; then' \
   "zsh.nix should own cargo PATH initialization"
 assert_contains "$zsh_nix" 'path_prepend_if_dir "$HOME/.npm-global/bin"' \
   "zsh.nix should own the npm-global base path layer"
-assert_contains "$zsh_nix" 'path_prepend_if_dir "/opt/homebrew/opt/postgresql@17/bin"' \
-  "zsh.nix should own the shared PostgreSQL path layer"
 assert_contains "$zsh_nix" 'path_prepend_if_dir "$HOME/.local/bin"' \
   "zsh.nix should own the user local bin layer"
 assert_contains "$zsh_nix" 'path_append_if_dir "/usr/local/bin"' \
@@ -132,6 +138,25 @@ assert_missing "$zsh_dir/env.zsh" \
   "env.zsh should be removed once zsh.nix owns all zsh environment setup"
 assert_missing "$zsh_dir/homebrew.zsh" \
   "homebrew.zsh should be removed once zsh.nix owns all PATH setup"
+
+init_content_line="$(first_lineno "$zsh_nix" 'initContent = lib.mkMerge')"
+path_helper_line="$(first_lineno "$zsh_nix" 'path_prepend_if_dir()')"
+state_dir_line="$(first_lineno "$zsh_nix" 'export ZSH_STATE_DIR=')"
+
+if [ -z "$init_content_line" ] || [ -z "$path_helper_line" ] || [ -z "$state_dir_line" ]; then
+  echo "zsh.nix should keep initContent and environment initialization markers"
+  exit 1
+fi
+
+if [ "$path_helper_line" -gt "$init_content_line" ]; then
+  echo "zsh.nix should initialize PATH before initContent begins"
+  exit 1
+fi
+
+if [ "$state_dir_line" -gt "$init_content_line" ]; then
+  echo "zsh.nix should initialize env vars before initContent begins"
+  exit 1
+fi
 
 if [ -e "$zsh_dir/aliases.zsh" ] || [ -e "$zsh_dir/completion.zsh" ]; then
   echo "aliases and completion should be managed directly in zsh.nix"

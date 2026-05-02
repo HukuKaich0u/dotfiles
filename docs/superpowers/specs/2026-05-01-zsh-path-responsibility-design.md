@@ -64,12 +64,19 @@ Option 1。
 
 このファイルでは「どのレイヤの PATH が先に来るか」「どのツールが PATH を変更するか」「どの環境変数が追加されるか」がまとめて読める状態を目指す。特に、基礎レイヤでは `nix > homebrew` を明示する。
 
+役割分担:
+- `profileExtra`
+  - login shell の初期化
+  - PATH と環境変数の初期化をまとめて置く
+- `initContent`
+  - interactive shell の初期化
+  - `bindkey` や `local.zsh` のような対話専用の調整だけを置く
+
 想定する対象:
 - `brew shellenv`
 - `nix-daemon.sh`
 - `~/.npm-global/bin`
 - `~/.local/bin`
-- `/opt/homebrew/opt/postgresql@17/bin`
 - `~/.cargo/env`
 - `PNPM_HOME` に伴う PATH 追加
 - `conda init`
@@ -88,13 +95,13 @@ Option 1。
 
 ## 起動フロー
 
-1. `zsh.nix` が login shell 用の基礎初期化を組み立てる
+1. `zsh.nix` の `profileExtra` が login shell 用の環境初期化を組み立てる
 2. その中で `brew shellenv` を読み、Homebrew 系 PATH を入れる
 3. 続けて `nix-daemon.sh` を読み、Nix 系 PATH が Homebrew より優先されるようにする
-4. `zsh.nix` が管理する基礎 PATH を追加する
-5. `zsh.nix` が `cargo`, `pnpm`, `conda`, `gcloud`, `~/.local/bin/env` の PATH 追加または PATH 変更の呼び出しを行う
-6. `zsh.nix` が `ZSH_STATE_DIR`, `HISTFILE`, `JAVA_HOME`, `PNPM_HOME`, `CPLUS_INCLUDE_PATH`, `gcloud` completion を初期化する
-7. 必要なら `zsh.nix` 経由で `local.zsh` を読み、最終 override を行う
+4. `profileExtra` が管理する基礎 PATH を追加する
+5. `profileExtra` が `cargo`, `pnpm`, `conda`, `gcloud`, `~/.local/bin/env` の PATH 追加または PATH 変更の呼び出しを行う
+6. `profileExtra` が `ZSH_STATE_DIR`, `HISTFILE`, `JAVA_HOME`, `PNPM_HOME`, `CPLUS_INCLUDE_PATH`, `gcloud` completion を初期化する
+7. `initContent` が interactive shell 専用の `local.zsh` と `bindkey` を読み、最後の操作性調整だけを行う
 
 ## PATH 優先順
 
@@ -103,9 +110,9 @@ Option 1。
 1. Nix 系
 2. Homebrew 系
 3. ユーザー管理の追加 PATH
-4. `zsh.nix` 内のツール別 PATH 追加
-5. `zsh.nix` 内の非 PATH 環境変数初期化
-6. `zsh.nix` 経由の `local.zsh` による最終 override
+4. `profileExtra` 内のツール別 PATH 追加
+5. `profileExtra` 内の非 PATH 環境変数初期化
+6. `initContent` 経由の `local.zsh` による最終 override
 
 少なくとも基礎レイヤでは `nix > homebrew` を維持し、環境初期化の責務は `zsh.nix` から外へ漏らさない。
 
