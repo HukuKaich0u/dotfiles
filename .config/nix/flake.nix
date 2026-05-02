@@ -18,6 +18,7 @@
     self,
     nixpkgs,
     home-manager,
+    nix-darwin,
     ...
   }: {
     homeConfigurations."KokiAoyagi" = home-manager.lib.homeManagerConfiguration {
@@ -28,6 +29,14 @@
       extraSpecialArgs = {inherit self;};
       modules = [
         ./home-manager/home.nix
+      ];
+    };
+
+    darwinConfigurations."KokiAoyagi" = nix-darwin.lib.darwinSystem {
+      system = "aarch64-darwin";
+      modules = [
+        ./nix-darwin/configuration.nix
+        home-manager.darwinModules.home-manager
       ];
     };
   };

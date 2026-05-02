@@ -25,6 +25,8 @@ assert_contains "$flake_nix" 'darwinConfigurations."KokiAoyagi"' \
   "flake should expose a nix-darwin configuration entry point"
 assert_contains "$flake_nix" 'nix-darwin.lib.darwinSystem' \
   "flake should build the darwin configuration through nix-darwin.lib.darwinSystem"
+assert_contains "$flake_nix" 'home-manager.darwinModules.home-manager' \
+  "flake should import the home-manager darwin module for nix-darwin wiring"
 assert_contains "$flake_nix" './nix-darwin/configuration.nix' \
   "flake should wire darwinConfigurations to nix-darwin/configuration.nix"
 assert_contains "$darwin_config" './home_manager.nix' \
