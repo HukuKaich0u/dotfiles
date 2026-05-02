@@ -97,16 +97,22 @@ assert_contains "$zsh_nix" 'if [ -f "$HOME/.cargo/env" ]; then' \
   "zsh.nix should own cargo PATH initialization"
 assert_contains "$zsh_nix" 'path_prepend_if_dir "$HOME/.npm-global/bin"' \
   "zsh.nix should own the npm-global base path layer"
-assert_contains "$zsh_nix" 'path_prepend_if_dir "$HOME/.local/bin"' \
-  "zsh.nix should own the user local bin layer"
-assert_contains "$zsh_nix" 'path_append_if_dir "/usr/local/bin"' \
-  "zsh.nix should append /usr/local/bin as a low-priority fallback"
+assert_not_contains "$zsh_nix" 'path_prepend_if_dir "$HOME/.local/bin"' \
+  "zsh.nix should not add ~/.local/bin when those tools are unmanaged"
+assert_not_contains "$zsh_nix" 'path_append_if_dir "/usr/local/bin"' \
+  "zsh.nix should rely on system path setup instead of appending /usr/local/bin manually"
+assert_not_contains "$zsh_nix" 'path_append_if_dir "/usr/.local/bin"' \
+  "zsh.nix should not append unused local system bin paths manually"
 assert_contains "$zsh_nix" 'if [ -d "$HOME/Library/pnpm" ]; then' \
   "zsh.nix should own pnpm PATH initialization"
 assert_contains "$zsh_nix" 'if [ -x "$HOME/miniconda3/bin/conda" ]; then' \
   "zsh.nix should own conda PATH initialization"
 assert_contains "$zsh_nix" 'if [ -f "$HOME/google-cloud-sdk/path.zsh.inc" ]; then . "$HOME/google-cloud-sdk/path.zsh.inc"; fi' \
   "zsh.nix should own gcloud PATH initialization"
+assert_not_contains "$zsh_nix" 'if [ -f "$HOME/.local/bin/env" ]; then' \
+  "zsh.nix should not source ~/.local/bin/env once local bin helpers are removed"
+assert_not_contains "$zsh_nix" 'nix > homebrew' \
+  "zsh.nix should not claim strict nix-over-homebrew PATH ordering anymore"
 assert_contains "$zsh_nix" 'export ZSH_STATE_DIR="'"''"'${XDG_STATE_HOME:-$HOME/.local/state}/zsh"' \
   "zsh.nix should own the zsh state directory setup"
 assert_contains "$zsh_nix" 'export HISTFILE="$ZSH_STATE_DIR/.zsh_history"' \

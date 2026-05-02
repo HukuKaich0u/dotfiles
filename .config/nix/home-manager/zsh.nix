@@ -34,6 +34,8 @@ in {
     profileExtra = ''
       # ここは login shell の初期化。
       # コマンド解決と環境変数に関わるものは、対話操作より前にここでそろえる。
+      # Homebrew や Nix の厳密な優先順位はここで作り込まず、
+      # 自前で必要なものだけを明示的に PATH へ足す。
 
       # まず Homebrew の PATH を入れる。
       for brew_bin in /opt/homebrew/bin/brew /usr/local/bin/brew; do
@@ -43,7 +45,7 @@ in {
         fi
       done
 
-      # その上から Nix の PATH を重ねて、全体としては nix > homebrew を維持する。
+      # Nix も標準の初期化スクリプトに任せる。
       if [ -e "/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh" ]; then
         source "/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh"
       fi
@@ -54,19 +56,9 @@ in {
         fi
       }
 
-      path_append_if_dir() {
-        if [ -d "$1" ]; then
-          export PATH="$PATH:$1"
-        fi
-      }
-
-      # 日常的に使う自前コマンド群を base PATH として積む。
+      # 標準では見つからない個人用コマンドだけを明示的に追加する。
       path_prepend_if_dir "$HOME/.npm-global/bin"
-      path_prepend_if_dir "$HOME/.local/bin"
-      path_append_if_dir "/usr/local/bin"
-      path_append_if_dir "/usr/.local/bin"
 
-      # ツール個別の PATH を追加する。
       # JDK は PATH と JAVA_HOME の両方が必要なので先に実体を探しておく。
       if [ -d "/opt/homebrew/opt/openjdk" ]; then
         path_prepend_if_dir "/opt/homebrew/opt/openjdk/bin"
@@ -77,17 +69,12 @@ in {
         . "$HOME/.cargo/env"
       fi
 
-      # pnpm は同じ path を重複追加しないように明示的にチェックする。
+      # pnpm は専用の bin ディレクトリを持つので必要な時だけ追加する。
       if [ -d "$HOME/Library/pnpm" ]; then
         case ":$PATH:" in
           *":$HOME/Library/pnpm:"*) ;;
           *) export PATH="$HOME/Library/pnpm:$PATH" ;;
         esac
-      fi
-
-      # 個人用の補助 env があればここで PATH へ反映する。
-      if [ -f "$HOME/.local/bin/env" ]; then
-        . "$HOME/.local/bin/env"
       fi
 
       # conda は公式が生成する hook を優先し、だめなら profile script / bin を使う。
