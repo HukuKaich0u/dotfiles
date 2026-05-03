@@ -16,6 +16,9 @@
   users.users.KokiAoyagi.home = "/Users/KokiAoyagi";
 
   imports = [
+    # Keep nixpkgs-level tweaks shared between standalone Home Manager and
+    # darwin-driven evaluation.
+    ../common/nixpkgs.nix
     # Keep the Home Manager wiring in a separate file so this darwin entry can
     # stay small and clearly focused on machine-level concerns.
     ./home_manager.nix

@@ -374,16 +374,18 @@ return {
         -- priority = 1000,
         config = function()
             local transparent = false
-            local bg = "#ffffff"
-            local bg_dark = "#f7f9fc"
-            local bg_float = "#f5f7fb"
-            local bg_highlight = "#e9eef7"
-            local bg_search = "#cfe8ff"
-            local bg_visual = "#dbeafe"
-            local fg = "#3760bf"
-            local fg_dark = "#6172b0"
-            local fg_gutter = "#99a7c2"
-            local border = "#cad3e6"
+            local day_style = {
+                bg = "#ffffff",
+                bg_dark = "#f7f9fc",
+                bg_float = "#f5f7fb",
+                bg_highlight = "#e9eef7",
+                bg_search = "#cfe8ff",
+                bg_visual = "#dbeafe",
+                fg = "#3760bf",
+                fg_dark = "#6172b0",
+                fg_gutter = "#99a7c2",
+                border = "#cad3e6",
+            }
 
             require("tokyonight").setup({
                 style = "day",
@@ -396,21 +398,25 @@ return {
                     floats = "dark",
                 },
                 on_colors = function(colors)
-                    colors.bg = bg
-                    colors.bg_dark = bg_dark
-                    colors.bg_float = bg_float
-                    colors.bg_highlight = bg_highlight
-                    colors.bg_popup = bg_float
-                    colors.bg_search = bg_search
-                    colors.bg_sidebar = bg_dark
-                    colors.bg_statusline = bg_dark
-                    colors.bg_visual = bg_visual
-                    colors.border = border
-                    colors.fg = fg
-                    colors.fg_dark = fg_dark
-                    colors.fg_float = fg
-                    colors.fg_gutter = fg_gutter
-                    colors.fg_sidebar = fg_dark
+                    if vim.g.colors_name ~= "tokyonight-day" and vim.g.colors_name ~= "tokyonight" then
+                        return
+                    end
+
+                    colors.bg = day_style.bg
+                    colors.bg_dark = day_style.bg_dark
+                    colors.bg_float = day_style.bg_float
+                    colors.bg_highlight = day_style.bg_highlight
+                    colors.bg_popup = day_style.bg_float
+                    colors.bg_search = day_style.bg_search
+                    colors.bg_sidebar = day_style.bg_dark
+                    colors.bg_statusline = day_style.bg_dark
+                    colors.bg_visual = day_style.bg_visual
+                    colors.border = day_style.border
+                    colors.fg = day_style.fg
+                    colors.fg_dark = day_style.fg_dark
+                    colors.fg_float = day_style.fg
+                    colors.fg_gutter = day_style.fg_gutter
+                    colors.fg_sidebar = day_style.fg_dark
                 end,
             })
             -- vim.cmd("colorscheme tokyonight")
