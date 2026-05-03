@@ -26,6 +26,7 @@ local function apply_snacks_picker_highlights(colors)
         SnacksPickerPathHidden = { fg = muted_fg },
         SnacksPickerPathIgnored = { fg = muted_fg },
         SnacksPickerListCursorLine = { bg = selection_bg, fg = selection_fg },
+        SnacksPickerBoxTitle = { bg = "none" },
         SnacksPickerInputTitle = { bg = "none" },
     }
 
