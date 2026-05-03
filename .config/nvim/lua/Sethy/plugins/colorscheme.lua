@@ -26,6 +26,7 @@ local function apply_snacks_picker_highlights(colors)
         SnacksPickerPathHidden = { fg = muted_fg },
         SnacksPickerPathIgnored = { fg = muted_fg },
         SnacksPickerListCursorLine = { bg = selection_bg, fg = selection_fg },
+        SnacksPickerInputTitle = { bg = "none" },
     }
 
     for group, opts in pairs(highlights) do
@@ -386,6 +387,57 @@ return {
                 fg_gutter = "#99a7c2",
                 border = "#cad3e6",
             }
+            local dark_variants = {
+                ["tokyonight-moon"] = true,
+                ["tokyonight-night"] = true,
+                ["tokyonight-storm"] = true,
+            }
+            local dark_selection = {
+                bg = "#2f3b63",
+                fg = "#c0caf5",
+            }
+
+            local function apply_tokyonight_transparency()
+                if not dark_variants[vim.g.colors_name] then
+                    return
+                end
+
+                local highlights = {
+                    Normal = { bg = "none" },
+                    NormalNC = { bg = "none" },
+                    EndOfBuffer = { bg = "none" },
+                    SignColumn = { bg = "none" },
+                    NormalFloat = { bg = "none" },
+                    FloatBorder = { bg = "none" },
+                    FloatTitle = { bg = "none" },
+                    Pmenu = { bg = "none" },
+                    PmenuSel = { bg = dark_selection.bg, fg = dark_selection.fg, bold = true },
+                    StatusLine = { bg = "none" },
+                    StatusLineNC = { bg = "none" },
+                    CursorLine = { bg = dark_selection.bg },
+                    TelescopeNormal = { bg = "none" },
+                    TelescopeBorder = { bg = "none" },
+                    TelescopePromptNormal = { bg = "none" },
+                    TelescopePromptBorder = { bg = "none" },
+                    TelescopePromptTitle = { bg = "none" },
+                    TelescopeResultsNormal = { bg = "none" },
+                    TelescopeResultsBorder = { bg = "none" },
+                    TelescopeSelection = { bg = dark_selection.bg, fg = dark_selection.fg, bold = true },
+                    TelescopeResultsTitle = { bg = "none" },
+                    TelescopePreviewNormal = { bg = "none" },
+                    TelescopePreviewBorder = { bg = "none" },
+                    TelescopePreviewTitle = { bg = "none" },
+                    BlinkCmpMenu = { bg = "none" },
+                    BlinkCmpMenuBorder = { bg = "none" },
+                    BlinkCmpMenuSelection = { bg = dark_selection.bg, fg = dark_selection.fg, bold = true },
+                    BlinkCmpDoc = { bg = "none" },
+                    BlinkCmpDocBorder = { bg = "none" },
+                }
+
+                for group, opts in pairs(highlights) do
+                    merge_highlight(group, opts)
+                end
+            end
 
             require("tokyonight").setup({
                 style = "day",
@@ -419,6 +471,16 @@ return {
                     colors.fg_sidebar = day_style.fg_dark
                 end,
             })
+
+            local group = vim.api.nvim_create_augroup("SethyTokyonightTransparency", { clear = true })
+
+            vim.api.nvim_create_autocmd("ColorScheme", {
+                group = group,
+                pattern = "tokyonight*",
+                callback = apply_tokyonight_transparency,
+            })
+
+            apply_tokyonight_transparency()
             -- vim.cmd("colorscheme tokyonight")
             -- NOTE: Auto switch to tokyonight for markdown files only
             -- vim.api.nvim_create_autocmd("FileType", {
