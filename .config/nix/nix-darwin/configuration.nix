@@ -22,5 +22,8 @@
     # Keep the Home Manager wiring in a separate file so this darwin entry can
     # stay small and clearly focused on machine-level concerns.
     ./home_manager.nix
+    # Keep Homebrew in its own module so package lists can grow there without
+    # bloating this top-level darwin file.
+    ./homebrew.nix
   ];
 }
