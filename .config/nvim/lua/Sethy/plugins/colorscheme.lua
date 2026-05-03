@@ -26,8 +26,13 @@ local function apply_snacks_picker_highlights(colors)
         SnacksPickerPathHidden = { fg = muted_fg },
         SnacksPickerPathIgnored = { fg = muted_fg },
         SnacksPickerListCursorLine = { bg = selection_bg, fg = selection_fg },
+        SnacksPickerBoxBorder = { bg = "none" },
         SnacksPickerBoxTitle = { bg = "none" },
+        SnacksPickerInputBorder = { bg = "none" },
         SnacksPickerInputTitle = { bg = "none" },
+        SnacksPickerToggle = { bg = "none" },
+        SnacksPickerToggleHidden = { bg = "none" },
+        SnacksPickerToggleIgnored = { bg = "none" },
     }
 
     for group, opts in pairs(highlights) do
