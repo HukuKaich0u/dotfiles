@@ -13,6 +13,7 @@
 7. **Markdown** - render-markdown, image-support, after/ftplugin/markdown.lua
 8. **コード折りたたみ** - nvim-ufo
 9. **ユーティリティ** - undotree, vim-maximizer, noice
+10. **LeetCode** - leetcode.nvim
 
 ---
 
@@ -347,6 +348,44 @@ UIの改善（コマンドライン、メッセージ、通知）。
 - `/` `?` で検索ポップアップ
 - LSP progress 表示
 - メッセージを通知スタイルで表示
+
+---
+
+## 10. LeetCode
+
+### leetcode.nvim
+
+LeetCode の問題一覧、問題文表示、実行、提出を Neovim 内で行うプラグイン。
+
+この設定では custom keymap は足していないので、`:` から `Leet` コマンドを直接使う。
+
+### よく使うコマンド
+
+| コマンド | 動作 |
+|---------|------|
+| `:Leet` | ダッシュボードを開く |
+| `:Leet list` | 問題一覧を開く |
+| `:Leet daily` | 今日の問題を開く |
+| `:Leet run` | 現在の問題を実行 |
+| `:Leet submit` | 現在の回答を提出 |
+| `:Leet lang` | 問題の言語を切り替える |
+| `:Leet info` | 問題情報ポップアップ |
+| `:Leet cookie update` | ログイン用 cookie を更新 |
+
+### 使い方メモ
+
+- デフォルト言語は `Rust`
+- 必要に応じて `:Leet lang` で `Go` / `C++` へ切り替える
+- `leetcode.com` 前提で設定しているので、中国版サイトは使わない
+- 既存セッション中でも `:Leet` で開けるよう `non_standalone` を有効化している
+
+### ログイン
+
+1. ブラウザで `leetcode.com` にログイン
+2. 開発者ツールの request headers から `Cookie` をコピー
+3. `:Leet cookie update` を実行して貼り付ける
+
+注意: `set-cookie` ではなく request headers の `Cookie` を使う。
 
 ---
 

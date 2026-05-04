@@ -1,1 +1,1 @@
-vim.cmd("colorscheme tokyonight-moon")
+vim.cmd("colorscheme github_dark_high_contrast")
