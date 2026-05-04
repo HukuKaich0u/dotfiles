@@ -16,5 +16,8 @@ return {
         picker = {
             provider = "snacks-picker",
         },
+        description = {
+            width = "45%",
+        },
     },
 }

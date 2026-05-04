@@ -25,6 +25,7 @@ assert_match(leetcode, 'cmd = "Leet"', "leetcode config should lazy-load on :Lee
 assert_match(leetcode, 'lang = "rust"', "leetcode config should default to Rust")
 assert_match(leetcode, 'enabled = false', "leetcode config should keep leetcode.cn disabled")
 assert_match(leetcode, 'non_standalone = true', "leetcode config should support existing sessions")
+assert_match(leetcode, 'width = "45%%"', "leetcode description pane should use 45%% width")
 assert_no_match(leetcode, "<leader>l", "leetcode config should not define custom leader-l keymaps")
 
 print("nvim leetcode tests passed")
