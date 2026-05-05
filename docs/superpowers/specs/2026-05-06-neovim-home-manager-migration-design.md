@@ -216,7 +216,7 @@ Option 2 を採用する。
 
 ### build / 生成確認
 
-- `home-manager build --flake nix#KokiAoyagi` が通る
+- `home-manager build --flake ./nix#KokiAoyagi` が通る
 - build 生成物に `~/.config/nvim` 相当が含まれる
 - `nvim` 実行に必要な `git` `rg` `fd` `make` `tmux` `lazygit` `magick` `pngpaste` `ascii-image-converter` が PATH 上に出る
 

@@ -145,7 +145,7 @@ return {
 				},
 			},
 				image = {
-					enabled = env.image_support_enabled(),
+					enabled = false,
 					doc = {
 					float = false,
 					inline = true, -- if you want show image on cursor hover

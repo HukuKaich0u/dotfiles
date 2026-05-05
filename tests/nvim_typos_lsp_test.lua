@@ -28,10 +28,10 @@ local function extract_lsp_block(content, server_name)
   return content:sub(start_pos, next_pos - 1)
 end
 
-local mason = read(".config/nvim/lua/Sethy/plugins/lsp/mason.lua")
+local mason = read("nix/home-manager/nvim/lua/Sethy/plugins/lsp/mason.lua")
 assert_match(mason, '"typos_lsp"', "mason should install typos_lsp")
 
-local lspconfig = read(".config/nvim/lua/Sethy/plugins/lsp/lspconfig.lua")
+local lspconfig = read("nix/home-manager/nvim/lua/Sethy/plugins/lsp/lspconfig.lua")
 local typos_block = extract_lsp_block(lspconfig, "typos_lsp")
 
 assert_match(lspconfig, 'vim%.lsp%.enable%("typos_lsp"%)', "lspconfig should enable typos_lsp")
@@ -40,7 +40,7 @@ assert_match(typos_block, 'init_options = {', "typos_lsp should define init_opti
 assert_match(typos_block, 'config = vim%.fn%.stdpath%("config"%) %.%. "/typos%.toml"',
   "typos_lsp should point at the global typos config file")
 
-local typos_toml = read(".config/nvim/typos.toml")
+local typos_toml = read("nix/home-manager/nvim/typos.toml")
 assert_match(typos_toml, "%[default%.extend%-words%]", "global typos config should define extend-words")
 assert_match(typos_toml, "%[default%.extend%-identifiers%]",
   "global typos config should define extend-identifiers for case-sensitive allowlists")

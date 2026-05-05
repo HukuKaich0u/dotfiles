@@ -19,7 +19,7 @@ local function assert_no_match(content, pattern, message)
   end
 end
 
-local leetcode = read(".config/nvim/lua/Sethy/plugins/leetcode.lua")
+local leetcode = read("nix/home-manager/nvim/lua/Sethy/plugins/leetcode.lua")
 assert_match(leetcode, '"kawre/leetcode%.nvim"', "leetcode config should install leetcode.nvim")
 assert_match(leetcode, 'cmd = "Leet"', "leetcode config should lazy-load on :Leet")
 assert_match(leetcode, 'lang = "rust"', "leetcode config should default to Rust")

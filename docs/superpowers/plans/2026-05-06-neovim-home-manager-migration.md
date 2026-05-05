@@ -179,7 +179,7 @@
 - Check: `nix/flake.nix`
 - Check: `nix/home-manager/nvim.nix`
 
-- [ ] Run: `home-manager build --flake nix#KokiAoyagi`
+- [ ] Run: `home-manager build --flake ./nix#KokiAoyagi`
 - [ ] Expected: PASS
 - [ ] Inspect `result/home-files/.config/nvim`
 - [ ] Inspect that PATH-visible tooling from `home.packages` is present in the built environment

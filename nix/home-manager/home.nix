@@ -8,6 +8,7 @@
     ./git.nix
     ./gh.nix
     ./mise.nix
+    ./nvim.nix
     ./starship.nix
     ./tmux.nix
     ./wezterm.nix

@@ -171,7 +171,7 @@ fi
 
 assert_contains "$install_script" 'HOME_DOTFILES=""' \
   "install.sh should stop linking zsh dotfiles"
-assert_contains "$install_script" 'SKIP_CONFIG_DIRS="tmux zsh starship.toml yazi bacon wezterm"' \
+assert_contains "$install_script" 'SKIP_CONFIG_DIRS="tmux zsh starship.toml yazi bacon wezterm nvim"' \
   "install.sh should stop linking .config/zsh and starship.toml"
 
 assert_missing "$repo_root/.zshenv" \

@@ -40,7 +40,9 @@ return {
 	-- Display images in Neovim (requires: luarocks --local --lua-version=5.1 install magick)
 	{
 		"3rd/image.nvim",
-		enabled = env.image_support_enabled(),
+		-- Deferred in the initial Home Manager migration because this still
+		-- expects a user-local luarocks magick installation.
+		enabled = false,
 		ft = { "markdown", "norg", "html", "css" },
 		event = {
 			"BufReadPre *.png",

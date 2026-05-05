@@ -1,6 +1,9 @@
 return {
     "cordx56/rustowl",
     version = "*",
+    -- Deferred in the initial Home Manager migration because this plugin builds
+    -- itself with cargo-binstall instead of using Mason or Nix.
+    enabled = false,
     lazy = false,
     build = "cargo binstall rustowl --no-confirm",
     -- RustOwl highlight legend:
