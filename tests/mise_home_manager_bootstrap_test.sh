@@ -26,6 +26,12 @@ assert_contains "$mise_nix" 'globalConfig = {' \
   "mise.nix should define global config"
 assert_contains "$mise_nix" 'tools = {' \
   "mise.nix should manage global tools through config.toml"
+assert_contains "$mise_nix" 'node = ' \
+  "mise.nix should define a global node runtime"
+assert_contains "$mise_nix" 'go = ' \
+  "mise.nix should define a global go runtime"
+assert_contains "$mise_nix" 'java = ' \
+  "mise.nix should define a global java runtime"
 assert_contains "$mise_nix" 'settings = {' \
   "mise.nix should manage global settings through config.toml"
 
