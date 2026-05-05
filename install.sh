@@ -114,6 +114,23 @@ cleanup_legacy_ai_links() {
     done
 }
 
+cleanup_legacy_nix_link() {
+    local target="$HOME/.config/nix"
+    local current_target=""
+
+    if [ ! -L "$target" ]; then
+        return
+    fi
+
+    current_target="$(readlink "$target")"
+    case "$current_target" in
+        "$DOTFILES_DIR/.config/nix")
+            rm "$target"
+            echo "✓ removed legacy nix link $target"
+            ;;
+    esac
+}
+
 install_config_tree() {
     local source=""
     local name=""
@@ -172,6 +189,7 @@ echo ""
 
 install_config_tree
 cleanup_legacy_ai_links
+cleanup_legacy_nix_link
 install_explicit_links
 install_home_dotfiles
 

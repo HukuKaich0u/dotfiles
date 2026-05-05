@@ -3,10 +3,10 @@
 set -eu
 
 repo_root="$(CDPATH= cd -- "$(dirname "$0")/.." && pwd)"
-home_nix="$repo_root/.config/nix/home-manager/home.nix"
-starship_nix="$repo_root/.config/nix/home-manager/starship.nix"
-zsh_nix="$repo_root/.config/nix/home-manager/zsh.nix"
-zsh_dir="$repo_root/.config/nix/home-manager/zsh"
+home_nix="$repo_root/nix/home-manager/home.nix"
+starship_nix="$repo_root/nix/home-manager/starship.nix"
+zsh_nix="$repo_root/nix/home-manager/zsh.nix"
+zsh_dir="$repo_root/nix/home-manager/zsh"
 install_script="$repo_root/install.sh"
 
 assert_contains() {
@@ -171,7 +171,7 @@ fi
 
 assert_contains "$install_script" 'HOME_DOTFILES=""' \
   "install.sh should stop linking zsh dotfiles"
-assert_contains "$install_script" 'SKIP_CONFIG_DIRS="tmux zsh starship.toml yazi"' \
+assert_contains "$install_script" 'SKIP_CONFIG_DIRS="tmux zsh starship.toml yazi bacon wezterm"' \
   "install.sh should stop linking .config/zsh and starship.toml"
 
 assert_missing "$repo_root/.zshenv" \

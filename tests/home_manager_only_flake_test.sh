@@ -3,8 +3,8 @@
 set -eu
 
 repo_root="$(CDPATH= cd -- "$(dirname "$0")/.." && pwd)"
-flake_nix="$repo_root/.config/nix/flake.nix"
-darwin_config="$repo_root/.config/nix/nix-darwin/configuration.nix"
+flake_nix="$repo_root/nix/flake.nix"
+darwin_config="$repo_root/nix/nix-darwin/configuration.nix"
 
 assert_contains() {
   file="$1"

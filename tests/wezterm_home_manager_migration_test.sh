@@ -3,10 +3,10 @@
 set -eu
 
 repo_root="$(CDPATH= cd -- "$(dirname "$0")/.." && pwd)"
-home_nix="$repo_root/.config/nix/home-manager/home.nix"
-wezterm_nix="$repo_root/.config/nix/home-manager/wezterm.nix"
+home_nix="$repo_root/nix/home-manager/home.nix"
+wezterm_nix="$repo_root/nix/home-manager/wezterm.nix"
 install_sh="$repo_root/install.sh"
-wezterm_dir="$repo_root/.config/nix/home-manager/wezterm"
+wezterm_dir="$repo_root/nix/home-manager/wezterm"
 
 assert_contains() {
   file="$1"

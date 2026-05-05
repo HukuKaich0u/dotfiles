@@ -2,10 +2,10 @@
 set -eu
 
 repo_root="$(CDPATH= cd -- "$(dirname "$0")/.." && pwd)"
-flake_nix="$repo_root/.config/nix/flake.nix"
-common_nixpkgs_nix="$repo_root/.config/nix/common/nixpkgs.nix"
-darwin_config_nix="$repo_root/.config/nix/nix-darwin/configuration.nix"
-overlay_nix="$repo_root/.config/nix/common/direnv-no-zsh-check-overlay.nix"
+flake_nix="$repo_root/nix/flake.nix"
+common_nixpkgs_nix="$repo_root/nix/common/nixpkgs.nix"
+darwin_config_nix="$repo_root/nix/nix-darwin/configuration.nix"
+overlay_nix="$repo_root/nix/common/direnv-no-zsh-check-overlay.nix"
 
 assert_contains() {
   file="$1"

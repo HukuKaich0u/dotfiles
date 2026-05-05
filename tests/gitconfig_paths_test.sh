@@ -3,8 +3,8 @@
 set -eu
 
 repo_root="$(CDPATH= cd -- "$(dirname "$0")/.." && pwd)"
-home_nix="$repo_root/.config/nix/home-manager/home.nix"
-git_nix="$repo_root/.config/nix/home-manager/git.nix"
+home_nix="$repo_root/nix/home-manager/home.nix"
+git_nix="$repo_root/nix/home-manager/git.nix"
 
 if ! grep -Fq './git.nix' "$home_nix"; then
   echo "home.nix should import git.nix"
@@ -46,7 +46,7 @@ if ! grep -Fq 'email = "s1f102402697@iniad.org";' "$git_nix"; then
   exit 1
 fi
 
-if [ -e "$repo_root/.config/nix/home-manager/git/config-university" ]; then
+if [ -e "$repo_root/nix/home-manager/git/config-university" ]; then
   echo "config-university should be absorbed into git.nix"
   exit 1
 fi

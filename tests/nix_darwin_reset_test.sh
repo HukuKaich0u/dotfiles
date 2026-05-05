@@ -2,9 +2,9 @@
 set -eu
 
 repo_root="$(CDPATH= cd -- "$(dirname "$0")/.." && pwd)"
-config_nix="$repo_root/.config/nix/nix-darwin/configuration.nix"
-home_manager_nix="$repo_root/.config/nix/nix-darwin/home_manager.nix"
-homebrew_nix="$repo_root/.config/nix/nix-darwin/homebrew.nix"
+config_nix="$repo_root/nix/nix-darwin/configuration.nix"
+home_manager_nix="$repo_root/nix/nix-darwin/home_manager.nix"
+homebrew_nix="$repo_root/nix/nix-darwin/homebrew.nix"
 
 assert_contains() {
   file="$1"
@@ -39,8 +39,8 @@ assert_contains "$config_nix" './home_manager.nix' \
 assert_contains "$config_nix" './homebrew.nix' \
   "configuration.nix must import the homebrew bootstrap module"
 
-assert_not_contains "$config_nix" '../common/nixpkgs.nix' \
-  "configuration.nix must remove the common nixpkgs import"
+assert_contains "$config_nix" '../common/nixpkgs.nix' \
+  "configuration.nix must keep the shared nixpkgs import"
 assert_not_contains "$config_nix" 'nix.enable = false;' \
   "configuration.nix must remove nix.enable"
 assert_not_contains "$config_nix" 'system.defaults =' \

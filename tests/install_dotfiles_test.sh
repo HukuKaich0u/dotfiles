@@ -15,6 +15,10 @@ trap 'rm -rf "$tmp_dir"' EXIT
 
 home_dir="$tmp_dir/home"
 mkdir -p "$home_dir"
+mkdir -p "$home_dir/.config"
+
+ln -s "$repo_root/.config/nix" "$home_dir/.config/nix"
+ln -s /tmp "$home_dir/.config/not-nix"
 
 env -i HOME="$home_dir" PATH="/usr/bin:/bin" "$script" >/dev/null
 
@@ -49,6 +53,8 @@ assert_absent "$home_dir/.gitconfig-university"
 assert_absent "$home_dir/.config/starship.toml"
 assert_absent "$home_dir/.config/tmux"
 assert_absent "$home_dir/.config/zsh"
+assert_absent "$home_dir/.config/nix"
+assert_symlink "$home_dir/.config/not-nix" "/tmp"
 assert_absent "$home_dir/.zshenv"
 assert_absent "$home_dir/.zprofile"
 assert_absent "$home_dir/.zshrc"

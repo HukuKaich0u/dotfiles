@@ -3,9 +3,9 @@
 set -eu
 
 repo_root="$(CDPATH= cd -- "$(dirname "$0")/.." && pwd)"
-home_nix="$repo_root/.config/nix/home-manager/home.nix"
-tmux_nix="$repo_root/.config/nix/home-manager/tmux.nix"
-tmux_nix_conf="$repo_root/.config/nix/home-manager/tmux/tmux.conf"
+home_nix="$repo_root/nix/home-manager/home.nix"
+tmux_nix="$repo_root/nix/home-manager/tmux.nix"
+tmux_nix_conf="$repo_root/nix/home-manager/tmux/tmux.conf"
 
 assert_contains() {
     file="$1"

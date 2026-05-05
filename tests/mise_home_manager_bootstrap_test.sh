@@ -2,8 +2,8 @@
 set -eu
 
 repo_root="$(CDPATH= cd -- "$(dirname "$0")/.." && pwd)"
-home_nix="$repo_root/.config/nix/home-manager/home.nix"
-mise_nix="$repo_root/.config/nix/home-manager/mise.nix"
+home_nix="$repo_root/nix/home-manager/home.nix"
+mise_nix="$repo_root/nix/home-manager/mise.nix"
 
 assert_contains() {
   file="$1"
