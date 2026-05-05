@@ -20,5 +20,13 @@ assert_contains "$home_nix" './mise.nix' \
   "home-manager should import mise.nix"
 assert_contains "$mise_nix" 'programs.mise.enable = true;' \
   "mise.nix should enable programs.mise"
+assert_contains "$mise_nix" 'programs.mise.enableZshIntegration = true;' \
+  "mise.nix should enable zsh integration"
+assert_contains "$mise_nix" 'globalConfig = {' \
+  "mise.nix should define global config"
+assert_contains "$mise_nix" 'tools = {' \
+  "mise.nix should manage global tools through config.toml"
+assert_contains "$mise_nix" 'settings = {' \
+  "mise.nix should manage global settings through config.toml"
 
 echo "mise home-manager bootstrap test passed"
