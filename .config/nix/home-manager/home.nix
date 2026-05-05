@@ -4,6 +4,7 @@
 
 {
   imports = [
+    ./bacon.nix
     ./git.nix
     ./gh.nix
     ./mise.nix

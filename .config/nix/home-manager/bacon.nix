@@ -1,0 +1,13 @@
+{
+  programs.bacon = {
+    enable = true;
+    settings = {
+      listen = true;
+      exports.locations = {
+        auto = true;
+        path = ".bacon-locations";
+        line_format = "{item-idx}: {kind} {path}:{line}:{column} {message}";
+      };
+    };
+  };
+}
