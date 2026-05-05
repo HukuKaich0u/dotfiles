@@ -34,5 +34,13 @@ assert_contains "$mise_nix" 'java = ' \
   "mise.nix should define a global java runtime"
 assert_contains "$mise_nix" 'settings = {' \
   "mise.nix should manage global settings through config.toml"
+assert_contains "$mise_nix" 'home.sessionPath = [' \
+  "mise.nix should add a session path for corepack shims"
+assert_contains "$mise_nix" '"$HOME/.local/bin"' \
+  "mise.nix should place corepack shims under ~/.local/bin"
+assert_contains "$mise_nix" 'home.activation.enableCorepack' \
+  "mise.nix should enable corepack during home-manager activation"
+assert_contains "$mise_nix" 'corepack enable --install-directory "$HOME/.local/bin"' \
+  "mise.nix should enable corepack into ~/.local/bin"
 
 echo "mise home-manager bootstrap test passed"
