@@ -1,25 +1,25 @@
 # Starship Notes
 
-This directory contains the prompt config in [`starship.toml`](./starship.toml).
+このディレクトリには、[`starship.toml`](./starship.toml) の prompt 設定が入っています。
 
 ## Current Prompt Structure
 
-The prompt is a two-line layout.
+prompt は 2 行構成です。
 
-- First line: `hostname` (SSH only), `directory`, `git_branch`, `git_status`, context modules (`docker_context`, `kubernetes`, `terraform`, `direnv`), `cmd_duration`, `time`
-- Second line: prompt `character`
+- 1 行目: `hostname` (SSH のときだけ), `directory`, `git_branch`, `git_status`, context modules (`docker_context`, `kubernetes`, `terraform`, `direnv`), `cmd_duration`, `time`
+- 2 行目: prompt `character`
 
 ## SSH-only Hostname
 
-`hostname` is configured with `ssh_only = true`, so it appears only during SSH sessions.
+`hostname` には `ssh_only = true` を設定しているので、SSH session のときだけ表示されます。
 
 ## Git Modules
 
 ### `git_branch`
 
-Shows the current branch name.
+現在の branch 名を表示します。
 
-Example:
+例:
 
 ```text
  main
@@ -27,7 +27,7 @@ Example:
 
 ### `git_status`
 
-Shows repository state using Starship's default symbols.
+Starship のデフォルト記号で repository の状態を表示します。
 
 - `=`: conflicted
 - `⇡`: ahead
@@ -40,16 +40,16 @@ Shows repository state using Starship's default symbols.
 - `»`: renamed
 - `✘`: deleted
 
-Example:
+例:
 
 ```text
 ✘!?
 ```
 
-This means:
+これは次の意味です。
 
-- `✘`: deleted files exist
-- `!`: modified files exist
-- `?`: untracked files exist
+- `✘`: deleted files がある
+- `!`: modified files がある
+- `?`: untracked files がある
 
-It does **not** mean merge conflicts unless `=` appears.
+`=` が出ていない限り、merge conflict を意味しているわけではありません。
