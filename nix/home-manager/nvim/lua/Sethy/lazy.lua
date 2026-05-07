@@ -17,6 +17,7 @@ require("lazy").setup(
         { import = "Sethy.plugins.lsp" }
     },
     {
+        lockfile = vim.fn.expand("~/Documents/repos/personal/dotfiles/nix/home-manager/nvim/lazy-lock.json"),
         checker = {
             enabled = true,
             notify = false,
