@@ -1,8 +1,9 @@
 {
+  pkgs,
   ...
-}:
-
-{
+}: let
+  asciiImageConverter = pkgs."ascii-image-converter";
+in {
   imports = [
     ./bacon.nix
     ./git.nix
@@ -46,6 +47,19 @@
   #
   home.sessionVariables = {
   };
+
+  home.packages = with pkgs; [
+    git
+    ripgrep
+    fd
+    gnumake
+    tmux
+    # Added during the Neovim migration, but installed as shared CLI tools.
+    lazygit
+    imagemagick
+    pngpaste
+    asciiImageConverter
+  ];
 
   programs.home-manager.enable = true;
 }
