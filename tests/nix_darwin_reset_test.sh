@@ -58,7 +58,112 @@ if [ ! -f "$homebrew_nix" ]; then
   exit 1
 fi
 
-assert_contains "$homebrew_nix" 'homebrew.enable = true;' \
+assert_contains "$homebrew_nix" 'homebrew = {' \
+  "homebrew.nix must define the Homebrew attrset"
+assert_contains "$homebrew_nix" 'enable = true;' \
   "homebrew.nix must enable Homebrew through nix-darwin"
+assert_contains "$homebrew_nix" 'taps = [' \
+  "homebrew.nix must declare Homebrew taps"
+assert_contains "$homebrew_nix" 'brews = [' \
+  "homebrew.nix must declare Homebrew formulae"
+assert_contains "$homebrew_nix" 'casks = [' \
+  "homebrew.nix must declare Homebrew casks"
+
+expected_taps='
+k1low/tap
+oven-sh/bun
+steipete/tap
+supabase/tap
+thezoraiz/ascii-image-converter
+trasta298/tap
+'
+
+expected_brews='
+aom
+asdf
+ast-grep
+awscli
+bat
+clang-format
+deno
+dnsmasq
+fd
+ffmpeg
+fzf
+gauche
+gcc
+ghostscript
+git-gui
+glib
+gnu-time
+go
+imagemagick
+jpeg-xl
+k1low/tap/mo
+lazygit
+libheif
+liblqr
+libraw
+libtiff
+llvm
+lua
+lua-language-server
+luarocks
+marp-cli
+neovim
+node
+oven-sh/bun/bun
+php
+pipx
+pkgconf
+pngpaste
+pnpm
+postgresql@17
+prek
+python@3.12
+python@3.13
+python@3.14
+qemu
+ripgrep
+supabase
+tectonic
+terminal-notifier
+terraform
+tfenv
+tombi
+tree
+tree-sitter-cli
+uv
+zsh-autosuggestions
+zsh-syntax-highlighting
+'
+
+expected_casks='
+codex
+cursor-cli
+gcloud-cli
+ghostty
+github
+ngrok
+rectangle
+utm
+visual-studio-code
+wezterm@nightly
+'
+
+for tap in $expected_taps; do
+  assert_contains "$homebrew_nix" "\"$tap\"" \
+    "homebrew.nix must declare tap $tap"
+done
+
+for formula in $expected_brews; do
+  assert_contains "$homebrew_nix" "\"$formula\"" \
+    "homebrew.nix must declare formula $formula"
+done
+
+for cask in $expected_casks; do
+  assert_contains "$homebrew_nix" "\"$cask\"" \
+    "homebrew.nix must declare cask $cask"
+done
 
 echo "nix-darwin reset test passed"

@@ -1,5 +1,89 @@
 {
-  # Start with the smallest possible darwin-owned Homebrew module.
-  # Package lists such as taps, brews, and casks will be added later.
-  homebrew.enable = true;
+  # Homebrew stays responsible for dependency resolution.
+  # Keep the top-level packages that are intentionally present on this Mac here.
+  homebrew = {
+    enable = true;
+
+    taps = [
+      "k1low/tap"
+      "oven-sh/bun"
+      "steipete/tap"
+      "supabase/tap"
+      "thezoraiz/ascii-image-converter"
+      "trasta298/tap"
+    ];
+
+    brews = [
+      "aom"
+      "asdf"
+      "ast-grep"
+      "awscli"
+      "bat"
+      "clang-format"
+      "deno"
+      "dnsmasq"
+      "fd"
+      "ffmpeg"
+      "fzf"
+      "gauche"
+      "gcc"
+      "ghostscript"
+      "git-gui"
+      "glib"
+      "gnu-time"
+      "go"
+      "imagemagick"
+      "jpeg-xl"
+      "k1low/tap/mo"
+      "lazygit"
+      "libheif"
+      "liblqr"
+      "libraw"
+      "libtiff"
+      "llvm"
+      "lua"
+      "lua-language-server"
+      "luarocks"
+      "marp-cli"
+      "neovim"
+      "node"
+      "oven-sh/bun/bun"
+      "php"
+      "pipx"
+      "pkgconf"
+      "pngpaste"
+      "pnpm"
+      "postgresql@17"
+      "prek"
+      "python@3.12"
+      "python@3.13"
+      "python@3.14"
+      "qemu"
+      "ripgrep"
+      "supabase"
+      "tectonic"
+      "terminal-notifier"
+      "terraform"
+      "tfenv"
+      "tombi"
+      "tree"
+      "tree-sitter-cli"
+      "uv"
+      "zsh-autosuggestions"
+      "zsh-syntax-highlighting"
+    ];
+
+    casks = [
+      "codex"
+      "cursor-cli"
+      "gcloud-cli"
+      "ghostty"
+      "github"
+      "ngrok"
+      "rectangle"
+      "utm"
+      "visual-studio-code"
+      "wezterm@nightly"
+    ];
+  };
 }
