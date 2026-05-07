@@ -32,6 +32,9 @@ vim.keymap.set("n", "Q", "<nop>")
 vim.keymap.set("n", "x", '"_x', opts) -- prevents deleted characters from copying to clipboard
 
 vim.keymap.set("n", "<leader>r", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]], { desc = "Replace word cursor in on globally" })
+vim.keymap.set("n", "<leader>tr", function()
+    require("Sethy.core.reload").sync_current_tab()
+end, { desc = "Reload current tab" })
 vim.keymap.set("n", "<leader>x", "<cmd>!chmod +x %<CR>", { silent = true, desc = "makes file executable" })
 
 vim.api.nvim_create_autocmd("TextYankPost", {

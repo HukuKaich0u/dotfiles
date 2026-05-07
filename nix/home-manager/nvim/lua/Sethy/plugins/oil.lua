@@ -4,12 +4,12 @@ return {
     config = function()
         require("oil").setup({
             default_file_explorer = true, --start up nvim with oil instead of netrw,
+            watch_for_changes = true,
             columns = { },
             keymaps = {
                 ["<C-h>"] = false,
                 ["<C-l>"] = false,
                 ["<C-c>"] = false, -- prevents ctrl c from closing out of oil
-                ["g<C-l>"] = "actions.refresh",
                 ["<M-h>"] = "actions.select_split",
                 ["q"] = "actions.close",
             },
