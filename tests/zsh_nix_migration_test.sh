@@ -85,6 +85,8 @@ assert_contains "$zsh_nix" 'autoload -Uz compinit' \
   "zsh.nix should inline completion initialization"
 assert_contains "$zsh_nix" "bindkey '^[^M' self-insert-unmeta" \
   "zsh.nix should keep the multiline input bindkey in initContent"
+assert_contains "$zsh_nix" "bindkey -e" \
+  "zsh.nix should explicitly enable emacs keybindings for interactive shells"
 assert_contains "$zsh_nix" 'if [ -e "/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh" ]; then' \
   "zsh.nix should source nix-daemon.sh after macOS path_helper runs"
 assert_contains "$zsh_nix" 'source "/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh"' \

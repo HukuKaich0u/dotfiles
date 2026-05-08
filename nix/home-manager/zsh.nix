@@ -127,6 +127,9 @@ in {
         fi
       '')
       (lib.mkOrder 1000 ''
+        # Ctrl+F などの標準的な行編集を安定させるため、interactive shell は Emacs keymap を明示する。
+        bindkey -e
+
         # Shift+Enter が Esc+Enter として届く端末でも、複数行入力の改行として扱いやすくする。
         bindkey '^[^M' self-insert-unmeta
       '')
