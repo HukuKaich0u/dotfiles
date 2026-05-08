@@ -25,7 +25,11 @@ assert_match(leetcode, 'cmd = "Leet"', "leetcode config should lazy-load on :Lee
 assert_match(leetcode, 'lang = "rust"', "leetcode config should default to Rust")
 assert_match(leetcode, 'enabled = false', "leetcode config should keep leetcode.cn disabled")
 assert_match(leetcode, 'non_standalone = true', "leetcode config should support existing sessions")
-assert_match(leetcode, 'width = "45%%"', "leetcode description pane should use 45%% width")
+assert_match(leetcode, 'description_ratio = 0%.45', "leetcode layout should keep the 45:55 target ratio")
+assert_match(leetcode, 'code_min_width = 80', "leetcode layout should preserve minimum code width")
+assert_match(leetcode, 'width = current_description_width%(%),', "leetcode description pane should use dynamic width")
+assert_match(leetcode, 'VimResized', "leetcode layout should react to editor resizes")
+assert_match(leetcode, 'nvim_win_set_width', "leetcode layout should resize the description split directly")
 assert_no_match(leetcode, "<leader>l", "leetcode config should not define custom leader-l keymaps")
 
 print("nvim leetcode tests passed")
