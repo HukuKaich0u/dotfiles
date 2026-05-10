@@ -55,6 +55,26 @@ assert_contains "$tmux_nix" "@sessionx-bind 'o'" \
     "sessionx bind should be configured before the plugin loads"
 assert_not_contains "$tmux_nix" "builtins.replaceStrings" \
     "home-manager should not inject tmux plugin paths manually"
+assert_not_contains "$tmux_nix" "      battery" \
+    "battery status should not depend on tmux plugin interpolation order"
+assert_not_contains "$tmux_nix" "      online-status" \
+    "wifi status should not depend on the online-status tmux plugin"
+assert_contains "$tmux_nix" "battery_script=" \
+    "tmux.nix should define a direct battery status command"
+assert_contains "$tmux_nix" "wifi_status_script=" \
+    "tmux.nix should define a direct wifi status command"
+assert_contains "$tmux_nix" "pkgs.writeShellScript" \
+    "wifi status should be wrapped in a nix-managed script to keep tmux parsing stable"
+assert_not_contains "$tmux_nix" "wifi_status_script=''#(" \
+    "wifi status should not inline a shell program directly into tmux config"
+assert_contains "$tmux_nix" "nmcli" \
+    "linux wifi detection should prefer local wifi state via nmcli when available"
+assert_contains "$tmux_nix" "iwgetid" \
+    "linux wifi detection should fall back to iwgetid when nmcli is unavailable"
+assert_contains "$tmux_nix" "/sys/class/net" \
+    "linux wifi detection should inspect kernel network state as a final fallback"
+assert_not_contains "$tmux_nix" "elif ping -c 1 -W 3 1.1.1.1" \
+    "linux wifi detection should not rely on internet reachability alone"
 
 assert_contains "$tmux_nix_conf" "@catppuccin_flavor 'macchiato'" \
     "tmux config should keep catppuccin settings"
@@ -68,6 +88,12 @@ assert_not_contains "$tmux_nix_conf" "__TMUX_PLUGIN_" \
     "tmux config should not keep nix plugin placeholders once plugins are managed by Home Manager"
 assert_not_contains "$tmux_nix_conf" "TMUX_PLUGIN_MANAGER_PATH" \
     "tmux nix config should not keep TPM path"
+assert_not_contains "$tmux_nix_conf" "#{battery_icon}" \
+    "tmux.conf should not rely on battery plugin placeholders in status-right"
+assert_not_contains "$tmux_nix_conf" "#{battery_percentage}" \
+    "tmux.conf should not rely on battery plugin placeholders in status-right"
+assert_not_contains "$tmux_nix_conf" "#{online_status}" \
+    "tmux.conf should not rely on online-status placeholders in status-right"
 assert_not_contains "$tmux_nix_conf" "@sessionx-bind 'o'" \
     "sessionx bind should not live in extraConfig after plugin migration"
 assert_not_contains "$tmux_nix_conf" "run '~/.config/tmux/plugins/tpm/tpm'" \
