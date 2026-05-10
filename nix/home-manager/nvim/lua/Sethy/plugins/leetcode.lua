@@ -62,6 +62,9 @@ return {
         cn = {
             enabled = false,
         },
+        storage = {
+            home = vim.fn.expand("~/Documents/repos/personal/leetcode/leetcodenvim"),
+        },
         plugins = {
             non_standalone = true,
         },

@@ -25,6 +25,11 @@ assert_match(leetcode, 'cmd = "Leet"', "leetcode config should lazy-load on :Lee
 assert_match(leetcode, 'lang = "rust"', "leetcode config should default to Rust")
 assert_match(leetcode, 'enabled = false', "leetcode config should keep leetcode.cn disabled")
 assert_match(leetcode, 'non_standalone = true', "leetcode config should support existing sessions")
+assert_match(
+  leetcode,
+  'home = vim%.fn%.expand%("~/Documents/repos/personal/leetcode/leetcodenvim"%)',
+  "leetcode config should store workspace files under the dedicated leetcodenvim directory"
+)
 assert_match(leetcode, 'description_ratio = 0%.45', "leetcode layout should keep the 45:55 target ratio")
 assert_match(leetcode, 'code_min_width = 80', "leetcode layout should preserve minimum code width")
 assert_match(leetcode, 'width = current_description_width%(%),', "leetcode description pane should use dynamic width")
