@@ -2,6 +2,7 @@ local description_ratio = 0.45
 local description_min_width = 45
 local description_max_width = 110
 local code_min_width = 80
+local previous_showtabline = nil
 local resize_group = vim.api.nvim_create_augroup("sethy_leetcode_dynamic_layout", { clear = true })
 local resize_autocmd_registered = false
 
@@ -50,6 +51,23 @@ local function ensure_resize_autocmd()
     resize_autocmd_registered = true
 end
 
+local function hide_tabline()
+    if previous_showtabline == nil then
+        previous_showtabline = vim.o.showtabline
+    end
+
+    vim.o.showtabline = 0
+end
+
+local function restore_tabline()
+    if previous_showtabline == nil then
+        return
+    end
+
+    vim.o.showtabline = previous_showtabline
+    previous_showtabline = nil
+end
+
 return {
     "kawre/leetcode.nvim",
     cmd = "Leet",
@@ -77,6 +95,7 @@ return {
         hooks = {
             enter = {
                 ensure_resize_autocmd,
+                hide_tabline,
             },
             question_enter = {
                 function(question)
@@ -84,6 +103,9 @@ return {
                         resize_question_layout(question)
                     end)
                 end,
+            },
+            leave = {
+                restore_tabline,
             },
         },
     },

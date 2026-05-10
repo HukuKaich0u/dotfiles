@@ -35,6 +35,10 @@ assert_match(leetcode, 'code_min_width = 80', "leetcode layout should preserve m
 assert_match(leetcode, 'width = current_description_width%(%),', "leetcode description pane should use dynamic width")
 assert_match(leetcode, 'VimResized', "leetcode layout should react to editor resizes")
 assert_match(leetcode, 'nvim_win_set_width', "leetcode layout should resize the description split directly")
+assert_match(leetcode, 'local previous_showtabline = nil', "leetcode config should track the previous tabline visibility")
+assert_match(leetcode, 'vim%.o%.showtabline = 0', "leetcode config should hide the tabline while LeetCode is open")
+assert_match(leetcode, 'vim%.o%.showtabline = previous_showtabline', "leetcode config should restore the previous tabline visibility on exit")
+assert_match(leetcode, 'leave = %{\n%s*restore_tabline,', "leetcode config should restore tabline visibility through the leave hook")
 assert_no_match(leetcode, "<leader>l", "leetcode config should not define custom leader-l keymaps")
 
 print("nvim leetcode tests passed")
