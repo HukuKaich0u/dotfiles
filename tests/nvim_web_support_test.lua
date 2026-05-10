@@ -121,6 +121,9 @@ local colorscheme = read("nix/home-manager/nvim/lua/Sethy/plugins/colorscheme.lu
 assert_match(colorscheme, '"projekt0n/github%-nvim%-theme"', "colorscheme config should install github-nvim-theme")
 assert_match(colorscheme, 'style = "day"', "tokyonight should use the day style for the light preset")
 assert_match(colorscheme, "local transparent = false", "tokyonight day preset should disable transparency")
+assert_match(colorscheme, 'comment = "#8a9099"', "onedark transparency overrides should brighten comment text")
+assert_match(colorscheme, 'Comment = { fg = palette%.comment }',
+  "onedark transparency overrides should apply the custom comment highlight")
 assert_no_match(colorscheme, 'colors%.bg = transparent and colors%.none or bg',
   "tokyonight day preset should not leave the main background transparent")
 
