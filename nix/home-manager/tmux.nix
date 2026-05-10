@@ -96,8 +96,8 @@ in
       # Home Manager loads plugins before extraConfig, so status placeholders
       # from tmux-battery/online-status do not get a second interpolation pass.
       set-option -g status-right ""
-      set-option -ga status-right "#[bg=default,fg=#{@thm_green}] #(${battery_script}/battery_icon.sh) #(${battery_script}/battery_percentage.sh) "
-      set-option -ga status-right "#[bg=default,fg=#{@thm_rosewater}] #(${wifi_status_script}) "
+      set-option -ga status-right "#[bg=default,fg=#{@thm_blue}] #(${battery_script}/battery_icon.sh) #(${battery_script}/battery_percentage.sh) "
+      set-option -ga status-right "#[bg=default,fg=#{@thm_blue}] #(${wifi_status_script}) "
       set-option -ga status-right "#[bg=default,fg=#{@thm_blue}] 󰭦 %Y-%m-%d 󰅐 %H:%M "
     '';
   };

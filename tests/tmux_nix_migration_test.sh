@@ -63,6 +63,14 @@ assert_contains "$tmux_nix" "battery_script=" \
     "tmux.nix should define a direct battery status command"
 assert_contains "$tmux_nix" "wifi_status_script=" \
     "tmux.nix should define a direct wifi status command"
+assert_contains "$tmux_nix" 'fg=#{@thm_blue}] #(${battery_script}/battery_icon.sh)' \
+    "battery status segment should use the blue theme accent"
+assert_contains "$tmux_nix" 'fg=#{@thm_blue}] #(${wifi_status_script})' \
+    "wifi status segment should use the blue theme accent"
+assert_not_contains "$tmux_nix" 'fg=#{@thm_green}] #(${battery_script}/battery_icon.sh)' \
+    "battery status segment should no longer use the green accent"
+assert_not_contains "$tmux_nix" 'fg=#{@thm_rosewater}] #(${wifi_status_script})' \
+    "wifi status segment should no longer use the rosewater accent"
 assert_contains "$tmux_nix" "pkgs.writeShellScript" \
     "wifi status should be wrapped in a nix-managed script to keep tmux parsing stable"
 assert_not_contains "$tmux_nix" "wifi_status_script=''#(" \
@@ -78,6 +86,10 @@ assert_not_contains "$tmux_nix" "elif ping -c 1 -W 3 1.1.1.1" \
 
 assert_contains "$tmux_nix_conf" "@catppuccin_flavor 'macchiato'" \
     "tmux config should keep catppuccin settings"
+assert_contains "$tmux_nix_conf" "fg=#{@thm_red}" \
+    "tmux status-left session segment should use the theme red accent"
+assert_not_contains "$tmux_nix_conf" "fg=#{@thm_green}]  #S" \
+    "tmux status-left session segment should no longer use the green accent"
 assert_contains "$tmux_nix_conf" "setw -g pane-border-lines heavy" \
     "tmux config should use heavy pane border lines"
 assert_contains "$tmux_nix_conf" "setw -g pane-active-border-style \"fg=#{@thm_yellow},bold\"" \
