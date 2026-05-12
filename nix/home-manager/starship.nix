@@ -125,7 +125,7 @@
         diverged = "⇕";
         up_to_date = "";
         untracked = "?";
-        stashed = "$";
+        stashed = "\\$";
         modified = "!";
         staged = "+";
         renamed = "»";
