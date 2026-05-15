@@ -6,5 +6,5 @@
     withRuby = true;
   };
 
-  xdg.configFile."nvim".source = ./nvim;
+  xdg.configFile."nvim".source = ../assets/nvim;
 }

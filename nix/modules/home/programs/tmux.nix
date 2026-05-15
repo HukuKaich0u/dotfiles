@@ -91,7 +91,7 @@ in
       continuum
     ];
     extraConfig = ''
-      ${builtins.readFile ./tmux/tmux.conf}
+      ${builtins.readFile ../assets/tmux/tmux.conf}
 
       # Home Manager loads plugins before extraConfig, so status placeholders
       # from tmux-battery/online-status do not get a second interpolation pass.

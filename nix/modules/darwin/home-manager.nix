@@ -1,7 +1,7 @@
 {
   # This file is only the connection layer from nix-darwin into the existing
   # Home Manager tree. Put actual user-facing config such as shell, git, tmux,
-  # and other daily tools under ../home-manager/home.nix and its imports.
+  # and other daily tools under ../home/default.nix and its imports.
 
   # Reuse the same nixpkgs set on both sides so darwin and Home Manager do not
   # drift onto different package revisions.
@@ -10,5 +10,5 @@
   # integration instead of treating it as a completely separate setup.
   home-manager.useUserPackages = true;
   # The real Home Manager module tree starts here.
-  home-manager.users."KokiAoyagi" = ../home-manager/home.nix;
+  home-manager.users."KokiAoyagi" = ./default.nix;
 }

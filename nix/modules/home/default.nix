@@ -1,24 +1,19 @@
 {
-  pkgs,
   ...
-}: let
-  asciiImageConverter = pkgs."ascii-image-converter";
-in {
+}: {
   imports = [
-    ./bacon.nix
-    ./git.nix
-    ./gh.nix
-    ./mise.nix
-    ./nvim.nix
-    ./starship.nix
-    ./tmux.nix
-    ./wezterm.nix
-    ./yazi.nix
-    ./zsh.nix
+    ./packages.nix
+    ./programs/bacon.nix
+    ./programs/git.nix
+    ./programs/gh.nix
+    ./programs/mise.nix
+    ./programs/nvim.nix
+    ./programs/starship.nix
+    ./programs/tmux.nix
+    ./programs/wezterm.nix
+    ./programs/yazi.nix
+    ./programs/zsh.nix
   ];
-
-  home.username = "KokiAoyagi";
-  home.homeDirectory = "/Users/KokiAoyagi";
 
   # This value determines the Home Manager release that your configuration is
   # compatible with. This helps avoid breakage when a new Home Manager release
@@ -47,19 +42,6 @@ in {
   #
   home.sessionVariables = {
   };
-
-  home.packages = with pkgs; [
-    git
-    ripgrep
-    fd
-    gnumake
-    tmux
-    # Added during the Neovim migration, but installed as shared CLI tools.
-    lazygit
-    imagemagick
-    pngpaste
-    asciiImageConverter
-  ];
 
   programs.home-manager.enable = true;
 }
