@@ -3,8 +3,8 @@
 set -eu
 
 repo_root="$(CDPATH= cd -- "$(dirname "$0")/.." && pwd)"
-home_nix="$repo_root/nix/home-manager/home.nix"
-yazi_nix="$repo_root/nix/home-manager/yazi.nix"
+home_default_nix="$repo_root/nix/modules/home/default.nix"
+yazi_nix="$repo_root/nix/modules/home/programs/yazi.nix"
 install_sh="$repo_root/install.sh"
 
 assert_contains() {
@@ -28,8 +28,8 @@ assert_not_exists() {
   fi
 }
 
-assert_contains "$home_nix" './yazi.nix' \
-  "home-manager should import yazi.nix"
+assert_contains "$home_default_nix" './programs/yazi.nix' \
+  "modules/home/default.nix should import programs/yazi.nix"
 assert_contains "$yazi_nix" 'programs.yazi = {' \
   "yazi.nix should configure programs.yazi"
 assert_contains "$yazi_nix" 'shellWrapperName = "yy";' \

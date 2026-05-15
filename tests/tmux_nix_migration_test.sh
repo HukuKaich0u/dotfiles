@@ -3,9 +3,9 @@
 set -eu
 
 repo_root="$(CDPATH= cd -- "$(dirname "$0")/.." && pwd)"
-home_nix="$repo_root/nix/home-manager/home.nix"
-tmux_nix="$repo_root/nix/home-manager/tmux.nix"
-tmux_nix_conf="$repo_root/nix/home-manager/tmux/tmux.conf"
+home_default_nix="$repo_root/nix/modules/home/default.nix"
+tmux_nix="$repo_root/nix/modules/home/programs/tmux.nix"
+tmux_nix_conf="$repo_root/nix/modules/home/assets/tmux/tmux.conf"
 
 assert_contains() {
     file="$1"
@@ -29,8 +29,8 @@ assert_not_contains() {
     fi
 }
 
-assert_contains "$home_nix" "./tmux.nix" \
-    "home.nix should import tmux.nix"
+assert_contains "$home_default_nix" "./programs/tmux.nix" \
+    "modules/home/default.nix should import programs/tmux.nix"
 
 if [ ! -f "$tmux_nix_conf" ]; then
     echo "tmux nix config file should exist"
@@ -45,7 +45,7 @@ assert_contains "$tmux_nix" "sensibleOnTop = false;" \
     "home-manager should not inject tmux-sensible defaults"
 assert_contains "$tmux_nix" "plugins = with pkgs.tmuxPlugins; [" \
     "home-manager should declare tmux plugins through programs.tmux.plugins"
-assert_contains "$tmux_nix" "builtins.readFile ./tmux/tmux.conf" \
+assert_contains "$tmux_nix" "builtins.readFile ../assets/tmux/tmux.conf" \
     "home-manager should read tmux config from nix-managed file"
 assert_contains "$tmux_nix" "catppuccin" \
     "home-manager should source tmux plugins from nixpkgs"

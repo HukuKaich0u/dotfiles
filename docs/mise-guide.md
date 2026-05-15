@@ -107,7 +107,7 @@ Go や Java でも同じ考え方です。
 
 ## この repo ではどうなっているか
 
-この repo では、global runtime の source of truth は [nix/home-manager/mise.nix](/Users/KokiAoyagi/Documents/repos/personal/dotfiles/nix/home-manager/mise.nix) です。`mise` 自体は `nix` / Home Manager で管理されています。
+この repo では、global runtime の source of truth は [nix/modules/home/programs/mise.nix](/Users/KokiAoyagi/Documents/repos/personal/dotfiles/nix/modules/home/programs/mise.nix) です。`mise` 自体は `nix` / Home Manager で管理されています。
 
 今の global runtime は次です。
 

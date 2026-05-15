@@ -3,9 +3,10 @@ set -eu
 
 repo_root="$(CDPATH= cd -- "$(dirname "$0")/.." && pwd)"
 flake_nix="$repo_root/nix/flake.nix"
-common_nixpkgs_nix="$repo_root/nix/common/nixpkgs.nix"
-darwin_config_nix="$repo_root/nix/nix-darwin/configuration.nix"
-overlay_nix="$repo_root/nix/common/direnv-no-zsh-check-overlay.nix"
+shared_nixpkgs_nix="$repo_root/nix/lib/nixpkgs.nix"
+darwin_config_nix="$repo_root/nix/modules/darwin/system.nix"
+overlay_default_nix="$repo_root/nix/overlays/default.nix"
+overlay_nix="$repo_root/nix/overlays/direnv-no-zsh-check.nix"
 
 assert_contains() {
   file="$1"
@@ -18,11 +19,13 @@ assert_contains() {
   fi
 }
 
-assert_contains "$flake_nix" './common/direnv-no-zsh-check-overlay.nix' \
-  "standalone home-manager pkgs import should include the direnv overlay"
-assert_contains "$common_nixpkgs_nix" './direnv-no-zsh-check-overlay.nix' \
+assert_contains "$flake_nix" './lib/nixpkgs.nix' \
+  "flake should use the shared nixpkgs helper"
+assert_contains "$shared_nixpkgs_nix" '../overlays' \
   "shared nixpkgs config should include the direnv overlay"
-assert_contains "$darwin_config_nix" '../common/nixpkgs.nix' \
+assert_contains "$overlay_default_nix" './direnv-no-zsh-check.nix' \
+  "overlay default should include the direnv overlay"
+assert_contains "$darwin_config_nix" '../../lib/nixpkgs.nix' \
   "darwin configuration should import shared nixpkgs config"
 assert_contains "$overlay_nix" 'make test-go test-bash test-fish' \
   "overlay should keep non-zsh direnv checks"

@@ -2,9 +2,9 @@
 set -eu
 
 repo_root="$(CDPATH= cd -- "$(dirname "$0")/.." && pwd)"
-config_nix="$repo_root/nix/nix-darwin/configuration.nix"
-home_manager_nix="$repo_root/nix/nix-darwin/home_manager.nix"
-homebrew_nix="$repo_root/nix/nix-darwin/homebrew.nix"
+config_nix="$repo_root/nix/modules/darwin/system.nix"
+home_manager_nix="$repo_root/nix/modules/darwin/home-manager.nix"
+homebrew_nix="$repo_root/nix/modules/darwin/homebrew.nix"
 
 assert_contains() {
   file="$1"
@@ -34,13 +34,13 @@ assert_contains "$config_nix" 'system.primaryUser = "KokiAoyagi";' \
   "configuration.nix must keep system.primaryUser"
 assert_contains "$config_nix" 'users.users.KokiAoyagi.home = "/Users/KokiAoyagi";' \
   "configuration.nix must keep the user home path"
-assert_contains "$config_nix" './home_manager.nix' \
-  "configuration.nix must keep the home_manager import"
+assert_contains "$config_nix" './home-manager.nix' \
+  "system.nix must keep the home-manager import"
 assert_contains "$config_nix" './homebrew.nix' \
   "configuration.nix must import the homebrew bootstrap module"
 
-assert_contains "$config_nix" '../common/nixpkgs.nix' \
-  "configuration.nix must keep the shared nixpkgs import"
+assert_contains "$config_nix" '../../lib/nixpkgs.nix' \
+  "system.nix must keep the shared nixpkgs import"
 assert_not_contains "$config_nix" 'nix.enable = false;' \
   "configuration.nix must remove nix.enable"
 assert_not_contains "$config_nix" 'system.defaults =' \
@@ -50,8 +50,8 @@ assert_not_contains "$config_nix" 'nixpkgs.hostPlatform' \
 assert_not_contains "$config_nix" 'security.pam.services.sudo_local.touchIdAuth' \
   "configuration.nix must remove Touch ID sudo config"
 
-assert_contains "$home_manager_nix" 'home-manager.users."KokiAoyagi" = ../home-manager/home.nix;' \
-  "home_manager.nix must stay wired to home-manager/home.nix"
+assert_contains "$home_manager_nix" 'home-manager.users."KokiAoyagi" = ./default.nix;' \
+  "home-manager.nix must stay wired to ./default.nix"
 
 if [ ! -f "$homebrew_nix" ]; then
   echo "homebrew.nix must exist"

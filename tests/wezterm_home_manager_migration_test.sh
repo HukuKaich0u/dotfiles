@@ -3,10 +3,10 @@
 set -eu
 
 repo_root="$(CDPATH= cd -- "$(dirname "$0")/.." && pwd)"
-home_nix="$repo_root/nix/home-manager/home.nix"
-wezterm_nix="$repo_root/nix/home-manager/wezterm.nix"
+home_default_nix="$repo_root/nix/modules/home/default.nix"
+wezterm_nix="$repo_root/nix/modules/home/programs/wezterm.nix"
 install_sh="$repo_root/install.sh"
-wezterm_dir="$repo_root/nix/home-manager/wezterm"
+wezterm_dir="$repo_root/nix/modules/home/assets/wezterm"
 
 assert_contains() {
   file="$1"
@@ -29,8 +29,8 @@ assert_not_exists() {
   fi
 }
 
-assert_contains "$home_nix" './wezterm.nix' \
-  "home-manager should import wezterm.nix"
+assert_contains "$home_default_nix" './programs/wezterm.nix' \
+  "modules/home/default.nix should import programs/wezterm.nix"
 
 if [ ! -f "$wezterm_nix" ]; then
   echo "wezterm.nix should exist"
@@ -49,12 +49,12 @@ fi
 
 assert_contains "$wezterm_nix" 'xdg.configFile."wezterm/wezterm.lua"' \
   "wezterm.nix should manage wezterm.lua through xdg.configFile"
-assert_contains "$wezterm_nix" 'source = ./wezterm/wezterm.lua;' \
-  "wezterm.nix should source wezterm.lua from the home-manager tree"
+assert_contains "$wezterm_nix" 'source = ../assets/wezterm/wezterm.lua;' \
+  "wezterm.nix should source wezterm.lua from the assets tree"
 assert_contains "$wezterm_nix" 'xdg.configFile."wezterm/keybinds.lua"' \
   "wezterm.nix should manage keybinds.lua through xdg.configFile"
-assert_contains "$wezterm_nix" 'source = ./wezterm/keybinds.lua;' \
-  "wezterm.nix should source keybinds.lua from the home-manager tree"
+assert_contains "$wezterm_nix" 'source = ../assets/wezterm/keybinds.lua;' \
+  "wezterm.nix should source keybinds.lua from the assets tree"
 assert_contains "$install_sh" 'SKIP_CONFIG_DIRS="tmux zsh starship.toml yazi bacon wezterm nvim"' \
   "install.sh should skip wezterm after the home-manager migration"
 assert_contains "$wezterm_dir/wezterm.lua" 'config.keys = require("keybinds").keys' \

@@ -3,8 +3,8 @@
 set -eu
 
 repo_root="$(CDPATH= cd -- "$(dirname "$0")/.." && pwd)"
-home_nix="$repo_root/nix/home-manager/home.nix"
-bacon_nix="$repo_root/nix/home-manager/bacon.nix"
+home_default_nix="$repo_root/nix/modules/home/default.nix"
+bacon_nix="$repo_root/nix/modules/home/programs/bacon.nix"
 install_sh="$repo_root/install.sh"
 
 assert_contains() {
@@ -28,8 +28,8 @@ assert_not_exists() {
   fi
 }
 
-assert_contains "$home_nix" './bacon.nix' \
-  "home-manager should import bacon.nix"
+assert_contains "$home_default_nix" './programs/bacon.nix' \
+  "modules/home/default.nix should import programs/bacon.nix"
 
 if [ ! -f "$bacon_nix" ]; then
   echo "bacon.nix should exist"

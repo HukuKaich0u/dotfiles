@@ -3,10 +3,10 @@
 set -eu
 
 repo_root="$(CDPATH= cd -- "$(dirname "$0")/.." && pwd)"
-home_nix="$repo_root/nix/home-manager/home.nix"
-starship_nix="$repo_root/nix/home-manager/starship.nix"
-zsh_nix="$repo_root/nix/home-manager/zsh.nix"
-zsh_dir="$repo_root/nix/home-manager/zsh"
+home_default_nix="$repo_root/nix/modules/home/default.nix"
+starship_nix="$repo_root/nix/modules/home/programs/starship.nix"
+zsh_nix="$repo_root/nix/modules/home/programs/zsh.nix"
+zsh_dir="$repo_root/nix/modules/home/assets/zsh"
 install_script="$repo_root/install.sh"
 
 assert_contains() {
@@ -47,10 +47,10 @@ first_lineno() {
   grep -nF "$pattern" "$file" | head -n 1 | cut -d: -f1
 }
 
-assert_contains "$home_nix" "./zsh.nix" \
-  "home.nix should import zsh.nix"
-assert_contains "$home_nix" "./starship.nix" \
-  "home.nix should import starship.nix"
+assert_contains "$home_default_nix" "./programs/zsh.nix" \
+  "modules/home/default.nix should import programs/zsh.nix"
+assert_contains "$home_default_nix" "./programs/starship.nix" \
+  "modules/home/default.nix should import programs/starship.nix"
 
 if [ ! -f "$starship_nix" ]; then
   echo "starship.nix should exist"

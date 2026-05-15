@@ -3,11 +3,11 @@
 set -eu
 
 repo_root="$(CDPATH= cd -- "$(dirname "$0")/.." && pwd)"
-home_nix="$repo_root/nix/home-manager/home.nix"
-gh_nix="$repo_root/nix/home-manager/gh.nix"
+home_default_nix="$repo_root/nix/modules/home/default.nix"
+gh_nix="$repo_root/nix/modules/home/programs/gh.nix"
 
-if ! grep -Fq './gh.nix' "$home_nix"; then
-  echo "home.nix should import gh.nix"
+if ! grep -Fq './programs/gh.nix' "$home_default_nix"; then
+  echo "modules/home/default.nix should import programs/gh.nix"
   exit 1
 fi
 

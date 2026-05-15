@@ -34,12 +34,12 @@ local function extract_lsp_block(content, server_name)
   return content:sub(start_pos, next_pos - 1)
 end
 
-local mason = read("nix/home-manager/nvim/lua/Sethy/plugins/lsp/mason.lua")
+local mason = read("nix/modules/home/assets/nvim/lua/Sethy/plugins/lsp/mason.lua")
 assert_match(mason, '"svelte"', "mason should install the svelte language server")
 assert_match(mason, '"emmet_language_server"', "mason should install emmet_language_server")
 assert_no_match(mason, '"emmet_ls"', "mason should not install emmet_ls")
 
-local blink = read("nix/home-manager/nvim/lua/Sethy/plugins/blink-cmp.lua")
+local blink = read("nix/modules/home/assets/nvim/lua/Sethy/plugins/blink-cmp.lua")
 assert_match(blink, '"Saghen/blink%.cmp"', "blink config should install blink.cmp")
 assert_match(blink, 'version = "1%.%*"', "blink config should pin the stable major version")
 assert_match(blink, 'preset = "luasnip"', "blink config should keep LuaSnip snippets")
@@ -83,7 +83,7 @@ assert_match(blink, 'ghost_text = {', "blink cmdline should configure ghost text
 assert_match(blink, 'enabled = false', "blink cmdline should disable ghost text")
 assert_no_match(blink, 'preset = "inherit"', "blink cmdline should not inherit insert-mode mappings")
 
-local lspconfig = read("nix/home-manager/nvim/lua/Sethy/plugins/lsp/lspconfig.lua")
+local lspconfig = read("nix/modules/home/assets/nvim/lua/Sethy/plugins/lsp/lspconfig.lua")
 local html_block = extract_lsp_block(lspconfig, "html")
 local emmet_language_server_block = extract_lsp_block(lspconfig, "emmet_language_server")
 
@@ -112,12 +112,12 @@ assert_match(emmet_language_server_block, '"astro"',
 assert_match(emmet_language_server_block, '"svelte"',
   "emmet_language_server should support svelte")
 
-local conform = read("nix/home-manager/nvim/lua/Sethy/plugins/conform.lua")
+local conform = read("nix/modules/home/assets/nvim/lua/Sethy/plugins/conform.lua")
 assert_match(conform, 'astro = { "prettier" }', "astro should format with prettier")
 assert_match(conform, 'svelte = { "prettier" }', "svelte should format with prettier")
 assert_match(conform, "format_on_save", "web files should format on save")
 
-local colorscheme = read("nix/home-manager/nvim/lua/Sethy/plugins/colorscheme.lua")
+local colorscheme = read("nix/modules/home/assets/nvim/lua/Sethy/plugins/colorscheme.lua")
 assert_match(colorscheme, '"projekt0n/github%-nvim%-theme"', "colorscheme config should install github-nvim-theme")
 assert_match(colorscheme, 'style = "day"', "tokyonight should use the day style for the light preset")
 assert_match(colorscheme, "local transparent = false", "tokyonight day preset should disable transparency")
@@ -127,26 +127,27 @@ assert_match(colorscheme, 'Comment = { fg = palette%.comment }',
 assert_no_match(colorscheme, 'colors%.bg = transparent and colors%.none or bg',
   "tokyonight day preset should not leave the main background transparent")
 
-local current_theme = read("nix/home-manager/nvim/lua/current-theme.lua")
-assert_match(current_theme, 'colorscheme onedark', "current theme selector should point at onedark")
+local current_theme = read("nix/modules/home/assets/nvim/lua/current-theme.lua")
+assert_match(current_theme, 'colorscheme tokyonight%-moon',
+  "current theme selector should point at tokyonight-moon")
 
-local options = read("nix/home-manager/nvim/lua/Sethy/core/options.lua")
+local options = read("nix/modules/home/assets/nvim/lua/Sethy/core/options.lua")
 assert_match(options, 'vim%.opt%.background = "light"', "light theme setup should declare a light background")
 assert_no_match(options, 'highlight Normal guibg=NONE ctermbg=NONE',
   "core options should not force the main background back to transparent")
 assert_no_match(options, 'highlight NormalNC guibg=NONE ctermbg=NONE',
   "core options should not force inactive windows back to transparent")
 
-local tailwind = read("nix/home-manager/nvim/lua/Sethy/plugins/tailwind-tools.lua")
+local tailwind = read("nix/modules/home/assets/nvim/lua/Sethy/plugins/tailwind-tools.lua")
 assert_match(tailwind, '"javascriptreact"', "tailwind colorizer should support javascriptreact")
 assert_match(tailwind, '"typescriptreact"', "tailwind colorizer should support typescriptreact")
 assert_match(tailwind, '"astro"', "tailwind colorizer should support astro")
 
-local autopairs = read("nix/home-manager/nvim/lua/Sethy/plugins/auto-pairs.lua")
+local autopairs = read("nix/modules/home/assets/nvim/lua/Sethy/plugins/auto-pairs.lua")
 assert_no_match(autopairs, '"hrsh7th/nvim%-cmp"', "autopairs should not depend on nvim-cmp")
 assert_no_match(autopairs, 'completion%.cmp', "autopairs should not use cmp confirm hooks")
 
-local noice = read("nix/home-manager/nvim/lua/Sethy/plugins/noice.lua")
+local noice = read("nix/modules/home/assets/nvim/lua/Sethy/plugins/noice.lua")
 assert_match(noice, 'popupmenu = {', "noice should keep popupmenu configuration explicit")
 assert_match(noice, 'enabled = false', "noice popupmenu should not expect the cmp backend")
 assert_no_match(noice, 'backend = "cmp"', "noice should not depend on the cmp popupmenu backend")

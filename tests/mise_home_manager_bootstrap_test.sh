@@ -2,8 +2,8 @@
 set -eu
 
 repo_root="$(CDPATH= cd -- "$(dirname "$0")/.." && pwd)"
-home_nix="$repo_root/nix/home-manager/home.nix"
-mise_nix="$repo_root/nix/home-manager/mise.nix"
+home_default_nix="$repo_root/nix/modules/home/default.nix"
+mise_nix="$repo_root/nix/modules/home/programs/mise.nix"
 
 assert_contains() {
   file="$1"
@@ -16,8 +16,8 @@ assert_contains() {
   fi
 }
 
-assert_contains "$home_nix" './mise.nix' \
-  "home-manager should import mise.nix"
+assert_contains "$home_default_nix" './programs/mise.nix' \
+  "modules/home/default.nix should import programs/mise.nix"
 assert_contains "$mise_nix" 'programs.mise.enable = true;' \
   "mise.nix should enable programs.mise"
 assert_contains "$mise_nix" 'programs.mise.enableZshIntegration = true;' \
