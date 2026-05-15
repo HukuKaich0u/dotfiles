@@ -40,3 +40,6 @@ result
 .claude/todos/
 .claude/debug/
 .claude/shell-snapshots/
+
+# Local planning / spec docs
+docs/superpowers/
