@@ -46,6 +46,7 @@
     # homebrew, system.defaults, security, and users will eventually live.
     darwinConfigurations."KokiAoyagi" = nix-darwin.lib.darwinSystem {
       system = "aarch64-darwin";
+      specialArgs = {inherit self;};
       modules = [
         ./modules/darwin/system.nix
         # Without this bridge module, nix-darwin cannot understand the
