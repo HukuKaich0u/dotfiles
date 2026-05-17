@@ -1,4 +1,8 @@
-{self, ...}: {
+{
+  self,
+  pkgs,
+  ...
+}: {
   # This is the main nix-darwin config file.
   #
   # For now it is intentionally kept as a minimal bridge so darwin can own the
@@ -14,6 +18,7 @@
   system.primaryUser = "KokiAoyagi";
   # Home path for that primary user on this Mac.
   users.users.KokiAoyagi.home = "/Users/KokiAoyagi";
+  users.users.KokiAoyagi.shell = pkgs.zsh;
 
   imports = [
     # Keep nixpkgs-level tweaks shared between standalone Home Manager and
