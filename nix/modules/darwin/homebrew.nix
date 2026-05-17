@@ -63,7 +63,6 @@
       "supabase"
       "tectonic"
       "terminal-notifier"
-      "terraform"
       "tfenv"
       "tombi"
       "tree"
