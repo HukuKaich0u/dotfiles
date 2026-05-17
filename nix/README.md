@@ -240,7 +240,7 @@ Codex まわりは install / config / prompt assets を分けて考えます。
 ### install
 
 - macOS: `modules/darwin/homebrew.nix`
-- Linux: まだ未定
+- Linux: distro package manager で install (`apt install zsh` など)
 
 ### config
 
@@ -272,6 +272,16 @@ open_external_editor = []
 
 現状の `/.codex/AGENTS.md` は `/.agents/AGENTS.md` への symlink です。
 つまり `AGENTS.md` の実体は `/.agents/AGENTS.md` にあります。
+
+## Linux zsh
+
+Linux は standalone Home Manager を使っているので、login shell の変更までは Nix で自動化しません。
+
+- zsh の install は distro 側で行う
+- default shell の変更は手動で `chsh -s "$(command -v zsh)"`
+- zsh の設定内容自体は `modules/home/programs/zsh.nix` を macOS と共通で使う
+
+そのため、今のところ Linux 専用の `zsh.nix` は不要です。差分が出た時だけ `modules/linux/` 側で吸収します。
 
 ### `modules/linux/`
 
