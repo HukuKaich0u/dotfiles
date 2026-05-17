@@ -141,6 +141,7 @@ package 一覧を `default.nix` に直接肥大化させないこと。
 
 - `git.nix`
 - `gh.nix`
+- `codex.nix`
 - `mise.nix`
 - `nvim.nix`
 - `tmux.nix`
@@ -157,6 +158,16 @@ program module から参照される実ファイル群を置きます。
 - WezTerm の Lua config
 
 Lua や tmux conf のような asset を `programs/` と同じ階層に散らさないこと。
+
+#### `modules/home/programs/codex.nix`
+
+Codex の Home Manager 側の接着層です。
+
+- `~/.codex/config.toml` を Nix から生成する
+- `~/.codex/AGENTS.md` を repo root の `/.codex/AGENTS.md` へ向ける
+- Codex 本体の install はここで持たない
+
+ここには Home Manager で配るための配線だけを書き、Codex 本体の install 経路は別の module で管理します。
 
 ### `modules/darwin/`
 
@@ -215,7 +226,52 @@ Homebrew 専用です。
 - brews
 - casks
 
+現状の Codex install もここで管理します。
+
+- `codex` の install は Homebrew cask
+- Codex の設定ファイル配布は `modules/home/programs/codex.nix`
+
 Nix package で足りるものはまず Nix を優先し、Homebrew は macOS 依存や運用上必要なものだけに寄せます。
+
+## Codex Layout
+
+Codex まわりは install / config / prompt assets を分けて考えます。
+
+### install
+
+- macOS: `modules/darwin/homebrew.nix`
+- Linux: まだ未定
+
+### config
+
+- `modules/home/programs/codex.nix`
+- `~/.codex/config.toml` を Home Manager で生成
+
+現状 `config.toml` に入れている設定はこれです。
+
+```toml
+[tui.keymap.global]
+open_external_editor = []
+```
+
+これはプロンプト入力中に external editor を開く操作を無効化する設定です。
+
+### prompt assets
+
+- repo root `/.codex/AGENTS.md`
+- repo root `/.agents/skills/`
+
+役割はこう分けます。
+
+- `/.codex/`
+  - Codex がそのまま読む repo 側の置き場
+  - 今は `AGENTS.md` だけ
+- `/.agents/`
+  - agent / skill 資産の SoT
+  - `skills/` はここで管理
+
+現状の `/.codex/AGENTS.md` は `/.agents/AGENTS.md` への symlink です。
+つまり `AGENTS.md` の実体は `/.agents/AGENTS.md` にあります。
 
 ### `modules/linux/`
 
@@ -244,6 +300,10 @@ Linux 固有差分を `modules/home/` の条件分岐で増やしすぎないこ
 | Homebrew package を追加 | `modules/darwin/homebrew.nix` |
 | git 設定を変える | `modules/home/programs/git.nix` |
 | gh 設定を変える | `modules/home/programs/gh.nix` |
+| Codex の keymap / config を変える | `modules/home/programs/codex.nix` |
+| Codex の AGENTS.md を変える | `../.agents/AGENTS.md` |
+| Codex / agent skills を変える | `../.agents/skills/` |
+| Codex の macOS install を変える | `modules/darwin/homebrew.nix` |
 | mise の global runtime を変える | `modules/home/programs/mise.nix` |
 | zsh 設定を変える | `modules/home/programs/zsh.nix` |
 | tmux 設定を変える | `modules/home/programs/tmux.nix` |
