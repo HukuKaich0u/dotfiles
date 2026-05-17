@@ -4,7 +4,7 @@
   imports = [
     ./packages.nix
     ./programs/bacon.nix
-    ./programs/codex.nix
+    ./programs/codex
     ./programs/git.nix
     ./programs/gh.nix
     ./programs/mise.nix

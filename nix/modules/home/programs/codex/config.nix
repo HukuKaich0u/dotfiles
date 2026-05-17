@@ -8,6 +8,12 @@ in {
     ".codex/config.toml" = {
       force = true;
       text = ''
+        model = "gpt-5.4"
+        approval_policy = "on-request"
+        model_reasoning_effort = "medium"
+        web_search = "live"
+        personality = "pragmatic"
+
         [tui.keymap.global]
         open_external_editor = []
       '';
