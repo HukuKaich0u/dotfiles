@@ -3,6 +3,7 @@
 }: {
   imports = [
     ./packages.nix
+    ./programs/agent-skills
     ./programs/bacon.nix
     ./programs/codex
     ./programs/git.nix

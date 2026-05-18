@@ -159,15 +159,30 @@ program module から参照される実ファイル群を置きます。
 
 Lua や tmux conf のような asset を `programs/` と同じ階層に散らさないこと。
 
-#### `modules/home/programs/codex.nix`
+#### `modules/home/programs/codex/`
 
-Codex の Home Manager 側の接着層です。
+Codex 固有の Home Manager module 群です。
 
-- `~/.codex/config.toml` を Nix から生成する
-- `~/.codex/AGENTS.md` を repo root の `/.codex/AGENTS.md` へ向ける
-- Codex 本体の install はここで持たない
+- `config.nix`
+  - `~/.codex/config.toml` を activation で実ファイル生成する
+  - `~/.codex/AGENTS.md` を repo root の `/.codex/AGENTS.md` へ向ける
+- `default.nix`
+  - Codex module の束ね役
 
-ここには Home Manager で配るための配線だけを書き、Codex 本体の install 経路は別の module で管理します。
+ここには Codex 固有 config だけを書き、skills の export は `modules/home/programs/agent-skills/` へ分離します。
+
+#### `modules/home/programs/agent-skills/`
+
+agent skills の Home Manager 側の接着層です。
+
+- `local-skills.nix`
+  - repo root `/.agents/skills/` にある local skill を `~/.agents/skills/` へ export する
+  - 旧 `~/.agents/skills -> repo` symlink を migration する
+- `external/`
+  - upstream pin のまま扱う skill collection を置く
+  - 現状は `superpowers.nix` のみ
+- `default.nix`
+  - skills export module の束ね役
 
 ### `modules/darwin/`
 
@@ -229,7 +244,7 @@ Homebrew 専用です。
 現状の Codex install もここで管理します。
 
 - `codex` の install は Homebrew cask
-- Codex の設定ファイル配布は `modules/home/programs/codex.nix`
+- Codex の設定ファイル配布は `modules/home/programs/codex/`
 
 Nix package で足りるものはまず Nix を優先し、Homebrew は macOS 依存や運用上必要なものだけに寄せます。
 
@@ -244,34 +259,66 @@ Codex まわりは install / config / prompt assets を分けて考えます。
 
 ### config
 
-- `modules/home/programs/codex.nix`
-- `~/.codex/config.toml` を Home Manager で生成
+- `modules/home/programs/codex/config.nix`
+- `~/.codex/config.toml` を Home Manager activation で実ファイル生成
+- `~/.codex/AGENTS.md` は repo root `/.codex/AGENTS.md` への symlink
 
 現状 `config.toml` に入れている設定はこれです。
 
 ```toml
+model = "gpt-5.4"
+approval_policy = "on-request"
+model_reasoning_effort = "medium"
+web_search = "live"
+personality = "pragmatic"
+
 [tui.keymap.global]
 open_external_editor = []
 ```
 
 これはプロンプト入力中に external editor を開く操作を無効化する設定です。
 
-### prompt assets
+`config.toml` は symlink ではなく writable な実ファイルとして生成するので、Codex 自身が trust 状態などを書き込めます。ただし次回 `home-manager switch` では Nix 側の初期値で上書きされます。
+
+### prompt assets / adapters
 
 - repo root `/.codex/AGENTS.md`
+- repo root `/.claude/`
 - repo root `/.agents/skills/`
 
 役割はこう分けます。
 
 - `/.codex/`
-  - Codex がそのまま読む repo 側の置き場
-  - 今は `AGENTS.md` だけ
+  - Codex 用 adapter 層
+  - `AGENTS.md` のような Codex 向け入口を置く
+- `/.claude/`
+  - Claude 用 adapter 層
 - `/.agents/`
-  - agent / skill 資産の SoT
-  - `skills/` はここで管理
+  - cross-tool な agent / skill 資産の SoT
+  - `AGENTS.md` の実体
+  - `skills/` の local SoT
 
-現状の `/.codex/AGENTS.md` は `/.agents/AGENTS.md` への symlink です。
-つまり `AGENTS.md` の実体は `/.agents/AGENTS.md` にあります。
+現状の `/.codex/AGENTS.md` は `/.agents/AGENTS.md` への tracked symlink です。
+つまり adapter 層の入口だけ `/.codex/` に残し、実体は `/.agents/` に寄せます。
+
+### skills export
+
+- `modules/home/programs/agent-skills/local-skills.nix`
+- `modules/home/programs/agent-skills/external/`
+
+`~/.agents/skills/` は SoT ではなく export 先です。
+中身は Home Manager が次の 2 系統を合成して作ります。
+
+- local skill:
+  - repo root `/.agents/skills/` のディレクトリを `~/.agents/skills/<name>` へ symlink
+- external skill collection:
+  - upstream pin source を `~/.agents/skills/<name>` へ export
+
+運用ルール:
+
+- 単体 skill / 小さい skill は `/.agents/skills/` に vendor して管理する
+- 大きい skill collection は `external/` で upstream pin を検討する
+- 現状 upstream pin のままなのは `superpowers` だけ
 
 ## Linux zsh
 
@@ -310,9 +357,10 @@ Linux 固有差分を `modules/home/` の条件分岐で増やしすぎないこ
 | Homebrew package を追加 | `modules/darwin/homebrew.nix` |
 | git 設定を変える | `modules/home/programs/git.nix` |
 | gh 設定を変える | `modules/home/programs/gh.nix` |
-| Codex の keymap / config を変える | `modules/home/programs/codex.nix` |
+| Codex の keymap / config を変える | `modules/home/programs/codex/config.nix` |
 | Codex の AGENTS.md を変える | `../.agents/AGENTS.md` |
-| Codex / agent skills を変える | `../.agents/skills/` |
+| Codex / local agent skills を変える | `../.agents/skills/` |
+| external skill collection を変える | `modules/home/programs/agent-skills/external/` |
 | Codex の macOS install を変える | `modules/darwin/homebrew.nix` |
 | mise の global runtime を変える | `modules/home/programs/mise.nix` |
 | zsh 設定を変える | `modules/home/programs/zsh.nix` |
