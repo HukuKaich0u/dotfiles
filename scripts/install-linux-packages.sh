@@ -4,7 +4,7 @@ set -eu
 
 usage() {
   cat <<'EOF'
-Usage: ./scripts/install-apt-packages.sh <profile>
+Usage: ./scripts/install-linux-packages.sh <profile>
 
 Profiles:
   core         Install base Linux packages required before Home Manager setup

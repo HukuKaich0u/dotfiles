@@ -3,7 +3,8 @@
 set -eu
 
 repo_root="$(CDPATH= cd -- "$(dirname "$0")/.." && pwd)"
-script="$repo_root/scripts/install-apt-packages.sh"
+script="$repo_root/scripts/install-linux-packages.sh"
+setup_script="$repo_root/scripts/setup-linux.sh"
 
 assert_contains() {
   file="$1"
@@ -21,33 +22,49 @@ if [ ! -x "$script" ]; then
   exit 1
 fi
 
+if [ ! -x "$setup_script" ]; then
+  echo "linux setup script is not executable: $setup_script"
+  exit 1
+fi
+
 assert_contains "$script" 'core)' \
-  "install-apt-packages.sh should accept the core profile"
+  "install-linux-packages.sh should accept the core profile"
 assert_contains "$script" 'linux-extra)' \
-  "install-apt-packages.sh should accept the linux-extra profile"
+  "install-linux-packages.sh should accept the linux-extra profile"
 assert_contains "$script" 'ca-certificates' \
-  "install-apt-packages.sh should include ca-certificates in core"
+  "install-linux-packages.sh should include ca-certificates in core"
 assert_contains "$script" 'curl' \
-  "install-apt-packages.sh should include curl in core"
+  "install-linux-packages.sh should include curl in core"
 assert_contains "$script" 'zsh' \
-  "install-apt-packages.sh should include zsh in core"
+  "install-linux-packages.sh should include zsh in core"
 assert_contains "$script" 'unzip' \
-  "install-apt-packages.sh should include unzip in core"
+  "install-linux-packages.sh should include unzip in core"
 assert_contains "$script" 'build-essential' \
-  "install-apt-packages.sh should include build-essential in core"
+  "install-linux-packages.sh should include build-essential in core"
 assert_contains "$script" 'locales' \
-  "install-apt-packages.sh should include locales in core"
+  "install-linux-packages.sh should include locales in core"
 assert_contains "$script" 'docker-ce' \
-  "install-apt-packages.sh should install docker-ce in linux-extra"
+  "install-linux-packages.sh should install docker-ce in linux-extra"
 assert_contains "$script" 'docker-ce-cli' \
-  "install-apt-packages.sh should install docker-ce-cli in linux-extra"
+  "install-linux-packages.sh should install docker-ce-cli in linux-extra"
 assert_contains "$script" 'containerd.io' \
-  "install-apt-packages.sh should install containerd.io in linux-extra"
+  "install-linux-packages.sh should install containerd.io in linux-extra"
 assert_contains "$script" 'docker-buildx-plugin' \
-  "install-apt-packages.sh should install docker-buildx-plugin in linux-extra"
+  "install-linux-packages.sh should install docker-buildx-plugin in linux-extra"
 assert_contains "$script" 'docker-compose-plugin' \
-  "install-apt-packages.sh should install docker-compose-plugin in linux-extra"
+  "install-linux-packages.sh should install docker-compose-plugin in linux-extra"
 assert_contains "$script" 'download.docker.com' \
-  "install-apt-packages.sh should configure the Docker apt repository"
+  "install-linux-packages.sh should configure the Docker apt repository"
+
+assert_contains "$setup_script" 'install-linux-packages.sh core' \
+  "setup-linux.sh should install the core apt profile"
+assert_contains "$setup_script" "https://sh.rustup.rs" \
+  "setup-linux.sh should bootstrap rustup from the official installer"
+assert_contains "$setup_script" "sh -s -- -y" \
+  "setup-linux.sh should run rustup-init non-interactively"
+assert_contains "$setup_script" 'link-dotfiles.sh' \
+  "setup-linux.sh should install dotfiles after package bootstrap"
+assert_contains "$setup_script" 'with-docker' \
+  "setup-linux.sh should offer an opt-in Docker setup flag"
 
 echo "linux apt install script test passed"

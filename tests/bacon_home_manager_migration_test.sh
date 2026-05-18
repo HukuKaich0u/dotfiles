@@ -5,7 +5,7 @@ set -eu
 repo_root="$(CDPATH= cd -- "$(dirname "$0")/.." && pwd)"
 home_default_nix="$repo_root/nix/modules/home/default.nix"
 bacon_nix="$repo_root/nix/modules/home/programs/bacon.nix"
-install_sh="$repo_root/scripts/install-dotfiles.sh"
+install_sh="$repo_root/scripts/link-dotfiles.sh"
 
 assert_contains() {
   file="$1"
@@ -53,7 +53,7 @@ assert_contains "$bacon_nix" 'path = ".bacon-locations";' \
 assert_contains "$bacon_nix" 'line_format = "{item-idx}: {kind} {path}:{line}:{column} {message}";' \
   "bacon.nix should preserve exports.locations.line_format"
 assert_contains "$install_sh" 'SKIP_CONFIG_DIRS="tmux zsh starship.toml yazi bacon wezterm nvim"' \
-  "install-dotfiles.sh should skip bacon after the home-manager migration"
+  "link-dotfiles.sh should skip bacon after the home-manager migration"
 assert_not_exists "$repo_root/.config/bacon/prefs.toml" \
   "legacy bacon prefs should be removed from the symlink-managed config tree"
 

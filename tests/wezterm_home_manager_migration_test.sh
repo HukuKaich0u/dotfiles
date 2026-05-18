@@ -5,7 +5,7 @@ set -eu
 repo_root="$(CDPATH= cd -- "$(dirname "$0")/.." && pwd)"
 home_default_nix="$repo_root/nix/modules/home/default.nix"
 wezterm_nix="$repo_root/nix/modules/home/programs/wezterm.nix"
-install_sh="$repo_root/scripts/install-dotfiles.sh"
+install_sh="$repo_root/scripts/link-dotfiles.sh"
 wezterm_dir="$repo_root/nix/modules/home/assets/wezterm"
 
 assert_contains() {
@@ -56,7 +56,7 @@ assert_contains "$wezterm_nix" 'xdg.configFile."wezterm/keybinds.lua"' \
 assert_contains "$wezterm_nix" 'source = ../assets/wezterm/keybinds.lua;' \
   "wezterm.nix should source keybinds.lua from the assets tree"
 assert_contains "$install_sh" 'SKIP_CONFIG_DIRS="tmux zsh starship.toml yazi bacon wezterm nvim"' \
-  "install-dotfiles.sh should skip wezterm after the home-manager migration"
+  "link-dotfiles.sh should skip wezterm after the home-manager migration"
 assert_contains "$wezterm_dir/wezterm.lua" 'config.keys = require("keybinds").keys' \
   "home-manager wezterm.lua should keep the keybind loader"
 assert_contains "$wezterm_dir/keybinds.lua" 'return {' \

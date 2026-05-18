@@ -9,7 +9,7 @@ linux_default_nix="$repo_root/nix/modules/linux/default.nix"
 linux_zsh_nix="$repo_root/nix/modules/linux/zsh.nix"
 starship_nix="$repo_root/nix/modules/home/programs/starship.nix"
 zsh_nix="$repo_root/nix/modules/home/programs/zsh.nix"
-install_script="$repo_root/scripts/install-dotfiles.sh"
+install_script="$repo_root/scripts/link-dotfiles.sh"
 linux_zsh_dir="$repo_root/zsh"
 
 assert_contains() {
@@ -233,9 +233,9 @@ if [ "$state_dir_line" -gt "$init_content_line" ]; then
 fi
 
 assert_contains "$install_script" 'HOME_DOTFILES=""' \
-    "install-dotfiles.sh should stop linking zsh dotfiles"
+    "link-dotfiles.sh should stop linking zsh dotfiles"
 assert_contains "$install_script" 'SKIP_CONFIG_DIRS="tmux zsh starship.toml yazi bacon wezterm nvim"' \
-    "install-dotfiles.sh should stop linking .config/zsh and starship.toml"
+    "link-dotfiles.sh should stop linking .config/zsh and starship.toml"
 
 assert_missing "$repo_root/.zshenv" \
     "repo root should not keep a hand-managed top-level .zshenv entrypoint"
