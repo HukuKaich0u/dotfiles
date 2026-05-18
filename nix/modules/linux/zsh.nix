@@ -1,8 +1,7 @@
 {pkgs, ...}: let
   linuxZshEnv = ../../../zsh/.zshenv;
   linuxZshProfile = ../../../zsh/.zprofile;
-  linuxZshRc = pkgs.substituteAll {
-    src = ../../../zsh/.zshrc;
+  linuxZshRc = pkgs.replaceVars ../../../zsh/.zshrc {
     zshAutosuggestions = "${pkgs.zsh-autosuggestions}/share/zsh-autosuggestions/zsh-autosuggestions.zsh";
     zshSyntaxHighlighting = "${pkgs.zsh-syntax-highlighting}/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh";
   };
