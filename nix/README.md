@@ -274,7 +274,7 @@ Codex まわりは install / config / prompt assets を分けて考えます。
 ### install
 
 - macOS: `modules/darwin/homebrew.nix`
-- Linux: distro package manager で install (`apt install zsh` など)
+- Linux: `scripts/install-apt-packages.sh` で apt install
 
 ### config
 
@@ -343,11 +343,20 @@ open_external_editor = []
 
 Linux は standalone Home Manager を使っているので、login shell の変更までは Nix で自動化しません。
 
-- zsh の install は distro 側で行う
+- zsh の install は `scripts/install-apt-packages.sh core`
 - default shell の変更は手動で `chsh -s "$(command -v zsh)"`
 - shell 設定ファイルは repo root の `zsh/` を source of truth にする
 - `modules/linux/zsh.nix` はその `zsh/.zshenv` / `zsh/.zshrc` を `home.file` で配布する
 - `modules/home/programs/zsh.nix` は macOS の Home Manager 用設定として残す
+
+### Linux bootstrap
+
+Linux 初回セットアップは次の順で実行します。
+
+1. `./scripts/install-apt-packages.sh core`
+2. Docker が必要なら `./scripts/install-apt-packages.sh linux-extra`
+3. `./scripts/install-dotfiles.sh`
+4. `home-manager switch --flake ./nix#kokiaoyagi`
 
 ### `modules/linux/`
 

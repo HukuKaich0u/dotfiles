@@ -3,7 +3,7 @@
 set -eu
 
 repo_root="$(CDPATH= cd -- "$(dirname "$0")/.." && pwd)"
-script="$repo_root/install.sh"
+script="$repo_root/scripts/install-dotfiles.sh"
 
 if [ ! -x "$script" ]; then
   echo "install script is not executable: $script"
@@ -42,7 +42,7 @@ assert_absent() {
   target="$1"
 
   if [ -e "$target" ] || [ -L "$target" ]; then
-    echo "expected install.sh not to manage: $target"
+    echo "expected install-dotfiles.sh not to manage: $target"
     exit 1
   fi
 }

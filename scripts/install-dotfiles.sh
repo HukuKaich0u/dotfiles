@@ -6,7 +6,7 @@ set -euo pipefail
 # Mirrors repository-managed XDG config directories into ~/.config
 # and links selected home directory dotfiles.
 
-DOTFILES_DIR="$(cd "$(dirname "$0")" && pwd)"
+DOTFILES_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 REPO_CONFIG_DIR="$DOTFILES_DIR/.config"
 HOME_CONFIG_DIR="$HOME/.config"
 HOME_DOTFILES=""

@@ -4,9 +4,6 @@ return {
 		lazy = false,
 		build = ":TSUpdate",
 		config = function()
-			local ts = require("nvim-treesitter")
-
-			-- Install parsers on startup
 			local parsers = {
 				-- data / config
 				"json",
@@ -57,8 +54,6 @@ return {
 				"diff",
 				"tmux",
 			}
-
-			ts.install(parsers, { summary = false }):wait(30000)
 
 			-- Enable treesitter features for all filetypes
 			vim.api.nvim_create_autocmd("FileType", {

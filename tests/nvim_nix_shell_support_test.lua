@@ -47,6 +47,10 @@ assert_match(lspconfig, 'vim%.lsp%.enable%("bashls"%)', "lspconfig should enable
 local treesitter = read("nix/modules/home/assets/nvim/lua/Sethy/plugins/treesitter.lua")
 assert_match(treesitter, '"nix"', "treesitter should install the nix parser")
 assert_match(treesitter, '"bash"', "treesitter should keep shell parser support")
+assert_match(treesitter, 'build = ":TSUpdate"', "treesitter should update parsers during plugin install/update")
+if treesitter:match('ts%.install%(') then
+  error("treesitter should not trigger parser installation on every Neovim startup")
+end
 
 local conform = read("nix/modules/home/assets/nvim/lua/Sethy/plugins/conform.lua")
 assert_match(conform, 'nix = { "alejandra" }', "Nix files should format with alejandra")

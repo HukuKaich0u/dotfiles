@@ -5,7 +5,7 @@ set -eu
 repo_root="$(CDPATH= cd -- "$(dirname "$0")/.." && pwd)"
 home_default_nix="$repo_root/nix/modules/home/default.nix"
 yazi_nix="$repo_root/nix/modules/home/programs/yazi.nix"
-install_sh="$repo_root/install.sh"
+install_sh="$repo_root/scripts/install-dotfiles.sh"
 
 assert_contains() {
   file="$1"
@@ -35,7 +35,7 @@ assert_contains "$yazi_nix" 'programs.yazi = {' \
 assert_contains "$yazi_nix" 'shellWrapperName = "yy";' \
   "yazi.nix should pin the legacy shell wrapper name to avoid build warnings"
 assert_contains "$install_sh" 'SKIP_CONFIG_DIRS="tmux zsh starship.toml yazi bacon wezterm nvim"' \
-  "install.sh should skip yazi after the home-manager migration"
+  "install-dotfiles.sh should skip yazi after the home-manager migration"
 assert_not_exists "$repo_root/.config/yazi/yazi.toml" \
   "legacy yazi.toml should be removed from the symlink-managed config tree"
 

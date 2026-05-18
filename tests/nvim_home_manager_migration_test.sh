@@ -7,7 +7,7 @@ home_default_nix="$repo_root/nix/modules/home/default.nix"
 home_packages_nix="$repo_root/nix/modules/home/packages.nix"
 darwin_packages_nix="$repo_root/nix/modules/darwin/packages.nix"
 nvim_nix="$repo_root/nix/modules/home/programs/nvim.nix"
-install_sh="$repo_root/install.sh"
+install_sh="$repo_root/scripts/install-dotfiles.sh"
 rustowl_lua="$repo_root/nix/modules/home/assets/nvim/lua/Sethy/plugins/lsp/rustowl.lua"
 image_support_lua="$repo_root/nix/modules/home/assets/nvim/lua/Sethy/plugins/image-support.lua"
 snacks_lua="$repo_root/nix/modules/home/assets/nvim/lua/Sethy/plugins/snacks.lua"
@@ -82,7 +82,7 @@ assert_contains "$darwin_packages_nix" 'pngpaste' \
 assert_contains "$darwin_packages_nix" 'pkgs."ascii-image-converter"' \
   "modules/darwin/packages.nix should include ascii-image-converter as a darwin-only CLI dependency"
 assert_contains "$install_sh" 'SKIP_CONFIG_DIRS="tmux zsh starship.toml yazi bacon wezterm nvim"' \
-  "install.sh should skip nvim after the home-manager migration"
+  "install-dotfiles.sh should skip nvim after the home-manager migration"
 assert_contains "$rustowl_lua" 'enabled = false' \
   "rustowl should be disabled during the Phase 1 Home Manager migration"
 assert_contains "$image_support_lua" '"3rd/image.nvim"' \
