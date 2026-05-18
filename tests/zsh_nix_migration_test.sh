@@ -137,7 +137,7 @@ assert_not_contains "$zsh_nix" 'nix > homebrew' \
     "zsh.nix should not claim strict nix-over-homebrew PATH ordering anymore"
 assert_contains "$zsh_nix" 'export ZSH_STATE_DIR="'"''"'${XDG_STATE_HOME:-$HOME/.local/state}/zsh"' \
     "zsh.nix should own the zsh state directory setup"
-assert_contains "$zsh_nix" 'export BAT_THEME="Coldark-Dark"' \
+assert_contains "$zsh_nix" 'export BAT_THEME="1337"' \
     "zsh.nix should export the shared bat theme"
 assert_contains "$zsh_nix" 'export HISTFILE="$ZSH_STATE_DIR/.zsh_history"' \
     "zsh.nix should own the zsh history file setup"
@@ -196,7 +196,7 @@ assert_contains "$linux_zsh_dir/.zprofile" 'if [ -x "$HOME/miniconda3/bin/conda"
     "linux zsh profile template should initialize conda for login shells"
 assert_contains "$linux_zsh_dir/.zprofile" 'if [ -f "$HOME/google-cloud-sdk/path.zsh.inc" ]; then . "$HOME/google-cloud-sdk/path.zsh.inc"; fi' \
     "linux zsh profile template should initialize gcloud path for login shells"
-assert_contains "$linux_zsh_dir/.zshenv" 'export BAT_THEME="Coldark-Dark"' \
+assert_contains "$linux_zsh_dir/.zshenv" 'export BAT_THEME="1337"' \
     "linux zsh env template should export the shared bat theme"
 assert_contains "$linux_zsh_dir/.zshrc" 'eval "$(starship init zsh)"' \
     "linux zshrc template should initialize starship without programs.zsh"
