@@ -37,6 +37,10 @@ in {
       # Homebrew や Nix の厳密な優先順位はここで作り込まず、
       # 自前で必要なものだけを明示的に PATH へ足す。
 
+      if [ -f "/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh" ]; then
+        . "/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh"
+      fi
+
       # まず Homebrew の PATH を入れる。
       for brew_bin in /opt/homebrew/bin/brew /usr/local/bin/brew; do
         if [ -x "$brew_bin" ]; then
@@ -89,6 +93,7 @@ in {
       if [ -f "$HOME/google-cloud-sdk/path.zsh.inc" ]; then . "$HOME/google-cloud-sdk/path.zsh.inc"; fi
 
       # ここから下は PATH 以外の環境変数。
+      export BAT_THEME="TwoDark"
       export ZSH_STATE_DIR="''${XDG_STATE_HOME:-$HOME/.local/state}/zsh"
       mkdir -p "$ZSH_STATE_DIR"
       export HISTFILE="$ZSH_STATE_DIR/.zsh_history"

@@ -109,8 +109,8 @@ assert_contains "$zsh_nix" "bindkey '^[^M' self-insert-unmeta" \
   "zsh.nix should keep the multiline input bindkey in initContent"
 assert_contains "$zsh_nix" "bindkey -e" \
   "zsh.nix should explicitly enable emacs keybindings for interactive shells"
-assert_not_contains "$zsh_nix" 'nix-daemon.sh' \
-  "zsh.nix should no longer source nix-daemon.sh on macOS"
+assert_contains "$zsh_nix" '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh' \
+  "zsh.nix should source nix-daemon.sh on macOS when available"
 assert_contains "$zsh_nix" 'for brew_bin in /opt/homebrew/bin/brew /usr/local/bin/brew; do' \
   "zsh.nix should inline Homebrew shellenv lookup"
 assert_contains "$zsh_nix" "profileExtra = ''" \
@@ -137,6 +137,8 @@ assert_not_contains "$zsh_nix" 'nix > homebrew' \
   "zsh.nix should not claim strict nix-over-homebrew PATH ordering anymore"
 assert_contains "$zsh_nix" 'export ZSH_STATE_DIR="'"''"'${XDG_STATE_HOME:-$HOME/.local/state}/zsh"' \
   "zsh.nix should own the zsh state directory setup"
+assert_contains "$zsh_nix" 'export BAT_THEME="TwoDark"' \
+  "zsh.nix should export the shared bat theme"
 assert_contains "$zsh_nix" 'export HISTFILE="$ZSH_STATE_DIR/.zsh_history"' \
   "zsh.nix should own the zsh history file setup"
 assert_not_contains "$zsh_nix" '/opt/homebrew/opt/openjdk' \
@@ -182,12 +184,16 @@ assert_contains "$linux_zsh_dir/.zshrc" 'autoload -Uz compinit' \
   "linux zshrc template should initialize completion"
 assert_contains "$linux_zsh_dir/.zprofile" 'if [ -f "$HOME/.cargo/env" ]; then' \
   "linux zsh profile template should initialize cargo for login shells"
+assert_contains "$linux_zsh_dir/.zprofile" '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh' \
+  "linux zsh profile template should source nix-daemon.sh when available"
 assert_contains "$linux_zsh_dir/.zprofile" 'if [ -d "$HOME/.local/share/pnpm" ]; then' \
   "linux zsh profile template should initialize pnpm for login shells"
 assert_contains "$linux_zsh_dir/.zprofile" 'if [ -x "$HOME/miniconda3/bin/conda" ]; then' \
   "linux zsh profile template should initialize conda for login shells"
 assert_contains "$linux_zsh_dir/.zprofile" 'if [ -f "$HOME/google-cloud-sdk/path.zsh.inc" ]; then . "$HOME/google-cloud-sdk/path.zsh.inc"; fi' \
   "linux zsh profile template should initialize gcloud path for login shells"
+assert_contains "$linux_zsh_dir/.zshenv" 'export BAT_THEME="TwoDark"' \
+  "linux zsh env template should export the shared bat theme"
 assert_contains "$linux_zsh_dir/.zshrc" 'eval "$(starship init zsh)"' \
   "linux zshrc template should initialize starship without programs.zsh"
 assert_contains "$linux_zsh_dir/.zshrc" 'eval "$(mise activate zsh)"' \
@@ -202,8 +208,6 @@ assert_not_contains "$linux_zsh_dir/.zshrc" 'path.zsh.inc' \
   "linux zshrc template should no longer initialize gcloud path in interactive-only config"
 assert_not_contains "$linux_zsh_dir/.zshrc" '/opt/homebrew/bin/brew' \
   "linux zshrc template should not contain Homebrew initialization"
-assert_not_contains "$linux_zsh_dir/.zshrc" 'nix-daemon.sh' \
-  "linux zshrc template should not source nix-daemon.sh"
 
 init_content_line="$(first_lineno "$zsh_nix" 'initContent = lib.mkMerge')"
 path_helper_line="$(first_lineno "$zsh_nix" 'path_prepend_if_dir()')"
