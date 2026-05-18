@@ -69,6 +69,12 @@ assert_contains "$home_packages_nix" 'lazygit' \
   "modules/home/packages.nix should include lazygit as a shared CLI dependency"
 assert_contains "$home_packages_nix" 'imagemagick' \
   "modules/home/packages.nix should include imagemagick as a shared CLI dependency"
+assert_contains "$home_packages_nix" 'bat' \
+  "modules/home/packages.nix should include bat as a shared CLI dependency"
+assert_contains "$home_packages_nix" 'fzf' \
+  "modules/home/packages.nix should include fzf as a shared CLI dependency"
+assert_contains "$home_packages_nix" 'postgresql_17' \
+  "modules/home/packages.nix should include postgresql_17 as a shared CLI dependency"
 assert_contains "$darwin_packages_nix" 'home.packages = with pkgs; [' \
   "modules/darwin/packages.nix should manage darwin-only CLI packages"
 assert_contains "$darwin_packages_nix" 'pngpaste' \

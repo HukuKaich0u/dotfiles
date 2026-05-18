@@ -119,13 +119,31 @@ OS を問わず入れたい user package を置きます。
 
 例:
 
+- `ast-grep`
+- `awscli2`
+- `bat`
+- `clang-tools`
+- `ffmpeg`
+- `fzf`
 - `git`
 - `ripgrep`
 - `fd`
+- `ghostscript`
 - `gnumake`
-- `tmux`
 - `lazygit`
 - `imagemagick`
+- `lua-language-server`
+- `luarocks`
+- `pipx`
+- `pkg-config`
+- `pnpm`
+- `postgresql_17`
+- `tectonic`
+- `tmux`
+- `tombi`
+- `tree`
+- `tree-sitter`
+- `uv`
 
 package 一覧を `default.nix` に直接肥大化させないこと。
 

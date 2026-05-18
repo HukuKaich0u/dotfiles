@@ -3,13 +3,30 @@
   ...
 }: {
   home.packages = with pkgs; [
+    ast-grep
+    awscli2
+    bat
+    clang-tools
+    ffmpeg
+    fzf
     git
-    ripgrep
     fd
+    ghostscript
     gnumake
-    tmux
-    # Added during the Neovim migration, but installed as shared CLI tools.
-    lazygit
     imagemagick
+    lazygit
+    lua-language-server
+    luarocks
+    pipx
+    pkg-config
+    pnpm
+    postgresql_17
+    ripgrep
+    tectonic
+    tmux
+    tombi
+    tree
+    tree-sitter
+    uv
   ];
 }
