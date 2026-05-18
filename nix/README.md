@@ -60,7 +60,8 @@ nix/
     │   └── homebrew.nix
     └── linux/
         ├── default.nix
-        └── packages.nix
+        ├── packages.nix
+        └── zsh.nix
 ```
 
 ## Responsibility
@@ -344,9 +345,9 @@ Linux は standalone Home Manager を使っているので、login shell の変�
 
 - zsh の install は distro 側で行う
 - default shell の変更は手動で `chsh -s "$(command -v zsh)"`
-- zsh の設定内容自体は `modules/home/programs/zsh.nix` を macOS と共通で使う
-
-そのため、今のところ Linux 専用の `zsh.nix` は不要です。差分が出た時だけ `modules/linux/` 側で吸収します。
+- shell 設定ファイルは repo root の `zsh/` を source of truth にする
+- `modules/linux/zsh.nix` はその `zsh/.zshenv` / `zsh/.zshrc` を `home.file` で配布する
+- `modules/home/programs/zsh.nix` は macOS の Home Manager 用設定として残す
 
 ### `modules/linux/`
 
@@ -381,7 +382,8 @@ Linux 固有差分を `modules/home/` の条件分岐で増やしすぎないこ
 | external skill collection を変える | `modules/home/programs/agent-skills/external/` |
 | Codex の macOS install を変える | `modules/darwin/homebrew.nix` |
 | mise の global runtime を変える | `modules/home/programs/mise.nix` |
-| zsh 設定を変える | `modules/home/programs/zsh.nix` |
+| macOS の zsh 設定を変える | `modules/home/programs/zsh.nix` |
+| Linux の zsh 設定を変える | repo root `zsh/` と `modules/linux/zsh.nix` |
 | tmux 設定を変える | `modules/home/programs/tmux.nix` |
 | Neovim module 側を変える | `modules/home/programs/nvim.nix` |
 | Neovim の Lua / asset を変える | `modules/home/assets/nvim/` |

@@ -4,10 +4,13 @@ set -eu
 
 repo_root="$(CDPATH= cd -- "$(dirname "$0")/.." && pwd)"
 home_default_nix="$repo_root/nix/modules/home/default.nix"
+darwin_default_nix="$repo_root/nix/modules/darwin/default.nix"
+linux_default_nix="$repo_root/nix/modules/linux/default.nix"
+linux_zsh_nix="$repo_root/nix/modules/linux/zsh.nix"
 starship_nix="$repo_root/nix/modules/home/programs/starship.nix"
 zsh_nix="$repo_root/nix/modules/home/programs/zsh.nix"
-zsh_dir="$repo_root/nix/modules/home/assets/zsh"
 install_script="$repo_root/install.sh"
+linux_zsh_dir="$repo_root/zsh"
 
 assert_contains() {
   file="$1"
@@ -47,10 +50,14 @@ first_lineno() {
   grep -nF "$pattern" "$file" | head -n 1 | cut -d: -f1
 }
 
-assert_contains "$home_default_nix" "./programs/zsh.nix" \
-  "modules/home/default.nix should import programs/zsh.nix"
+assert_not_contains "$home_default_nix" "./programs/zsh.nix" \
+  "modules/home/default.nix should not import programs/zsh.nix once Linux splits off file-based zsh config"
 assert_contains "$home_default_nix" "./programs/starship.nix" \
   "modules/home/default.nix should import programs/starship.nix"
+assert_contains "$darwin_default_nix" "../home/programs/zsh.nix" \
+  "modules/darwin/default.nix should import the Home Manager zsh module for macOS"
+assert_contains "$linux_default_nix" "./zsh.nix" \
+  "modules/linux/default.nix should import the Linux zsh file-distribution module"
 
 if [ ! -f "$starship_nix" ]; then
   echo "starship.nix should exist"
@@ -62,8 +69,23 @@ if [ ! -f "$zsh_nix" ]; then
   exit 1
 fi
 
+if [ ! -f "$linux_zsh_nix" ]; then
+  echo "linux zsh module should exist"
+  exit 1
+fi
+
+if [ ! -f "$linux_zsh_dir/.zshenv" ] || [ ! -f "$linux_zsh_dir/.zshrc" ]; then
+  echo "repo-root zsh templates should exist for Linux"
+  exit 1
+fi
+
 if ! nix-instantiate --parse "$zsh_nix" >/dev/null; then
   echo "zsh.nix should parse as valid Nix"
+  exit 1
+fi
+
+if ! nix-instantiate --parse "$linux_zsh_nix" >/dev/null; then
+  echo "linux zsh module should parse as valid Nix"
   exit 1
 fi
 
@@ -142,10 +164,28 @@ assert_contains "$starship_nix" 'docker_context = {' \
 assert_missing "$repo_root/.config/starship.toml" \
   "repo root should not keep a hand-managed starship.toml source"
 
-assert_missing "$zsh_dir/env.zsh" \
-  "env.zsh should be removed once zsh.nix owns all zsh environment setup"
-assert_missing "$zsh_dir/homebrew.zsh" \
-  "homebrew.zsh should be removed once zsh.nix owns all PATH setup"
+assert_contains "$linux_zsh_nix" 'home.file.".zshenv"' \
+  "linux zsh module should install ~/.zshenv directly"
+assert_contains "$linux_zsh_nix" 'home.file.".zshrc"' \
+  "linux zsh module should install ~/.zshrc directly"
+assert_contains "$linux_zsh_nix" '../../../zsh/.zshenv' \
+  "linux zsh module should read the repo-root .zshenv template"
+assert_contains "$linux_zsh_nix" '../../../zsh/.zshrc' \
+  "linux zsh module should read the repo-root .zshrc template"
+assert_contains "$linux_zsh_nix" 'zsh-autosuggestions' \
+  "linux zsh module should still install zsh autosuggestions explicitly"
+assert_contains "$linux_zsh_nix" 'zsh-syntax-highlighting' \
+  "linux zsh module should still install zsh syntax highlighting explicitly"
+assert_contains "$linux_zsh_dir/.zshrc" 'autoload -Uz compinit' \
+  "linux zshrc template should initialize completion"
+assert_contains "$linux_zsh_dir/.zshrc" 'eval "$(starship init zsh)"' \
+  "linux zshrc template should initialize starship without programs.zsh"
+assert_contains "$linux_zsh_dir/.zshrc" 'eval "$(mise activate zsh)"' \
+  "linux zshrc template should initialize mise without programs.zsh"
+assert_not_contains "$linux_zsh_dir/.zshrc" '/opt/homebrew/bin/brew' \
+  "linux zshrc template should not contain Homebrew initialization"
+assert_not_contains "$linux_zsh_dir/.zshrc" 'nix-daemon.sh' \
+  "linux zshrc template should not source nix-daemon.sh"
 
 init_content_line="$(first_lineno "$zsh_nix" 'initContent = lib.mkMerge')"
 path_helper_line="$(first_lineno "$zsh_nix" 'path_prepend_if_dir()')"
@@ -166,21 +206,16 @@ if [ "$state_dir_line" -gt "$init_content_line" ]; then
   exit 1
 fi
 
-if [ -e "$zsh_dir/aliases.zsh" ] || [ -e "$zsh_dir/completion.zsh" ]; then
-  echo "aliases and completion should be managed directly in zsh.nix"
-  exit 1
-fi
-
 assert_contains "$install_script" 'HOME_DOTFILES=""' \
   "install.sh should stop linking zsh dotfiles"
 assert_contains "$install_script" 'SKIP_CONFIG_DIRS="tmux zsh starship.toml yazi bacon wezterm nvim"' \
   "install.sh should stop linking .config/zsh and starship.toml"
 
 assert_missing "$repo_root/.zshenv" \
-  "repo root should not keep a hand-managed .zshenv entrypoint"
+  "repo root should not keep a hand-managed top-level .zshenv entrypoint"
 assert_missing "$repo_root/.zprofile" \
-  "repo root should not keep a hand-managed .zprofile entrypoint"
+  "repo root should not keep a hand-managed top-level .zprofile entrypoint"
 assert_missing "$repo_root/.zshrc" \
-  "repo root should not keep a hand-managed .zshrc entrypoint"
+  "repo root should not keep a hand-managed top-level .zshrc entrypoint"
 
 echo "zsh nix migration tests passed"

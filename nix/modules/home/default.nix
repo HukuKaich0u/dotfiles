@@ -14,7 +14,6 @@
     ./programs/tmux.nix
     ./programs/wezterm.nix
     ./programs/yazi.nix
-    ./programs/zsh.nix
   ];
 
   # This value determines the Home Manager release that your configuration is
