@@ -74,7 +74,7 @@ if [ ! -f "$linux_zsh_nix" ]; then
   exit 1
 fi
 
-if [ ! -f "$linux_zsh_dir/.zshenv" ] || [ ! -f "$linux_zsh_dir/.zshrc" ]; then
+if [ ! -f "$linux_zsh_dir/.zshenv" ] || [ ! -f "$linux_zsh_dir/.zprofile" ] || [ ! -f "$linux_zsh_dir/.zshrc" ]; then
   echo "repo-root zsh templates should exist for Linux"
   exit 1
 fi
@@ -164,10 +164,14 @@ assert_missing "$repo_root/.config/starship.toml" \
 
 assert_contains "$linux_zsh_nix" 'home.file.".zshenv"' \
   "linux zsh module should install ~/.zshenv directly"
+assert_contains "$linux_zsh_nix" 'home.file.".zprofile"' \
+  "linux zsh module should install ~/.zprofile directly"
 assert_contains "$linux_zsh_nix" 'home.file.".zshrc"' \
   "linux zsh module should install ~/.zshrc directly"
 assert_contains "$linux_zsh_nix" '../../../zsh/.zshenv' \
   "linux zsh module should read the repo-root .zshenv template"
+assert_contains "$linux_zsh_nix" '../../../zsh/.zprofile' \
+  "linux zsh module should read the repo-root .zprofile template"
 assert_contains "$linux_zsh_nix" '../../../zsh/.zshrc' \
   "linux zsh module should read the repo-root .zshrc template"
 assert_contains "$linux_zsh_nix" 'zsh-autosuggestions' \
@@ -176,10 +180,26 @@ assert_contains "$linux_zsh_nix" 'zsh-syntax-highlighting' \
   "linux zsh module should still install zsh syntax highlighting explicitly"
 assert_contains "$linux_zsh_dir/.zshrc" 'autoload -Uz compinit' \
   "linux zshrc template should initialize completion"
+assert_contains "$linux_zsh_dir/.zprofile" 'if [ -f "$HOME/.cargo/env" ]; then' \
+  "linux zsh profile template should initialize cargo for login shells"
+assert_contains "$linux_zsh_dir/.zprofile" 'if [ -d "$HOME/.local/share/pnpm" ]; then' \
+  "linux zsh profile template should initialize pnpm for login shells"
+assert_contains "$linux_zsh_dir/.zprofile" 'if [ -x "$HOME/miniconda3/bin/conda" ]; then' \
+  "linux zsh profile template should initialize conda for login shells"
+assert_contains "$linux_zsh_dir/.zprofile" 'if [ -f "$HOME/google-cloud-sdk/path.zsh.inc" ]; then . "$HOME/google-cloud-sdk/path.zsh.inc"; fi' \
+  "linux zsh profile template should initialize gcloud path for login shells"
 assert_contains "$linux_zsh_dir/.zshrc" 'eval "$(starship init zsh)"' \
   "linux zshrc template should initialize starship without programs.zsh"
 assert_contains "$linux_zsh_dir/.zshrc" 'eval "$(mise activate zsh)"' \
   "linux zshrc template should initialize mise without programs.zsh"
+assert_not_contains "$linux_zsh_dir/.zshrc" '$HOME/.cargo/env' \
+  "linux zshrc template should no longer initialize cargo in interactive-only config"
+assert_not_contains "$linux_zsh_dir/.zshrc" '$HOME/.local/share/pnpm' \
+  "linux zshrc template should no longer initialize pnpm in interactive-only config"
+assert_not_contains "$linux_zsh_dir/.zshrc" 'miniconda3/bin/conda' \
+  "linux zshrc template should no longer initialize conda in interactive-only config"
+assert_not_contains "$linux_zsh_dir/.zshrc" 'path.zsh.inc' \
+  "linux zshrc template should no longer initialize gcloud path in interactive-only config"
 assert_not_contains "$linux_zsh_dir/.zshrc" '/opt/homebrew/bin/brew' \
   "linux zshrc template should not contain Homebrew initialization"
 assert_not_contains "$linux_zsh_dir/.zshrc" 'nix-daemon.sh' \

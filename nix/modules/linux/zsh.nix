@@ -1,5 +1,6 @@
 {pkgs, ...}: let
   linuxZshEnv = ../../../zsh/.zshenv;
+  linuxZshProfile = ../../../zsh/.zprofile;
   linuxZshRc = pkgs.substituteAll {
     src = ../../../zsh/.zshrc;
     zshAutosuggestions = "${pkgs.zsh-autosuggestions}/share/zsh-autosuggestions/zsh-autosuggestions.zsh";
@@ -13,5 +14,6 @@ in {
   ];
 
   home.file.".zshenv".source = linuxZshEnv;
+  home.file.".zprofile".source = linuxZshProfile;
   home.file.".zshrc".source = linuxZshRc;
 }
