@@ -66,4 +66,8 @@ local docs = read("nix/modules/home/assets/nvim/docs/plugins-guide.md")
 assert_match(docs, "| Nix | alejandra |", "plugin guide should document Nix formatting")
 assert_match(docs, "| Shell %(sh/bash/zsh%) | shfmt |", "plugin guide should document shell formatting")
 
+local telescope = read("nix/modules/home/assets/nvim/lua/Sethy/plugins/telescope.lua")
+assert_match(telescope, 'pcall%(' , "telescope should guard optional extension loading")
+assert_match(telescope, 'pcall%(telescope%.load_extension, "fzf"%)', "telescope should try to load the fzf extension")
+
 print("nvim nix and shell support tests passed")
