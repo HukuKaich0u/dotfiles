@@ -49,6 +49,8 @@ assert_contains "$nvim_nix" 'xdg.configFile."nvim"' \
   "nvim.nix should manage the nvim config directory through xdg.configFile"
 assert_contains "$nvim_nix" 'source = ../assets/nvim;' \
   "nvim.nix should source the nvim directory from the assets tree"
+assert_not_exists "$repo_root/nix/modules/home/assets/nvim/lazy-lock.json" \
+  "nvim assets should not ship a repo-managed lazy-lock.json once lazy writes runtime state"
 assert_contains "$home_default_nix" './packages.nix' \
   "modules/home/default.nix should import packages.nix"
 assert_contains "$home_packages_nix" 'home.packages = with pkgs; [' \

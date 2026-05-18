@@ -69,5 +69,20 @@ assert_match(docs, "| Shell %(sh/bash/zsh%) | shfmt |", "plugin guide should doc
 local telescope = read("nix/modules/home/assets/nvim/lua/Sethy/plugins/telescope.lua")
 assert_match(telescope, 'pcall%(' , "telescope should guard optional extension loading")
 assert_match(telescope, 'pcall%(telescope%.load_extension, "fzf"%)', "telescope should try to load the fzf extension")
+assert_match(telescope, 'stdpath%("state"%) .. "/current%-theme%.lua"', "telescope should persist theme selection under Neovim state")
+
+local lazy = read("nix/modules/home/assets/nvim/lua/Sethy/lazy.lua")
+assert_match(lazy, 'lockfile = vim%.fn%.stdpath%("state"%) .. "/lazy%-lock%.json"', "lazy.nvim should store the lockfile under Neovim state")
+
+local init_lua = read("nix/modules/home/assets/nvim/init.lua")
+assert_match(init_lua, 'stdpath%("state"%) .. "/current%-theme%.lua"', "init.lua should look for a writable persisted theme file under state")
+assert_match(init_lua, 'dofile%(', "init.lua should load the persisted theme file when present")
+assert_match(init_lua, 'require%("current%-theme"%)', "init.lua should fall back to the repo-managed default theme")
+
+local lazy_lock = io.open(repo_root .. "/nix/modules/home/assets/nvim/lazy-lock.json", "r")
+if lazy_lock ~= nil then
+  lazy_lock:close()
+  error("nvim assets should not include a repo-managed lazy-lock.json once lazy writes runtime state")
+end
 
 print("nvim nix and shell support tests passed")

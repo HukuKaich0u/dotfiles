@@ -35,7 +35,7 @@ return {
                     enable_live_preview = true,
                     persist = {
                         enabled = true,
-                        path = vim.fn.stdpath("config") .. "/lua/colorscheme.lua",
+                        path = vim.fn.stdpath("state") .. "/current-theme.lua",
                     },
                 },
             },

@@ -17,7 +17,7 @@ require("lazy").setup(
         { import = "Sethy.plugins.lsp" }
     },
     {
-        lockfile = vim.fn.stdpath("config") .. "/lazy-lock.json",
+        lockfile = vim.fn.stdpath("state") .. "/lazy-lock.json",
         checker = {
             enabled = true,
             notify = false,
