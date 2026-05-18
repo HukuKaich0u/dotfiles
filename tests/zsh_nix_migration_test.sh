@@ -109,10 +109,8 @@ assert_contains "$zsh_nix" "bindkey '^[^M' self-insert-unmeta" \
   "zsh.nix should keep the multiline input bindkey in initContent"
 assert_contains "$zsh_nix" "bindkey -e" \
   "zsh.nix should explicitly enable emacs keybindings for interactive shells"
-assert_contains "$zsh_nix" 'if [ -e "/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh" ]; then' \
-  "zsh.nix should source nix-daemon.sh after macOS path_helper runs"
-assert_contains "$zsh_nix" 'source "/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh"' \
-  "zsh.nix should restore nix profile paths in login shells"
+assert_not_contains "$zsh_nix" 'nix-daemon.sh' \
+  "zsh.nix should no longer source nix-daemon.sh on macOS"
 assert_contains "$zsh_nix" 'for brew_bin in /opt/homebrew/bin/brew /usr/local/bin/brew; do' \
   "zsh.nix should inline Homebrew shellenv lookup"
 assert_contains "$zsh_nix" "profileExtra = ''" \
@@ -141,8 +139,8 @@ assert_contains "$zsh_nix" 'export ZSH_STATE_DIR="'"''"'${XDG_STATE_HOME:-$HOME/
   "zsh.nix should own the zsh state directory setup"
 assert_contains "$zsh_nix" 'export HISTFILE="$ZSH_STATE_DIR/.zsh_history"' \
   "zsh.nix should own the zsh history file setup"
-assert_contains "$zsh_nix" 'export JAVA_HOME="/opt/homebrew/opt/openjdk"' \
-  "zsh.nix should own JAVA_HOME initialization"
+assert_not_contains "$zsh_nix" '/opt/homebrew/opt/openjdk' \
+  "zsh.nix should no longer contain Homebrew openjdk initialization"
 assert_contains "$zsh_nix" 'export CPLUS_INCLUDE_PATH="'"''"'${CPLUS_INCLUDE_PATH:+$CPLUS_INCLUDE_PATH:}$HOME/include"' \
   "zsh.nix should own CPLUS_INCLUDE_PATH initialization"
 assert_contains "$zsh_nix" 'export PNPM_HOME="$HOME/Library/pnpm"' \

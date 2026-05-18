@@ -45,11 +45,6 @@ in {
         fi
       done
 
-      # Nix も標準の初期化スクリプトに任せる。
-      if [ -e "/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh" ]; then
-        source "/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh"
-      fi
-
       path_prepend_if_dir() {
         if [ -d "$1" ]; then
           export PATH="$1:$PATH"
@@ -58,11 +53,6 @@ in {
 
       # 標準では見つからない個人用コマンドだけを明示的に追加する。
       path_prepend_if_dir "$HOME/.npm-global/bin"
-
-      # JDK は PATH と JAVA_HOME の両方が必要なので先に実体を探しておく。
-      if [ -d "/opt/homebrew/opt/openjdk" ]; then
-        path_prepend_if_dir "/opt/homebrew/opt/openjdk/bin"
-      fi
 
       # rustup/cargo が管理する PATH をそのまま読む。
       if [ -f "$HOME/.cargo/env" ]; then
@@ -102,10 +92,6 @@ in {
       export ZSH_STATE_DIR="''${XDG_STATE_HOME:-$HOME/.local/state}/zsh"
       mkdir -p "$ZSH_STATE_DIR"
       export HISTFILE="$ZSH_STATE_DIR/.zsh_history"
-
-      if [ -d "/opt/homebrew/opt/openjdk" ]; then
-        export JAVA_HOME="/opt/homebrew/opt/openjdk"
-      fi
 
       if [ -d "$HOME/include" ]; then
         export CPLUS_INCLUDE_PATH="''${CPLUS_INCLUDE_PATH:+$CPLUS_INCLUDE_PATH:}$HOME/include"
