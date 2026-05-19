@@ -111,16 +111,22 @@ Go や Java でも同じ考え方です。
 
 今の global runtime は次です。
 
+- `bun = 1`
 - `node = 24`
 - `go = 1.26`
 - `java = 25`
+- `lua = 5.4`
+- `terraform = 1.12`
 
 つまり、この環境ではまず普通に次を打てば使える前提です。
 
 ```sh
+bun --version
 node --version
 go version
 java -version
+lua -v
+terraform version
 ```
 
 zsh integration も有効なので、shell に入った時点で `mise` の解決結果が使われる構成です。
@@ -132,13 +138,13 @@ zsh integration も有効なので、shell に入った時点で `mise` の解�
 
 なので、この repo での理解は次の通りです。
 
-- `mise` は `node` `go` `java` の global runtime 層
+- `mise` は `bun` `node` `go` `java` `lua` `terraform` の global runtime 層
 - project ごとの細かい version 固定が必要なら `mise.toml` を使う
 - Python と Rust はそれぞれ別の専用 tool に寄せる
 
 ## 迷ったらこれだけ覚えればよい
 
-- 普段は `node` `go` `java` をそのまま打つ
+- 普段は `bun` `node` `go` `java` `lua` `terraform` をそのまま打つ
 - 状態確認は `mise current`
 - インストール済み一覧は `mise ls`
 - 一時実行は `mise exec ... -- ...`

@@ -121,7 +121,6 @@ OS を問わず入れたい user package を置きます。
 例:
 
 - `ast-grep`
-- `awscli2`
 - `bat`
 - `clang-tools`
 - `ffmpeg`
@@ -344,6 +343,7 @@ open_external_editor = []
 Linux は standalone Home Manager を使っているので、login shell の変更までは Nix で自動化しません。
 
 - zsh の install は `scripts/install-linux-packages.sh core`
+- `google-cloud-cli` の install も `scripts/install-linux-packages.sh core`
 - default shell の変更は手動で `chsh -s "$(command -v zsh)"`
 - shell 設定ファイルは repo root の `zsh/` を source of truth にする
 - `modules/linux/zsh.nix` はその `zsh/.zshenv` / `zsh/.zshrc` を `home.file` で配布する
