@@ -35,6 +35,10 @@ assert_contains "$script" 'ca-certificates' \
   "install-linux-packages.sh should include ca-certificates in core"
 assert_contains "$script" 'curl' \
   "install-linux-packages.sh should include curl in core"
+assert_contains "$script" 'apt-transport-https' \
+  "install-linux-packages.sh should include apt-transport-https for the gcloud apt repo"
+assert_contains "$script" 'gnupg' \
+  "install-linux-packages.sh should include gnupg for the gcloud apt repo"
 assert_contains "$script" 'zsh' \
   "install-linux-packages.sh should include zsh in core"
 assert_contains "$script" 'unzip' \
@@ -43,6 +47,10 @@ assert_contains "$script" 'build-essential' \
   "install-linux-packages.sh should include build-essential in core"
 assert_contains "$script" 'locales' \
   "install-linux-packages.sh should include locales in core"
+assert_contains "$script" 'packages.cloud.google.com' \
+  "install-linux-packages.sh should configure the Google Cloud apt repository"
+assert_contains "$script" 'google-cloud-cli' \
+  "install-linux-packages.sh should install google-cloud-cli in core"
 assert_contains "$script" 'docker-ce' \
   "install-linux-packages.sh should install docker-ce in linux-extra"
 assert_contains "$script" 'docker-ce-cli' \

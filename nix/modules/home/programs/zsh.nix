@@ -63,14 +63,6 @@ in {
         . "$HOME/.cargo/env"
       fi
 
-      # pnpm は専用の bin ディレクトリを持つので必要な時だけ追加する。
-      if [ -d "$HOME/Library/pnpm" ]; then
-        case ":$PATH:" in
-          *":$HOME/Library/pnpm:"*) ;;
-          *) export PATH="$HOME/Library/pnpm:$PATH" ;;
-        esac
-      fi
-
       # conda は公式が生成する hook を優先し、だめなら profile script / bin を使う。
       # >>> conda initialize >>>
       # !! Contents within this block are managed by 'conda init' !!
@@ -89,8 +81,10 @@ in {
       fi
       # <<< conda initialize <<<
 
-      # gcloud 本体の PATH 追加。
-      if [ -f "$HOME/google-cloud-sdk/path.zsh.inc" ]; then . "$HOME/google-cloud-sdk/path.zsh.inc"; fi
+      # Homebrew 管理の gcloud は prefix 配下の shell hook を使う。
+      if [ -n "''${HOMEBREW_PREFIX:-}" ] && [ -f "$HOMEBREW_PREFIX/share/google-cloud-sdk/path.zsh.inc" ]; then
+        . "$HOMEBREW_PREFIX/share/google-cloud-sdk/path.zsh.inc"
+      fi
 
       # ここから下は PATH 以外の環境変数。
       export BAT_THEME="1337"
@@ -102,12 +96,10 @@ in {
         export CPLUS_INCLUDE_PATH="''${CPLUS_INCLUDE_PATH:+$CPLUS_INCLUDE_PATH:}$HOME/include"
       fi
 
-      if [ -d "$HOME/Library/pnpm" ]; then
-        export PNPM_HOME="$HOME/Library/pnpm"
-      fi
-
       # gcloud の補完は PATH 変更とは別なので最後に有効化する。
-      if [ -f "$HOME/google-cloud-sdk/completion.zsh.inc" ]; then . "$HOME/google-cloud-sdk/completion.zsh.inc"; fi
+      if [ -n "''${HOMEBREW_PREFIX:-}" ] && [ -f "$HOMEBREW_PREFIX/share/google-cloud-sdk/completion.zsh.inc" ]; then
+        . "$HOMEBREW_PREFIX/share/google-cloud-sdk/completion.zsh.inc"
+      fi
     '';
     initContent = lib.mkMerge [
       (lib.mkOrder 600 ''

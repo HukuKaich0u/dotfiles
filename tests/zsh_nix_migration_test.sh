@@ -125,12 +125,12 @@ assert_not_contains "$zsh_nix" 'path_append_if_dir "/usr/local/bin"' \
     "zsh.nix should rely on system path setup instead of appending /usr/local/bin manually"
 assert_not_contains "$zsh_nix" 'path_append_if_dir "/usr/.local/bin"' \
     "zsh.nix should not append unused local system bin paths manually"
-assert_contains "$zsh_nix" 'if [ -d "$HOME/Library/pnpm" ]; then' \
-    "zsh.nix should own pnpm PATH initialization"
+assert_not_contains "$zsh_nix" '$HOME/Library/pnpm' \
+    "zsh.nix should not initialize pnpm globals when pnpm is provided via corepack"
 assert_contains "$zsh_nix" 'if [ -x "$HOME/miniconda3/bin/conda" ]; then' \
     "zsh.nix should own conda PATH initialization"
-assert_contains "$zsh_nix" 'if [ -f "$HOME/google-cloud-sdk/path.zsh.inc" ]; then . "$HOME/google-cloud-sdk/path.zsh.inc"; fi' \
-    "zsh.nix should own gcloud PATH initialization"
+assert_contains "$zsh_nix" '$HOMEBREW_PREFIX/share/google-cloud-sdk/path.zsh.inc' \
+    "zsh.nix should own Homebrew gcloud PATH initialization"
 assert_not_contains "$zsh_nix" 'if [ -f "$HOME/.local/bin/env" ]; then' \
     "zsh.nix should not source ~/.local/bin/env once local bin helpers are removed"
 assert_not_contains "$zsh_nix" 'nix > homebrew' \
@@ -145,10 +145,8 @@ assert_not_contains "$zsh_nix" '/opt/homebrew/opt/openjdk' \
     "zsh.nix should no longer contain Homebrew openjdk initialization"
 assert_contains "$zsh_nix" 'export CPLUS_INCLUDE_PATH="'"''"'${CPLUS_INCLUDE_PATH:+$CPLUS_INCLUDE_PATH:}$HOME/include"' \
     "zsh.nix should own CPLUS_INCLUDE_PATH initialization"
-assert_contains "$zsh_nix" 'export PNPM_HOME="$HOME/Library/pnpm"' \
-    "zsh.nix should own PNPM_HOME initialization"
-assert_contains "$zsh_nix" 'if [ -f "$HOME/google-cloud-sdk/completion.zsh.inc" ]; then . "$HOME/google-cloud-sdk/completion.zsh.inc"; fi' \
-    "zsh.nix should own gcloud completion initialization"
+assert_contains "$zsh_nix" '$HOMEBREW_PREFIX/share/google-cloud-sdk/completion.zsh.inc' \
+    "zsh.nix should own Homebrew gcloud completion initialization"
 assert_not_contains "$zsh_nix" 'source "$ZDOTDIR/homebrew.zsh"' \
     "zsh.nix should not depend on a separate homebrew.zsh file anymore"
 assert_not_contains "$zsh_nix" 'source "$ZDOTDIR/env.zsh"' \
@@ -190,12 +188,10 @@ assert_contains "$linux_zsh_dir/.zprofile" 'if [ -f "$HOME/.cargo/env" ]; then' 
     "linux zsh profile template should initialize cargo for login shells"
 assert_contains "$linux_zsh_dir/.zprofile" '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh' \
     "linux zsh profile template should source nix-daemon.sh when available"
-assert_contains "$linux_zsh_dir/.zprofile" 'if [ -d "$HOME/.local/share/pnpm" ]; then' \
-    "linux zsh profile template should initialize pnpm for login shells"
+assert_not_contains "$linux_zsh_dir/.zprofile" '$HOME/.local/share/pnpm' \
+    "linux zsh profile template should not initialize pnpm globals when pnpm is provided via corepack"
 assert_contains "$linux_zsh_dir/.zprofile" 'if [ -x "$HOME/miniconda3/bin/conda" ]; then' \
     "linux zsh profile template should initialize conda for login shells"
-assert_contains "$linux_zsh_dir/.zprofile" 'if [ -f "$HOME/google-cloud-sdk/path.zsh.inc" ]; then . "$HOME/google-cloud-sdk/path.zsh.inc"; fi' \
-    "linux zsh profile template should initialize gcloud path for login shells"
 assert_contains "$linux_zsh_dir/.zshenv" 'export BAT_THEME="1337"' \
     "linux zsh env template should export the shared bat theme"
 assert_contains "$linux_zsh_dir/.zshrc" 'eval "$(starship init zsh)"' \
@@ -212,6 +208,8 @@ assert_not_contains "$linux_zsh_dir/.zshrc" 'path.zsh.inc' \
     "linux zshrc template should no longer initialize gcloud path in interactive-only config"
 assert_not_contains "$linux_zsh_dir/.zshrc" '/opt/homebrew/bin/brew' \
     "linux zshrc template should not contain Homebrew initialization"
+assert_not_contains "$linux_zsh_dir/.zprofile" '$HOME/google-cloud-sdk' \
+    "linux zsh profile template should not assume a home-directory gcloud install"
 
 init_content_line="$(first_lineno "$zsh_nix" 'initContent = lib.mkMerge')"
 path_helper_line="$(first_lineno "$zsh_nix" 'path_prepend_if_dir()')"
