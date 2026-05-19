@@ -14,6 +14,28 @@
 - `rustup` は user-level installer
 - dotfiles link は repo 配布処理
 
+## Linux 最短手順
+
+Linux の新規 bootstrap を最短で通すなら、まずこれだけ実行する。
+
+Docker 不要:
+
+```sh
+./scripts/setup-linux.sh
+home-manager switch --flake ./nix#kokiaoyagi
+gcloud init
+```
+
+Docker も必要:
+
+```sh
+./scripts/setup-linux.sh --with-docker
+home-manager switch --flake ./nix#kokiaoyagi
+gcloud init
+```
+
+`setup-linux.sh` は orchestrator だけを担当する。apt repository 追加、package install、`rustup` install、dotfiles link の実装詳細は個別 script 側に置く。
+
 ## Script 一覧
 
 ### `setup-linux.sh`
@@ -176,18 +198,4 @@ Home Manager 管理に移したものは link 対象外:
 
 ## 推奨手順
 
-Linux 初回セットアップ:
-
-```sh
-./scripts/setup-linux.sh
-home-manager switch --flake ./nix#kokiaoyagi
-gcloud init
-```
-
-Docker も必要なら:
-
-```sh
-./scripts/setup-linux.sh --with-docker
-home-manager switch --flake ./nix#kokiaoyagi
-gcloud init
-```
+上の「Linux 最短手順」がそのまま推奨手順。

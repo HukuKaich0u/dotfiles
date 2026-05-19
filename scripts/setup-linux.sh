@@ -38,6 +38,8 @@ main() {
     shift
   done
 
+  # Keep this script as the single entrypoint only; concrete install behavior
+  # lives in the delegated scripts so each step stays re-runnable on its own.
   "$SCRIPT_DIR"/install-linux-packages.sh core
   if [ "$WITH_DOCKER" -eq 1 ]; then
     "$SCRIPT_DIR"/install-linux-packages.sh linux-extra

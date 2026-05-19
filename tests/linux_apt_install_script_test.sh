@@ -220,6 +220,131 @@ link-dotfiles:" \
   )
 }
 
+prepare_patched_linux_packages_script() {
+  target_script="$1"
+  fake_root="$2"
+  os_release_path="$fake_root/os-release"
+
+  mkdir -p "$fake_root/usr/share/keyrings" \
+    "$fake_root/etc/apt/sources.list.d" \
+    "$fake_root/etc/apt/keyrings"
+
+  cat >"$os_release_path" <<'EOF'
+ID=ubuntu
+VERSION_CODENAME=noble
+EOF
+
+  sed \
+    -e "s|/etc/os-release|$os_release_path|g" \
+    -e "s|/etc/apt/sources.list.d/google-cloud-sdk.list|$fake_root/etc/apt/sources.list.d/google-cloud-sdk.list|g" \
+    -e "s|/etc/apt/sources.list.d/docker.list|$fake_root/etc/apt/sources.list.d/docker.list|g" \
+    -e "s|/usr/share/keyrings|$fake_root/usr/share/keyrings|g" \
+    -e "s|/etc/apt/keyrings|$fake_root/etc/apt/keyrings|g" \
+    "$packages_script" >"$target_script"
+  make_executable "$target_script"
+}
+
+test_linux_package_repo_idempotency() {
+  (
+    tmpdir="$(create_temp_dir)"
+    trap 'rm -rf "$tmpdir"' EXIT HUP INT TERM
+
+    fake_root="$tmpdir/root"
+    fake_bin="$tmpdir/bin"
+    log_dir="$tmpdir/logs"
+    script_under_test="$tmpdir/install-linux-packages.sh"
+    mkdir -p "$fake_bin" "$log_dir"
+
+    prepare_patched_linux_packages_script "$script_under_test" "$fake_root"
+
+    cat >"$fake_bin/sudo" <<'EOF'
+#!/bin/sh
+"$@"
+EOF
+    make_executable "$fake_bin/sudo"
+
+    cat >"$fake_bin/apt-get" <<EOF
+#!/bin/sh
+echo "\$*" >>"$log_dir/apt-get.log"
+exit 0
+EOF
+    make_executable "$fake_bin/apt-get"
+
+    cat >"$fake_bin/curl" <<EOF
+#!/bin/sh
+echo "\$*" >>"$log_dir/curl.log"
+case "\$*" in
+  *packages.cloud.google.com*)
+    printf 'google-key\n'
+    ;;
+  *download.docker.com*)
+    printf 'docker-key\n'
+    ;;
+  *)
+    exit 1
+    ;;
+esac
+EOF
+    make_executable "$fake_bin/curl"
+
+    cat >"$fake_bin/gpg" <<'EOF'
+#!/bin/sh
+cat
+EOF
+    make_executable "$fake_bin/gpg"
+
+    cat >"$fake_bin/dpkg" <<'EOF'
+#!/bin/sh
+if [ "$1" = "--print-architecture" ]; then
+  echo amd64
+  exit 0
+fi
+exit 1
+EOF
+    make_executable "$fake_bin/dpkg"
+
+    PATH="$fake_bin:/bin:/usr/bin" /bin/sh "$script_under_test" core
+    PATH="$fake_bin:/bin:/usr/bin" /bin/sh "$script_under_test" core
+
+    assert_file_equals "$fake_root/etc/apt/sources.list.d/google-cloud-sdk.list" \
+"deb [signed-by=$fake_root/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" \
+      "core profile should write the Google Cloud apt source once"
+    assert_file_equals "$fake_root/usr/share/keyrings/cloud.google.gpg" "google-key" \
+      "core profile should write the Google Cloud keyring"
+    assert_file_equals "$log_dir/apt-get.log" \
+"update
+install -y apt-transport-https ca-certificates curl gnupg
+update
+update
+install -y zsh unzip build-essential locales google-cloud-cli
+update
+install -y apt-transport-https ca-certificates curl gnupg
+update
+install -y zsh unzip build-essential locales google-cloud-cli" \
+      "re-running core should skip the repo-refresh apt update when repo files are unchanged"
+
+    : >"$log_dir/apt-get.log"
+
+    PATH="$fake_bin:/bin:/usr/bin" /bin/sh "$script_under_test" linux-extra
+    PATH="$fake_bin:/bin:/usr/bin" /bin/sh "$script_under_test" linux-extra
+
+    assert_file_equals "$fake_root/etc/apt/sources.list.d/docker.list" \
+"deb [arch=amd64 signed-by=$fake_root/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu noble stable" \
+      "linux-extra should write the Docker apt source once"
+    assert_file_equals "$fake_root/etc/apt/keyrings/docker.gpg" "docker-key" \
+      "linux-extra should write the Docker keyring"
+    assert_file_equals "$log_dir/apt-get.log" \
+"update
+install -y ca-certificates curl gnupg
+update
+install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+update
+install -y ca-certificates curl gnupg
+install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin" \
+      "re-running linux-extra should skip the repo-refresh apt update when repo files are unchanged"
+  )
+}
+
 if [ ! -x "$packages_script" ]; then
   echo "apt install script is not executable: $packages_script"
   exit 1
@@ -283,5 +408,6 @@ assert_contains "$setup_script" 'with-docker' \
 
 test_install_rustup_behaviors
 test_setup_linux_order
+test_linux_package_repo_idempotency
 
 echo "linux apt install script test passed"

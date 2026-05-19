@@ -19,6 +19,17 @@
 - overlay と helper は `overlays/` と `lib/` に分ける
 - `flake.nix` は入口の配線だけを担当し、設定本体を持たない
 
+## Linux Shortest Path
+
+Linux の最短 bootstrap は 2 段階です。
+
+```sh
+./scripts/setup-linux.sh
+home-manager switch --flake ./nix#kokiaoyagi
+```
+
+Docker も必要なら最初の command だけ `./scripts/setup-linux.sh --with-docker` に置き換える。`setup-linux.sh` は OS package, `rustup`, dotfiles link までを担当し、Nix 側の反映は `home-manager switch` を明示的に続ける。
+
 ## Canonical Structure
 
 将来的な正規構成はこれです。

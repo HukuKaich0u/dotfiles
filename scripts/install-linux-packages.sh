@@ -36,14 +36,85 @@ apt_install() {
   sudo apt-get install -y "$@"
 }
 
+install_file_if_changed() {
+  src="$1"
+  dest="$2"
+  mode="$3"
+  dest_dir="$(dirname "$dest")"
+
+  if sudo test -f "$dest" && sudo cmp -s "$src" "$dest"; then
+    return 1
+  fi
+
+  sudo install -d -m 0755 "$dest_dir"
+  sudo install -m "$mode" "$src" "$dest"
+}
+
+sync_keyring() {
+  url="$1"
+  dest="$2"
+  tmp="$(mktemp)"
+
+  cleanup() {
+    rm -f "$tmp"
+  }
+
+  trap cleanup EXIT HUP INT TERM
+  curl -fsSL "$url" | gpg --dearmor >"$tmp"
+
+  if install_file_if_changed "$tmp" "$dest" 0644; then
+    trap - EXIT HUP INT TERM
+    cleanup
+    return 0
+  fi
+
+  trap - EXIT HUP INT TERM
+  cleanup
+  return 1
+}
+
+sync_apt_source() {
+  dest="$1"
+  source_line="$2"
+  tmp="$(mktemp)"
+
+  cleanup() {
+    rm -f "$tmp"
+  }
+
+  trap cleanup EXIT HUP INT TERM
+  printf '%s\n' "$source_line" >"$tmp"
+
+  if install_file_if_changed "$tmp" "$dest" 0644; then
+    trap - EXIT HUP INT TERM
+    cleanup
+    return 0
+  fi
+
+  trap - EXIT HUP INT TERM
+  cleanup
+  return 1
+}
+
 install_google_cloud_repo() {
   apt_install apt-transport-https ca-certificates curl gnupg
-  sudo install -d -m 0755 /usr/share/keyrings
-  curl -fsSL https://packages.cloud.google.com/apt/doc/apt-key.gpg \
-    | sudo gpg --dearmor -o /usr/share/keyrings/cloud.google.gpg
-  echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" \
-    | sudo tee /etc/apt/sources.list.d/google-cloud-sdk.list >/dev/null
-  sudo apt-get update
+  repo_changed=0
+
+  if sync_keyring \
+    https://packages.cloud.google.com/apt/doc/apt-key.gpg \
+    /usr/share/keyrings/cloud.google.gpg; then
+    repo_changed=1
+  fi
+
+  if sync_apt_source \
+    /etc/apt/sources.list.d/google-cloud-sdk.list \
+    "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main"; then
+    repo_changed=1
+  fi
+
+  if [ "$repo_changed" -eq 1 ]; then
+    sudo apt-get update
+  fi
 }
 
 install_core() {
@@ -61,15 +132,25 @@ install_linux_extra() {
   . /etc/os-release
 
   apt_install ca-certificates curl gnupg
-  sudo install -m 0755 -d /etc/apt/keyrings
-  curl -fsSL "https://download.docker.com/linux/${ID}/gpg" | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+  repo_changed=0
+
+  if sync_keyring \
+    "https://download.docker.com/linux/${ID}/gpg" \
+    /etc/apt/keyrings/docker.gpg; then
+    repo_changed=1
+  fi
+
   sudo chmod a+r /etc/apt/keyrings/docker.gpg
 
-  echo \
-    "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/${ID} ${VERSION_CODENAME} stable" \
-    | sudo tee /etc/apt/sources.list.d/docker.list >/dev/null
+  if sync_apt_source \
+    /etc/apt/sources.list.d/docker.list \
+    "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/${ID} ${VERSION_CODENAME} stable"; then
+    repo_changed=1
+  fi
 
-  sudo apt-get update
+  if [ "$repo_changed" -eq 1 ]; then
+    sudo apt-get update
+  fi
   sudo apt-get install -y \
     docker-ce \
     docker-ce-cli \
