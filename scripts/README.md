@@ -1,22 +1,21 @@
 # Scripts
 
-このディレクトリには、dotfiles repo のセットアップを役割ごとに分けた script を置く。
+このディレクトリには、dotfiles repo の bootstrap を役割ごとに分けた script を置く。
 
 ## 方針
 
-- `setup-*` は入口 script
+- `setup-*` は OS ごとの入口 script
 - `install-*` は package や外部依存の導入
 - `link-*` は repo 管理ファイルの symlink 配布
+- script は複数回実行しても壊れにくい前提で保つ
 
-1 本に全部詰め込まず、権限と責務で分ける。
+権限も責務も混ぜない。
 
 - OS package install は `sudo` が必要
 - `rustup` は user-level installer
 - dotfiles link は repo 配布処理
 
 ## Linux 最短手順
-
-Linux の新規 bootstrap を最短で通すなら、まずこれだけ実行する。
 
 Docker 不要:
 
@@ -37,8 +36,6 @@ gcloud init
 `setup-linux.sh` は orchestrator だけを担当する。apt repository 追加、package install、`rustup` install、dotfiles link の実装詳細は個別 script 側に置く。
 
 ## macOS 最短手順
-
-macOS の新規 bootstrap を最短で通すなら、まずこれを実行する。
 
 ```sh
 ./scripts/setup-mac.sh
@@ -64,250 +61,55 @@ gcloud init
 
 ### `setup-linux.sh`
 
-Linux 初回セットアップの入口。
-
-実行順:
-
-1. `install-linux-packages.sh core`
-2. `--with-docker` 指定時は `install-linux-packages.sh linux-extra`
-3. `rustup` を公式 installer で user install
-4. `link-dotfiles.sh`
-
-この script 自体は orchestrator で、個別処理の詳細は下の 3 本に委譲する。
-
-用途:
-
-- 新しい Linux マシンをこの repo 向けに bootstrap したい時
-- 何を最初に実行すればよいか迷いたくない時
-
-例:
-
-```sh
-./scripts/setup-linux.sh
-./scripts/setup-linux.sh --with-docker
-```
-
-この script がやること:
-
-- Linux 用の base package を入れる
-- 必要なら Docker package を入れる
-- `install-rustup.sh` を呼ぶ
-- repo 管理下の dotfiles link を張る
-
-この script がやらないこと:
-
-- `home-manager switch`
-- Docker daemon の post-install 調整
-- `rustup` install の実装詳細
-- `rustup` の toolchain/channel カスタマイズ
-- `gcloud init`
+- 役割: Linux bootstrap の入口
+- 実行順: `install-linux-packages.sh core` → 必要なら `install-linux-packages.sh linux-extra` → `install-rustup.sh` → `link-dotfiles.sh`
+- やらないこと: `home-manager switch`、Docker daemon の post-install 調整、`gcloud init`
+- 例: `./scripts/setup-linux.sh`, `./scripts/setup-linux.sh --with-docker`
 
 ### `setup-mac.sh`
 
-macOS 初回セットアップの入口。
-
-実行順:
-
-1. `install-homebrew.sh`
-2. `apply-nix-darwin.sh`
-3. `link-dotfiles.sh`
-
-この script 自体は orchestrator で、個別処理の詳細は下の 3 本に委譲する。
-
-用途:
-
-- 新しい macOS マシンをこの repo 向けに bootstrap したい時
-- 何を最初に実行すればよいか迷いたくない時
-
-例:
-
-```sh
-./scripts/setup-mac.sh
-```
-
-この script がやること:
-
-- Homebrew が無ければ install する
-- `darwin-rebuild switch --flake ./nix#KokiAoyagi` を実行する
-- repo 管理下の dotfiles link を張る
-
-この script がやらないこと:
-
-- `darwin-rebuild` 初回導入の完全自動化
-- GUI app 側の認証や初期設定
-- `gcloud auth login` や `gcloud init`
-
-## `install-homebrew.sh`
-
-macOS の Homebrew installer。
-
-用途:
-
-- Homebrew 導入だけを個別に再実行したい時
-- mac bootstrap 前提を先に満たしたい時
-
-例:
-
-```sh
-./scripts/install-homebrew.sh
-```
-
-この script がやること:
-
-- macOS 判定
-- `brew` が既にあれば clean に skip
-- 未導入時のみ Homebrew 公式 installer を実行
-
-この script がやらないこと:
-
-- Homebrew formula / cask の適用
-- `darwin-rebuild` 実行
-- dotfiles の symlink 配布
-
-## `apply-nix-darwin.sh`
-
-macOS の `nix-darwin` apply script。
-
-用途:
-
-- `darwin-rebuild` だけ単体で再実行したい時
-- Homebrew や dotfiles link を触らず Nix 側だけ反映したい時
-
-例:
-
-```sh
-./scripts/apply-nix-darwin.sh
-```
-
-この script がやること:
-
-- macOS 判定
-- `nix` と `darwin-rebuild` の前提確認
-- repo root で `darwin-rebuild switch --flake ./nix#KokiAoyagi` を実行
-
-この script がやらないこと:
-
-- Nix installer 自体の導入
-- `darwin-rebuild` 初回導入の完全自動化
-- dotfiles の symlink 配布
-
-## `install-linux-packages.sh`
-
-Linux の OS package installer。
-
-対応:
-
-- Debian / Ubuntu 系のみ
-
-profile:
-
-- `core`
-  - Linux bootstrap に最低限必要な package
-  - `ca-certificates`
-  - `curl`
-  - `zsh`
-  - `unzip`
-  - `build-essential`
-  - `locales`
-- `linux-extra`
-  - Docker 用 package
-  - Docker 公式 apt repository を登録してから install
-  - `docker-ce`
-  - `docker-ce-cli`
-  - `containerd.io`
-  - `docker-buildx-plugin`
-  - `docker-compose-plugin`
-
-用途:
-
-- OS package だけを個別に入れ直したい時
-- Docker 周りだけ後から足したい時
-
-例:
-
-```sh
-./scripts/install-linux-packages.sh core
-./scripts/install-linux-packages.sh linux-extra
-```
-
-この script がやること:
-
-- distro 判定
-- `apt-get update`
-- profile に応じた package install
-- Docker 公式 repo 設定
-
-この script がやらないこと:
-
-- `rustup` install
-- dotfiles の symlink 配布
-- Home Manager 実行
-
-## `install-rustup.sh`
-
-`rustup` の shared installer。
-
-用途:
-
-- Linux bootstrap から user-level の Rust 導入だけを切り出したい時
-- `rustup` install を単体で再実行したい時
-
-例:
-
-```sh
-./scripts/install-rustup.sh
-```
-
-この script がやること:
-
-- 既存の `rustup` install を検知し、すでに入っていれば skip
-- 未導入時のみ公式 installer を non-interactive で実行
-
-この script がやらないこと:
-
-- `apt` package install
-- dotfiles の symlink 配布
-- `rustup` の toolchain/channel カスタマイズ
-
-## `link-dotfiles.sh`
-
-repo 管理の dotfiles / config を home directory 配下へ link する script。
-
-もともとの `install.sh` の責務をこの script に移した。
-
-用途:
-
-- symlink 配布だけやりたい時
-- OS package install や `rustup` を触らずに dotfiles だけ反映したい時
-
-例:
-
-```sh
-./scripts/link-dotfiles.sh
-```
-
-この script がやること:
-
-- `~/.config` 配下の symlink 配布
-- AI 関連ファイルの明示 link
-- legacy link cleanup
-- terminfo compile
-
-この script がやらないこと:
-
-- `apt` package install
-- `rustup` install
-- Home Manager 管理領域の配布
-
-Home Manager 管理に移したものは link 対象外:
-
-- `nvim`
-- `tmux`
-- `zsh`
-- `wezterm`
-- `yazi`
-- `bacon`
-- `starship.toml`
+- 役割: macOS bootstrap の入口
+- 実行順: `install-homebrew.sh` → `apply-nix-darwin.sh` → `link-dotfiles.sh`
+- やらないこと: `darwin-rebuild` 初回導入の完全自動化、GUI app 側の認証や初期設定、`gcloud init`
+- 例: `./scripts/setup-mac.sh`
+
+### `install-homebrew.sh`
+
+- 役割: macOS の Homebrew installer
+- やること: macOS 判定、既存 `brew` の skip、未導入時のみ Homebrew 公式 installer 実行
+- やらないこと: Homebrew formula / cask の適用、`darwin-rebuild` 実行、dotfiles 配布
+- 例: `./scripts/install-homebrew.sh`
+
+### `apply-nix-darwin.sh`
+
+- 役割: macOS の `nix-darwin` apply
+- やること: macOS 判定、`nix` と `darwin-rebuild` の前提確認、repo root で `darwin-rebuild switch --flake ./nix#KokiAoyagi` 実行
+- やらないこと: Nix installer 自体の導入、`darwin-rebuild` 初回導入の完全自動化、dotfiles 配布
+- 例: `./scripts/apply-nix-darwin.sh`
+
+### `install-linux-packages.sh`
+
+- 役割: Debian / Ubuntu 向け OS package installer
+- profile:
+  - `core`: `ca-certificates`, `curl`, `zsh`, `unzip`, `build-essential`, `locales`, `google-cloud-cli`
+  - `linux-extra`: Docker 公式 apt repository を登録してから `docker-ce`, `docker-ce-cli`, `containerd.io`, `docker-buildx-plugin`, `docker-compose-plugin`
+- やらないこと: `rustup` install、dotfiles 配布、Home Manager 実行
+- 例: `./scripts/install-linux-packages.sh core`, `./scripts/install-linux-packages.sh linux-extra`
+
+### `install-rustup.sh`
+
+- 役割: `rustup` の shared installer
+- やること: 既存 install の検知、未導入時のみ公式 installer を non-interactive で実行
+- やらないこと: `apt` package install、dotfiles 配布、toolchain/channel カスタマイズ
+- 例: `./scripts/install-rustup.sh`
+
+### `link-dotfiles.sh`
+
+- 役割: repo 管理の dotfiles / config を home directory 配下へ link
+- やること: `~/.config` 配下の symlink 配布、AI 関連ファイルの明示 link、legacy link cleanup、terminfo compile
+- やらないこと: `apt` package install、`rustup` install、Home Manager 管理領域の配布
+- link 対象外: `nvim`, `tmux`, `zsh`, `wezterm`, `yazi`, `bacon`, `starship.toml`
+- 例: `./scripts/link-dotfiles.sh`
 
 ## 推奨手順
 
