@@ -152,6 +152,8 @@ assert_contains "$zsh_nix" 'export ZSH_STATE_DIR="'"''"'${XDG_STATE_HOME:-$HOME/
     "zsh.nix should own the zsh state directory setup"
 assert_contains "$zsh_nix" 'export BAT_THEME="1337"' \
     "zsh.nix should export the shared bat theme"
+assert_contains "$zsh_nix" 'export ASDF_LUA_LUAROCKS_VERSION="3.12.2"' \
+    "zsh.nix should export the pinned LuaRocks version for the asdf-lua plugin"
 assert_contains "$zsh_nix" 'export HISTFILE="$ZSH_STATE_DIR/.zsh_history"' \
     "zsh.nix should own the zsh history file setup"
 assert_not_contains "$zsh_nix" '/opt/homebrew/opt/openjdk' \
