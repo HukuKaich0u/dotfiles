@@ -38,10 +38,18 @@ assert_contains "$mise_nix" 'lua = ' \
   "mise.nix should define a global lua runtime"
 assert_contains "$mise_nix" 'terraform = ' \
   "mise.nix should define a global terraform runtime"
+assert_contains "$mise_nix" 'lua = "5.4.8";' \
+  "mise.nix should pin Lua to an exact patch release"
+assert_contains "$mise_nix" 'terraform = "1.12.2";' \
+  "mise.nix should pin Terraform to an exact patch release"
 assert_contains "$mise_nix" 'settings = {' \
   "mise.nix should manage global settings through config.toml"
 assert_contains "$mise_nix" 'home.sessionPath = [' \
   "mise.nix should add a session path for corepack shims"
+assert_contains "$mise_nix" 'home.sessionVariables = {' \
+  "mise.nix should export install-time environment variables for plugins"
+assert_contains "$mise_nix" 'ASDF_LUA_LUAROCKS_VERSION = "3.12.2";' \
+  "mise.nix should pin LuaRocks for the asdf-lua plugin"
 assert_contains "$mise_nix" '"$HOME/.local/bin"' \
   "mise.nix should place corepack shims under ~/.local/bin"
 assert_contains "$mise_nix" 'home.activation.enableCorepack' \

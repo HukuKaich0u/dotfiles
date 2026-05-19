@@ -13,8 +13,8 @@ in {
       node = "24";
       go = "1.26";
       java = "25";
-      lua = "5.4";
-      terraform = "1.12";
+      lua = "5.4.8";
+      terraform = "1.12.2";
     };
     settings = {};
   };
@@ -22,6 +22,10 @@ in {
   home.sessionPath = [
     "$HOME/.local/bin"
   ];
+  home.sessionVariables = {
+    # Work around asdf-lua failing to bootstrap with the latest LuaRocks release.
+    ASDF_LUA_LUAROCKS_VERSION = "3.12.2";
+  };
 
   home.activation.enableCorepack = lib.hm.dag.entryAfter ["writeBoundary"] ''
     mkdir -p "$HOME/.local/bin"
