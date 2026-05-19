@@ -3,7 +3,7 @@
 set -eu
 
 repo_root="$(CDPATH= cd -- "$(dirname "$0")/.." && pwd)"
-home_default_nix="$repo_root/nix/modules/home/default.nix"
+darwin_default_nix="$repo_root/nix/modules/darwin/default.nix"
 wezterm_nix="$repo_root/nix/modules/home/programs/wezterm.nix"
 install_sh="$repo_root/scripts/link-dotfiles.sh"
 wezterm_dir="$repo_root/nix/modules/home/assets/wezterm"
@@ -29,8 +29,8 @@ assert_not_exists() {
   fi
 }
 
-assert_contains "$home_default_nix" './programs/wezterm.nix' \
-  "modules/home/default.nix should import programs/wezterm.nix"
+assert_contains "$darwin_default_nix" '../home/programs/wezterm.nix' \
+  "modules/darwin/default.nix should import programs/wezterm.nix"
 
 if [ ! -f "$wezterm_nix" ]; then
   echo "wezterm.nix should exist"

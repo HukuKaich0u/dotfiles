@@ -4,7 +4,6 @@
 }: {
   home.packages = with pkgs; [
     ast-grep
-    awscli2
     bat
     clang-tools
     ffmpeg

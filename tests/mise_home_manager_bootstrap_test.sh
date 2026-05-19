@@ -28,10 +28,16 @@ assert_contains "$mise_nix" 'tools = {' \
   "mise.nix should manage global tools through config.toml"
 assert_contains "$mise_nix" 'node = ' \
   "mise.nix should define a global node runtime"
+assert_contains "$mise_nix" 'bun = ' \
+  "mise.nix should define a global bun runtime"
 assert_contains "$mise_nix" 'go = ' \
   "mise.nix should define a global go runtime"
 assert_contains "$mise_nix" 'java = ' \
   "mise.nix should define a global java runtime"
+assert_contains "$mise_nix" 'lua = ' \
+  "mise.nix should define a global lua runtime"
+assert_contains "$mise_nix" 'terraform = ' \
+  "mise.nix should define a global terraform runtime"
 assert_contains "$mise_nix" 'settings = {' \
   "mise.nix should manage global settings through config.toml"
 assert_contains "$mise_nix" 'home.sessionPath = [' \

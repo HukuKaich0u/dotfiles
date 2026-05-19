@@ -12,7 +12,6 @@
     ./programs/nvim.nix
     ./programs/starship.nix
     ./programs/tmux.nix
-    ./programs/wezterm.nix
     ./programs/yazi.nix
   ];
 

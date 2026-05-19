@@ -9,9 +9,12 @@ in {
   programs.mise.enableZshIntegration = true;
   programs.mise.globalConfig = {
     tools = {
+      bun = "1";
       node = "24";
       go = "1.26";
       java = "25";
+      lua = "5.4";
+      terraform = "1.12";
     };
     settings = {};
   };

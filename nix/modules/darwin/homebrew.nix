@@ -6,7 +6,6 @@
 
     taps = [
       "k1low/tap"
-      "oven-sh/bun"
       "steipete/tap"
       "thezoraiz/ascii-image-converter"
       "trasta298/tap"
@@ -14,6 +13,7 @@
 
     brews = [
       "aom"
+      "awscli"
       "dnsmasq"
       "gauche"
       "gcc"
@@ -27,9 +27,7 @@
       "libraw"
       "libtiff"
       "llvm"
-      "lua"
       "marp-cli"
-      "oven-sh/bun/bun"
       "php"
       "prek"
       "qemu"

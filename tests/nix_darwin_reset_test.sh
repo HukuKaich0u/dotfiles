@@ -71,7 +71,6 @@ assert_contains "$homebrew_nix" 'casks = [' \
 
 expected_taps='
 k1low/tap
-oven-sh/bun
 steipete/tap
 thezoraiz/ascii-image-converter
 trasta298/tap
@@ -79,6 +78,7 @@ trasta298/tap
 
 expected_brews='
 aom
+awscli
 dnsmasq
 gauche
 gcc
@@ -92,9 +92,7 @@ liblqr
 libraw
 libtiff
 llvm
-lua
 marp-cli
-oven-sh/bun/bun
 php
 prek
 qemu

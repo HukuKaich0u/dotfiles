@@ -4,6 +4,7 @@
 }: {
   imports = [
     ../home/default.nix
+    ../home/programs/wezterm.nix
     ../home/programs/zsh.nix
     ./packages.nix
   ];
