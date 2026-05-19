@@ -19,14 +19,6 @@ Options:
 EOF
 }
 
-install_rustup() {
-  if [ -f "$HOME/.cargo/env" ]; then
-    return
-  fi
-
-  curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-}
-
 main() {
   while [ "$#" -gt 0 ]; do
     case "$1" in
@@ -50,7 +42,7 @@ main() {
   if [ "$WITH_DOCKER" -eq 1 ]; then
     "$SCRIPT_DIR"/install-linux-packages.sh linux-extra
   fi
-  install_rustup
+  "$SCRIPT_DIR"/install-rustup.sh
   "$SCRIPT_DIR"/link-dotfiles.sh
 }
 

@@ -5,6 +5,7 @@ set -eu
 repo_root="$(CDPATH= cd -- "$(dirname "$0")/.." && pwd)"
 script="$repo_root/scripts/install-linux-packages.sh"
 setup_script="$repo_root/scripts/setup-linux.sh"
+rustup_script="$repo_root/scripts/install-rustup.sh"
 
 assert_contains() {
   file="$1"
@@ -24,6 +25,11 @@ fi
 
 if [ ! -x "$setup_script" ]; then
   echo "linux setup script is not executable: $setup_script"
+  exit 1
+fi
+
+if [ ! -x "$rustup_script" ]; then
+  echo "rustup install script is not executable: $rustup_script"
   exit 1
 fi
 
@@ -66,13 +72,28 @@ assert_contains "$script" 'download.docker.com' \
 
 assert_contains "$setup_script" 'install-linux-packages.sh core' \
   "setup-linux.sh should install the core apt profile"
-assert_contains "$setup_script" "https://sh.rustup.rs" \
-  "setup-linux.sh should bootstrap rustup from the official installer"
-assert_contains "$setup_script" "sh -s -- -y" \
-  "setup-linux.sh should run rustup-init non-interactively"
+assert_contains "$setup_script" 'install-rustup.sh' \
+  "setup-linux.sh should delegate rustup installation to the shared script"
 assert_contains "$setup_script" 'link-dotfiles.sh' \
   "setup-linux.sh should install dotfiles after package bootstrap"
 assert_contains "$setup_script" 'with-docker' \
   "setup-linux.sh should offer an opt-in Docker setup flag"
+
+if grep -Fq "https://sh.rustup.rs" "$setup_script"; then
+  echo "setup-linux.sh should not inline the rustup installer URL"
+  exit 1
+fi
+
+if grep -Fq "sh -s -- -y" "$setup_script"; then
+  echo "setup-linux.sh should not run rustup-init directly"
+  exit 1
+fi
+
+assert_contains "$rustup_script" '$HOME/.cargo/bin/rustup' \
+  "install-rustup.sh should guard on an existing rustup install"
+assert_contains "$rustup_script" "https://sh.rustup.rs" \
+  "install-rustup.sh should bootstrap rustup from the official installer"
+assert_contains "$rustup_script" "sh -s -- -y" \
+  "install-rustup.sh should run rustup-init non-interactively"
 
 echo "linux apt install script test passed"

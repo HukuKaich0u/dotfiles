@@ -27,7 +27,7 @@ Linux 初回セットアップの入口。
 3. `rustup` を公式 installer で user install
 4. `link-dotfiles.sh`
 
-この script 自体は orchestrator で、個別処理の詳細は下の 2 本に委譲する。
+この script 自体は orchestrator で、個別処理の詳細は下の 3 本に委譲する。
 
 用途:
 
@@ -45,13 +45,14 @@ Linux 初回セットアップの入口。
 
 - Linux 用の base package を入れる
 - 必要なら Docker package を入れる
-- `rustup` を導入する
+- `install-rustup.sh` を呼ぶ
 - repo 管理下の dotfiles link を張る
 
 この script がやらないこと:
 
 - `home-manager switch`
 - Docker daemon の post-install 調整
+- `rustup` install の実装詳細
 - `rustup` の toolchain/channel カスタマイズ
 - `gcloud init`
 
@@ -106,6 +107,32 @@ profile:
 - `rustup` install
 - dotfiles の symlink 配布
 - Home Manager 実行
+
+## `install-rustup.sh`
+
+`rustup` の shared installer。
+
+用途:
+
+- Linux bootstrap から user-level の Rust 導入だけを切り出したい時
+- `rustup` install を単体で再実行したい時
+
+例:
+
+```sh
+./scripts/install-rustup.sh
+```
+
+この script がやること:
+
+- 既存の `rustup` install を検知し、すでに入っていれば skip
+- 未導入時のみ公式 installer を non-interactive で実行
+
+この script がやらないこと:
+
+- `apt` package install
+- dotfiles の symlink 配布
+- `rustup` の toolchain/channel カスタマイズ
 
 ## `link-dotfiles.sh`
 
