@@ -356,6 +356,7 @@ Linux 初回セットアップは次の順で実行します。
 1. `./scripts/setup-linux.sh`
 2. Docker も必要なら `./scripts/setup-linux.sh --with-docker`
 3. `home-manager switch --flake ./nix#kokiaoyagi`
+4. `gcloud` を使うなら `gcloud init`
 
 script ごとの責務と詳細は `scripts/README.md` を参照。
 

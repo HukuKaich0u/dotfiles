@@ -53,6 +53,7 @@ Linux 初回セットアップの入口。
 - `home-manager switch`
 - Docker daemon の post-install 調整
 - `rustup` の toolchain/channel カスタマイズ
+- `gcloud init`
 
 ## `install-linux-packages.sh`
 
@@ -153,6 +154,7 @@ Linux 初回セットアップ:
 ```sh
 ./scripts/setup-linux.sh
 home-manager switch --flake ./nix#kokiaoyagi
+gcloud init
 ```
 
 Docker も必要なら:
@@ -160,4 +162,5 @@ Docker も必要なら:
 ```sh
 ./scripts/setup-linux.sh --with-docker
 home-manager switch --flake ./nix#kokiaoyagi
+gcloud init
 ```
