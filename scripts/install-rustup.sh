@@ -23,6 +23,8 @@ rustup_installed() {
 }
 
 main() {
+  installer=""
+
   if [ "$#" -ne 0 ]; then
     case "$1" in
       -h|--help)
@@ -42,7 +44,11 @@ main() {
     exit 0
   fi
 
-  curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+  installer="$(mktemp "${TMPDIR:-/tmp}/rustup-init.XXXXXX")"
+  trap 'rm -f "$installer"' EXIT HUP INT TERM
+
+  curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs -o "$installer"
+  sh "$installer" -y
 }
 
 main "$@"
