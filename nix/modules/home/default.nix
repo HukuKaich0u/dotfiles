@@ -13,6 +13,7 @@
     ./programs/starship.nix
     ./programs/tmux.nix
     ./programs/yazi.nix
+    ./programs/zoxide.nix
   ];
 
   # This value determines the Home Manager release that your configuration is
