@@ -82,6 +82,22 @@ assert_file_equals() {
   fi
 }
 
+assert_file_contains() {
+  path="$1"
+  needle="$2"
+  message="$3"
+
+  if [ ! -f "$path" ]; then
+    echo "$message"
+    exit 1
+  fi
+
+  if ! grep -Fq "$needle" "$path"; then
+    echo "$message"
+    exit 1
+  fi
+}
+
 run_install_rustup_test() {
   scenario="$1"
   rustup_on_path="$2"
@@ -191,11 +207,32 @@ EOF
   )
 }
 
+test_install_rustup_requires_curl() {
+  (
+    tmpdir="$(create_temp_dir)"
+    trap 'rm -rf "$tmpdir"' EXIT HUP INT TERM
+
+    home_dir="$tmpdir/home"
+    fake_bin="$tmpdir/bin"
+    stderr_log="$tmpdir/stderr.log"
+    mkdir -p "$home_dir" "$fake_bin"
+
+    if HOME="$home_dir" PATH="$fake_bin" /bin/sh "$rustup_script" 2>"$stderr_log"; then
+      echo "install-rustup.sh should fail when curl is unavailable"
+      exit 1
+    fi
+
+    assert_file_contains "$stderr_log" 'curl is required before installing rustup' \
+      "install-rustup.sh should explain the missing curl prerequisite"
+  )
+}
+
 test_install_rustup_behaviors() {
   run_install_rustup_test "PATH rustup" yes no 0
   run_install_rustup_test "HOME rustup" no yes 0
   run_install_rustup_test "missing rustup" no no 1
   test_install_rustup_download_failure
+  test_install_rustup_requires_curl
 }
 
 test_setup_linux_order() {
@@ -513,6 +550,213 @@ EOF
   )
 }
 
+test_install_linux_packages_requires_base_commands() {
+  (
+    tmpdir="$(create_temp_dir)"
+    trap 'rm -rf "$tmpdir"' EXIT HUP INT TERM
+
+    fake_root="$tmpdir/root"
+    fake_bin="$tmpdir/bin"
+    script_under_test="$tmpdir/install-linux-packages.sh"
+    stderr_log="$tmpdir/stderr.log"
+    mkdir -p "$fake_bin"
+
+    prepare_patched_linux_packages_script "$script_under_test" "$fake_root"
+
+    if PATH="$fake_bin" /bin/sh "$script_under_test" core 2>"$stderr_log"; then
+      echo "install-linux-packages.sh should fail when sudo is unavailable"
+      exit 1
+    fi
+
+    assert_file_contains "$stderr_log" 'sudo is required before installing Linux packages' \
+      "install-linux-packages.sh should explain the missing sudo prerequisite"
+  )
+}
+
+test_install_linux_packages_requires_apt_get() {
+  (
+    tmpdir="$(create_temp_dir)"
+    trap 'rm -rf "$tmpdir"' EXIT HUP INT TERM
+
+    fake_root="$tmpdir/root"
+    fake_bin="$tmpdir/bin"
+    script_under_test="$tmpdir/install-linux-packages.sh"
+    stderr_log="$tmpdir/stderr.log"
+    mkdir -p "$fake_bin"
+
+    prepare_patched_linux_packages_script "$script_under_test" "$fake_root"
+
+    cat >"$fake_bin/sudo" <<'EOF'
+#!/bin/sh
+"$@"
+EOF
+    make_executable "$fake_bin/sudo"
+
+    if PATH="$fake_bin" /bin/sh "$script_under_test" core 2>"$stderr_log"; then
+      echo "install-linux-packages.sh should fail when apt-get is unavailable"
+      exit 1
+    fi
+
+    assert_file_contains "$stderr_log" 'apt-get is required before installing Linux packages' \
+      "install-linux-packages.sh should explain the missing apt-get prerequisite"
+  )
+}
+
+test_install_linux_packages_requires_curl() {
+  (
+    tmpdir="$(create_temp_dir)"
+    trap 'rm -rf "$tmpdir"' EXIT HUP INT TERM
+
+    fake_root="$tmpdir/root"
+    fake_bin="$tmpdir/bin"
+    script_under_test="$tmpdir/install-linux-packages.sh"
+    stderr_log="$tmpdir/stderr.log"
+    mkdir -p "$fake_bin"
+
+    prepare_patched_linux_packages_script "$script_under_test" "$fake_root"
+
+    cat >"$fake_bin/sudo" <<'EOF'
+#!/bin/sh
+"$@"
+EOF
+    make_executable "$fake_bin/sudo"
+
+    cat >"$fake_bin/apt-get" <<'EOF'
+#!/bin/sh
+exit 0
+EOF
+    make_executable "$fake_bin/apt-get"
+
+    if PATH="$fake_bin" /bin/sh "$script_under_test" core 2>"$stderr_log"; then
+      echo "install-linux-packages.sh should fail when curl is unavailable"
+      exit 1
+    fi
+
+    assert_file_contains "$stderr_log" 'curl is required before configuring apt repositories' \
+      "install-linux-packages.sh should explain the missing curl prerequisite"
+  )
+}
+
+test_install_linux_packages_requires_gpg() {
+  (
+    tmpdir="$(create_temp_dir)"
+    trap 'rm -rf "$tmpdir"' EXIT HUP INT TERM
+
+    fake_root="$tmpdir/root"
+    fake_bin="$tmpdir/bin"
+    script_under_test="$tmpdir/install-linux-packages.sh"
+    stderr_log="$tmpdir/stderr.log"
+    mkdir -p "$fake_bin"
+
+    prepare_patched_linux_packages_script "$script_under_test" "$fake_root"
+
+    cat >"$fake_bin/sudo" <<'EOF'
+#!/bin/sh
+"$@"
+EOF
+    make_executable "$fake_bin/sudo"
+
+    cat >"$fake_bin/apt-get" <<'EOF'
+#!/bin/sh
+exit 0
+EOF
+    make_executable "$fake_bin/apt-get"
+
+    cat >"$fake_bin/curl" <<'EOF'
+#!/bin/sh
+while [ "$#" -gt 0 ]; do
+  case "$1" in
+    -o)
+      output_file="$2"
+      shift 2
+      ;;
+    *)
+      shift
+      ;;
+  esac
+done
+printf 'google-key\n' >"$output_file"
+EOF
+    make_executable "$fake_bin/curl"
+
+    if PATH="$fake_bin" /bin/sh "$script_under_test" core 2>"$stderr_log"; then
+      echo "install-linux-packages.sh should fail when gpg is unavailable"
+      exit 1
+    fi
+
+    assert_file_contains "$stderr_log" 'gpg is required before configuring apt repositories' \
+      "install-linux-packages.sh should explain the missing gpg prerequisite"
+  )
+}
+
+test_install_linux_packages_requires_dpkg_for_linux_extra() {
+  (
+    tmpdir="$(create_temp_dir)"
+    trap 'rm -rf "$tmpdir"' EXIT HUP INT TERM
+
+    fake_root="$tmpdir/root"
+    fake_bin="$tmpdir/bin"
+    script_under_test="$tmpdir/install-linux-packages.sh"
+    stderr_log="$tmpdir/stderr.log"
+    mkdir -p "$fake_bin"
+
+    prepare_patched_linux_packages_script "$script_under_test" "$fake_root"
+
+    cat >"$fake_bin/sudo" <<'EOF'
+#!/bin/sh
+"$@"
+EOF
+    make_executable "$fake_bin/sudo"
+
+    cat >"$fake_bin/apt-get" <<'EOF'
+#!/bin/sh
+exit 0
+EOF
+    make_executable "$fake_bin/apt-get"
+
+    cat >"$fake_bin/curl" <<'EOF'
+#!/bin/sh
+while [ "$#" -gt 0 ]; do
+  case "$1" in
+    -o)
+      output_file="$2"
+      shift 2
+      ;;
+    *)
+      shift
+      ;;
+  esac
+done
+printf 'docker-key\n' >"$output_file"
+EOF
+    make_executable "$fake_bin/curl"
+
+    cat >"$fake_bin/gpg" <<'EOF'
+#!/bin/sh
+if [ "$1" = "--dearmor" ] && [ "$2" = "--output" ]; then
+  cat "$4" >"$3"
+  exit 0
+fi
+exit 1
+EOF
+    make_executable "$fake_bin/gpg"
+
+    cat >"$fake_bin/chown" <<'EOF'
+#!/bin/sh
+exit 0
+EOF
+    make_executable "$fake_bin/chown"
+
+    if PATH="$fake_bin" /bin/sh "$script_under_test" linux-extra 2>"$stderr_log"; then
+      echo "install-linux-packages.sh should fail when dpkg is unavailable for linux-extra"
+      exit 1
+    fi
+
+    assert_file_contains "$stderr_log" 'dpkg is required before configuring the Docker apt repository' \
+      "install-linux-packages.sh should explain the missing dpkg prerequisite"
+  )
+}
+
 if [ ! -x "$packages_script" ]; then
   echo "apt install script is not executable: $packages_script"
   exit 1
@@ -579,5 +823,10 @@ test_setup_linux_order
 test_linux_package_repo_idempotency
 test_linux_package_keyring_mode_repair
 test_linux_package_keyring_download_failure
+test_install_linux_packages_requires_base_commands
+test_install_linux_packages_requires_apt_get
+test_install_linux_packages_requires_curl
+test_install_linux_packages_requires_gpg
+test_install_linux_packages_requires_dpkg_for_linux_extra
 
 echo "linux apt install script test passed"

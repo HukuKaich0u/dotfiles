@@ -10,6 +10,16 @@ Install Homebrew on macOS if it is not already available.
 EOF
 }
 
+require_command() {
+  command_name="$1"
+  message="$2"
+
+  if ! command -v "$command_name" >/dev/null 2>&1; then
+    echo "$message" >&2
+    exit 1
+  fi
+}
+
 main() {
   if [ "$#" -ne 0 ]; then
     case "$1" in
@@ -34,6 +44,9 @@ main() {
     echo "brew already installed, skipping"
     exit 0
   fi
+
+  require_command curl \
+    "curl is required before installing Homebrew. Install curl first, then rerun this script."
 
   NONINTERACTIVE=1 /bin/bash -c \
     "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"

@@ -12,6 +12,16 @@ Profiles:
 EOF
 }
 
+require_command() {
+  command_name="$1"
+  message="$2"
+
+  if ! command -v "$command_name" >/dev/null 2>&1; then
+    echo "$message" >&2
+    exit 1
+  fi
+}
+
 require_supported_distro() {
   if [ ! -r /etc/os-release ]; then
     echo "Unsupported Linux distribution: /etc/os-release not found" >&2
@@ -29,6 +39,20 @@ require_supported_distro() {
       exit 1
       ;;
   esac
+}
+
+require_base_commands() {
+  require_command sudo \
+    "sudo is required before installing Linux packages. Install or enable sudo first."
+  require_command apt-get \
+    "apt-get is required before installing Linux packages. This script supports Debian/Ubuntu only."
+}
+
+require_repo_commands() {
+  require_command curl \
+    "curl is required before configuring apt repositories. Install curl first."
+  require_command gpg \
+    "gpg is required before configuring apt repositories. Install gnupg first."
 }
 
 apt_install() {
@@ -242,10 +266,16 @@ main() {
       ;;
     core)
       require_supported_distro
+      require_base_commands
+      require_repo_commands
       install_core
       ;;
     linux-extra)
       require_supported_distro
+      require_base_commands
+      require_repo_commands
+      require_command dpkg \
+        "dpkg is required before configuring the Docker apt repository."
       install_linux_extra
       ;;
     *)

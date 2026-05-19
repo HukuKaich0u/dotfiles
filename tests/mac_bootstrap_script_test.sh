@@ -68,6 +68,16 @@ make_executable() {
   chmod +x "$1"
 }
 
+stub_darwin_uname() {
+  fake_bin="$1"
+
+  cat >"$fake_bin/uname" <<'EOF'
+#!/bin/sh
+echo Darwin
+EOF
+  make_executable "$fake_bin/uname"
+}
+
 test_mac_scripts_exist_and_document_guards() {
   assert_file_exists "$install_homebrew_script" "install-homebrew.sh must exist"
   assert_file_exists "$apply_nix_darwin_script" "apply-nix-darwin.sh must exist"
@@ -125,6 +135,52 @@ link-dotfiles:" \
   )
 }
 
+test_install_homebrew_requires_curl() {
+  (
+    tmpdir="$(create_temp_dir)"
+    trap 'rm -rf "$tmpdir"' EXIT HUP INT TERM
+
+    fake_bin="$tmpdir/bin"
+    stderr_log="$tmpdir/stderr.log"
+    mkdir -p "$fake_bin"
+    stub_darwin_uname "$fake_bin"
+
+    if PATH="$fake_bin" /bin/sh "$install_homebrew_script" 2>"$stderr_log"; then
+      echo "install-homebrew.sh should fail when curl is unavailable"
+      exit 1
+    fi
+
+    assert_contains "$stderr_log" 'curl is required before installing Homebrew' \
+      "install-homebrew.sh should explain that curl must be installed first"
+  )
+}
+
+test_apply_nix_darwin_requires_darwin_rebuild() {
+  (
+    tmpdir="$(create_temp_dir)"
+    trap 'rm -rf "$tmpdir"' EXIT HUP INT TERM
+
+    fake_bin="$tmpdir/bin"
+    stderr_log="$tmpdir/stderr.log"
+    mkdir -p "$fake_bin"
+    stub_darwin_uname "$fake_bin"
+
+    cat >"$fake_bin/nix" <<'EOF'
+#!/bin/sh
+exit 0
+EOF
+    make_executable "$fake_bin/nix"
+
+    if PATH="$fake_bin" /bin/sh "$apply_nix_darwin_script" 2>"$stderr_log"; then
+      echo "apply-nix-darwin.sh should fail when darwin-rebuild is unavailable"
+      exit 1
+    fi
+
+    assert_contains "$stderr_log" 'darwin-rebuild is required before applying nix-darwin' \
+      "apply-nix-darwin.sh should explain the missing darwin-rebuild prerequisite"
+  )
+}
+
 test_mac_readmes() {
   mac_shortest_path_section="$(section_between "$scripts_readme" '## macOS 最短手順' '## Script 一覧')"
 
@@ -151,6 +207,8 @@ test_mac_readmes() {
 
 test_mac_scripts_exist_and_document_guards
 test_setup_mac_order
+test_install_homebrew_requires_curl
+test_apply_nix_darwin_requires_darwin_rebuild
 test_mac_readmes
 
 echo "mac bootstrap script test passed"

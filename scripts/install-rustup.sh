@@ -10,6 +10,16 @@ Install rustup for the current user if it is not already available.
 EOF
 }
 
+require_command() {
+  command_name="$1"
+  message="$2"
+
+  if ! command -v "$command_name" >/dev/null 2>&1; then
+    echo "$message" >&2
+    exit 1
+  fi
+}
+
 rustup_installed() {
   if command -v rustup >/dev/null 2>&1; then
     return 0
@@ -43,6 +53,9 @@ main() {
     echo "rustup already installed, skipping"
     exit 0
   fi
+
+  require_command curl \
+    "curl is required before installing rustup. Install curl first, then rerun this script."
 
   installer="$(mktemp "${TMPDIR:-/tmp}/rustup-init.XXXXXX")"
   trap 'rm -f "$installer"' EXIT HUP INT TERM
