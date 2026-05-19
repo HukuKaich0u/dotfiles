@@ -43,34 +43,67 @@ install_file_if_changed() {
   dest_dir="$(dirname "$dest")"
 
   if sudo test -f "$dest" && sudo cmp -s "$src" "$dest"; then
-    return 1
+    return 2
   fi
 
   sudo install -d -m 0755 "$dest_dir"
   sudo install -m "$mode" "$src" "$dest"
 }
 
+normalize_managed_file() {
+  dest="$1"
+  mode="$2"
+
+  sudo chown root:root "$dest"
+  sudo chmod "$mode" "$dest"
+}
+
 sync_keyring() {
   url="$1"
   dest="$2"
-  tmp="$(mktemp)"
+  raw_tmp="$(mktemp)"
+  dearmored_tmp="$(mktemp)"
 
   cleanup() {
-    rm -f "$tmp"
+    rm -f "$raw_tmp" "$dearmored_tmp"
   }
 
   trap cleanup EXIT HUP INT TERM
-  curl -fsSL "$url" | gpg --dearmor >"$tmp"
+  if ! curl -fsSL -o "$raw_tmp" "$url"; then
+    trap - EXIT HUP INT TERM
+    cleanup
+    return 1
+  fi
 
-  if install_file_if_changed "$tmp" "$dest" 0644; then
+  if ! gpg --dearmor --output "$dearmored_tmp" "$raw_tmp"; then
+    trap - EXIT HUP INT TERM
+    cleanup
+    return 1
+  fi
+
+  if install_file_if_changed "$dearmored_tmp" "$dest" 0644; then
+    status=0
+  else
+    status=$?
+  fi
+
+  if [ "$status" -eq 0 ]; then
+    normalize_managed_file "$dest" 0644
     trap - EXIT HUP INT TERM
     cleanup
     return 0
   fi
 
+  if [ "$status" -ne 2 ]; then
+    trap - EXIT HUP INT TERM
+    cleanup
+    return "$status"
+  fi
+
+  normalize_managed_file "$dest" 0644
   trap - EXIT HUP INT TERM
   cleanup
-  return 1
+  return 2
 }
 
 sync_apt_source() {
@@ -86,14 +119,26 @@ sync_apt_source() {
   printf '%s\n' "$source_line" >"$tmp"
 
   if install_file_if_changed "$tmp" "$dest" 0644; then
+    status=0
+  else
+    status=$?
+  fi
+
+  if [ "$status" -eq 0 ]; then
     trap - EXIT HUP INT TERM
     cleanup
     return 0
   fi
 
+  if [ "$status" -ne 2 ]; then
+    trap - EXIT HUP INT TERM
+    cleanup
+    return "$status"
+  fi
+
   trap - EXIT HUP INT TERM
   cleanup
-  return 1
+  return 2
 }
 
 install_google_cloud_repo() {
@@ -103,13 +148,27 @@ install_google_cloud_repo() {
   if sync_keyring \
     https://packages.cloud.google.com/apt/doc/apt-key.gpg \
     /usr/share/keyrings/cloud.google.gpg; then
+    status=0
+  else
+    status=$?
+  fi
+  if [ "$status" -eq 0 ]; then
     repo_changed=1
+  elif [ "$status" -ne 2 ]; then
+    return "$status"
   fi
 
   if sync_apt_source \
     /etc/apt/sources.list.d/google-cloud-sdk.list \
     "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main"; then
+    status=0
+  else
+    status=$?
+  fi
+  if [ "$status" -eq 0 ]; then
     repo_changed=1
+  elif [ "$status" -ne 2 ]; then
+    return "$status"
   fi
 
   if [ "$repo_changed" -eq 1 ]; then
@@ -137,15 +196,27 @@ install_linux_extra() {
   if sync_keyring \
     "https://download.docker.com/linux/${ID}/gpg" \
     /etc/apt/keyrings/docker.gpg; then
-    repo_changed=1
+    status=0
+  else
+    status=$?
   fi
-
-  sudo chmod a+r /etc/apt/keyrings/docker.gpg
+  if [ "$status" -eq 0 ]; then
+    repo_changed=1
+  elif [ "$status" -ne 2 ]; then
+    return "$status"
+  fi
 
   if sync_apt_source \
     /etc/apt/sources.list.d/docker.list \
     "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/${ID} ${VERSION_CODENAME} stable"; then
+    status=0
+  else
+    status=$?
+  fi
+  if [ "$status" -eq 0 ]; then
     repo_changed=1
+  elif [ "$status" -ne 2 ]; then
+    return "$status"
   fi
 
   if [ "$repo_changed" -eq 1 ]; then

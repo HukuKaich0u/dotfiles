@@ -26,6 +26,24 @@ make_executable() {
   chmod +x "$1"
 }
 
+assert_file_mode() {
+  path="$1"
+  expected="$2"
+  message="$3"
+
+  if [ ! -e "$path" ]; then
+    echo "$message"
+    exit 1
+  fi
+
+  actual="$(stat -f '%Lp' "$path")"
+  if [ "$actual" != "$expected" ]; then
+    echo "$message"
+    printf 'expected mode:\n%s\nactual mode:\n%s\n' "$expected" "$actual"
+    exit 1
+  fi
+}
+
 assert_file_missing() {
   path="$1"
   message="$2"
@@ -273,12 +291,27 @@ EOF
     cat >"$fake_bin/curl" <<EOF
 #!/bin/sh
 echo "\$*" >>"$log_dir/curl.log"
-case "\$*" in
+output_file=""
+url=""
+while [ "\$#" -gt 0 ]; do
+  case "\$1" in
+    -o)
+      output_file="\$2"
+      shift 2
+      ;;
+    *)
+      url="\$1"
+      shift
+      ;;
+  esac
+done
+
+case "\$url" in
   *packages.cloud.google.com*)
-    printf 'google-key\n'
+    printf 'google-key\n' >"\$output_file"
     ;;
   *download.docker.com*)
-    printf 'docker-key\n'
+    printf 'docker-key\n' >"\$output_file"
     ;;
   *)
     exit 1
@@ -289,9 +322,19 @@ EOF
 
     cat >"$fake_bin/gpg" <<'EOF'
 #!/bin/sh
-cat
+if [ "$1" = "--dearmor" ] && [ "$2" = "--output" ]; then
+  cat "$4" >"$3"
+  exit 0
+fi
+exit 1
 EOF
     make_executable "$fake_bin/gpg"
+
+    cat >"$fake_bin/chown" <<'EOF'
+#!/bin/sh
+exit 0
+EOF
+    make_executable "$fake_bin/chown"
 
     cat >"$fake_bin/dpkg" <<'EOF'
 #!/bin/sh
@@ -342,6 +385,131 @@ update
 install -y ca-certificates curl gnupg
 install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin" \
       "re-running linux-extra should skip the repo-refresh apt update when repo files are unchanged"
+  )
+}
+
+test_linux_package_keyring_mode_repair() {
+  (
+    tmpdir="$(create_temp_dir)"
+    trap 'rm -rf "$tmpdir"' EXIT HUP INT TERM
+
+    fake_root="$tmpdir/root"
+    fake_bin="$tmpdir/bin"
+    log_dir="$tmpdir/logs"
+    script_under_test="$tmpdir/install-linux-packages.sh"
+    mkdir -p "$fake_bin" "$log_dir"
+
+    prepare_patched_linux_packages_script "$script_under_test" "$fake_root"
+
+    cat >"$fake_bin/sudo" <<'EOF'
+#!/bin/sh
+"$@"
+EOF
+    make_executable "$fake_bin/sudo"
+
+    cat >"$fake_bin/apt-get" <<EOF
+#!/bin/sh
+echo "\$*" >>"$log_dir/apt-get.log"
+exit 0
+EOF
+    make_executable "$fake_bin/apt-get"
+
+    cat >"$fake_bin/curl" <<'EOF'
+#!/bin/sh
+while [ "$#" -gt 0 ]; do
+  case "$1" in
+    -o)
+      output_file="$2"
+      shift 2
+      ;;
+    *)
+      shift
+      ;;
+  esac
+done
+printf 'google-key\n' >"$output_file"
+EOF
+    make_executable "$fake_bin/curl"
+
+    cat >"$fake_bin/gpg" <<'EOF'
+#!/bin/sh
+if [ "$1" = "--dearmor" ] && [ "$2" = "--output" ]; then
+  cat "$4" >"$3"
+  exit 0
+fi
+exit 1
+EOF
+    make_executable "$fake_bin/gpg"
+
+    cat >"$fake_bin/chown" <<'EOF'
+#!/bin/sh
+exit 0
+EOF
+    make_executable "$fake_bin/chown"
+
+    PATH="$fake_bin:/bin:/usr/bin" /bin/sh "$script_under_test" core
+
+    chmod 0600 "$fake_root/usr/share/keyrings/cloud.google.gpg"
+    assert_file_mode "$fake_root/usr/share/keyrings/cloud.google.gpg" "600" \
+      "test setup should drift the Google Cloud keyring mode"
+
+    PATH="$fake_bin:/bin:/usr/bin" /bin/sh "$script_under_test" core
+
+    assert_file_mode "$fake_root/usr/share/keyrings/cloud.google.gpg" "644" \
+      "re-running core should repair Google Cloud keyring readability drift"
+  )
+}
+
+test_linux_package_keyring_download_failure() {
+  (
+    tmpdir="$(create_temp_dir)"
+    trap 'rm -rf "$tmpdir"' EXIT HUP INT TERM
+
+    fake_root="$tmpdir/root"
+    fake_bin="$tmpdir/bin"
+    script_under_test="$tmpdir/install-linux-packages.sh"
+    mkdir -p "$fake_bin"
+
+    prepare_patched_linux_packages_script "$script_under_test" "$fake_root"
+
+    cat >"$fake_bin/sudo" <<'EOF'
+#!/bin/sh
+"$@"
+EOF
+    make_executable "$fake_bin/sudo"
+
+    cat >"$fake_bin/apt-get" <<'EOF'
+#!/bin/sh
+exit 0
+EOF
+    make_executable "$fake_bin/apt-get"
+
+    cat >"$fake_bin/curl" <<'EOF'
+#!/bin/sh
+exit 7
+EOF
+    make_executable "$fake_bin/curl"
+
+    cat >"$fake_bin/gpg" <<'EOF'
+#!/bin/sh
+if [ "$1" = "--dearmor" ] && [ "$2" = "--output" ]; then
+  cat "$4" >"$3"
+  exit 0
+fi
+exit 1
+EOF
+    make_executable "$fake_bin/gpg"
+
+    cat >"$fake_bin/chown" <<'EOF'
+#!/bin/sh
+exit 0
+EOF
+    make_executable "$fake_bin/chown"
+
+    if PATH="$fake_bin:/bin:/usr/bin" /bin/sh "$script_under_test" core; then
+      echo "install-linux-packages.sh should fail when the Google Cloud keyring download fails"
+      exit 1
+    fi
   )
 }
 
@@ -409,5 +577,7 @@ assert_contains "$setup_script" 'with-docker' \
 test_install_rustup_behaviors
 test_setup_linux_order
 test_linux_package_repo_idempotency
+test_linux_package_keyring_mode_repair
+test_linux_package_keyring_download_failure
 
 echo "linux apt install script test passed"
