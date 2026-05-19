@@ -36,6 +36,30 @@ gcloud init
 
 `setup-linux.sh` は orchestrator だけを担当する。apt repository 追加、package install、`rustup` install、dotfiles link の実装詳細は個別 script 側に置く。
 
+## macOS 最短手順
+
+macOS の新規 bootstrap を最短で通すなら、まずこれを実行する。
+
+```sh
+./scripts/setup-mac.sh
+```
+
+`setup-mac.sh` は orchestrator だけを担当する。Homebrew の導入確認、`darwin-rebuild switch --flake ./nix#KokiAoyagi`、dotfiles link の実装詳細は個別 script 側に置く。
+
+手動 step:
+
+```sh
+sudo nix --extra-experimental-features 'nix-command flakes' run nix-darwin -- switch --flake ./nix#KokiAoyagi
+```
+
+初回は `darwin-rebuild` がまだ無いことがある。その場合は上の command で一度 `nix-darwin` を適用してから、以後は `./scripts/setup-mac.sh` を再実行する。
+
+`gcloud` を使うなら追加でこれを実行する。
+
+```sh
+gcloud init
+```
+
 ## Script 一覧
 
 ### `setup-linux.sh`
@@ -77,6 +101,95 @@ Linux 初回セットアップの入口。
 - `rustup` install の実装詳細
 - `rustup` の toolchain/channel カスタマイズ
 - `gcloud init`
+
+### `setup-mac.sh`
+
+macOS 初回セットアップの入口。
+
+実行順:
+
+1. `install-homebrew.sh`
+2. `apply-nix-darwin.sh`
+3. `link-dotfiles.sh`
+
+この script 自体は orchestrator で、個別処理の詳細は下の 3 本に委譲する。
+
+用途:
+
+- 新しい macOS マシンをこの repo 向けに bootstrap したい時
+- 何を最初に実行すればよいか迷いたくない時
+
+例:
+
+```sh
+./scripts/setup-mac.sh
+```
+
+この script がやること:
+
+- Homebrew が無ければ install する
+- `darwin-rebuild switch --flake ./nix#KokiAoyagi` を実行する
+- repo 管理下の dotfiles link を張る
+
+この script がやらないこと:
+
+- `darwin-rebuild` 初回導入の完全自動化
+- GUI app 側の認証や初期設定
+- `gcloud auth login` や `gcloud init`
+
+## `install-homebrew.sh`
+
+macOS の Homebrew installer。
+
+用途:
+
+- Homebrew 導入だけを個別に再実行したい時
+- mac bootstrap 前提を先に満たしたい時
+
+例:
+
+```sh
+./scripts/install-homebrew.sh
+```
+
+この script がやること:
+
+- macOS 判定
+- `brew` が既にあれば clean に skip
+- 未導入時のみ Homebrew 公式 installer を実行
+
+この script がやらないこと:
+
+- Homebrew formula / cask の適用
+- `darwin-rebuild` 実行
+- dotfiles の symlink 配布
+
+## `apply-nix-darwin.sh`
+
+macOS の `nix-darwin` apply script。
+
+用途:
+
+- `darwin-rebuild` だけ単体で再実行したい時
+- Homebrew や dotfiles link を触らず Nix 側だけ反映したい時
+
+例:
+
+```sh
+./scripts/apply-nix-darwin.sh
+```
+
+この script がやること:
+
+- macOS 判定
+- `nix` と `darwin-rebuild` の前提確認
+- repo root で `darwin-rebuild switch --flake ./nix#KokiAoyagi` を実行
+
+この script がやらないこと:
+
+- Nix installer 自体の導入
+- `darwin-rebuild` 初回導入の完全自動化
+- dotfiles の symlink 配布
 
 ## `install-linux-packages.sh`
 
@@ -198,4 +311,4 @@ Home Manager 管理に移したものは link 対象外:
 
 ## 推奨手順
 
-上の「Linux 最短手順」がそのまま推奨手順。
+Linux は上の「Linux 最短手順」、macOS は「macOS 最短手順」がそのまま推奨手順。

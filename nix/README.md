@@ -30,6 +30,29 @@ home-manager switch --flake ./nix#kokiaoyagi
 
 Docker も必要なら最初の command だけ `./scripts/setup-linux.sh --with-docker` に置き換える。`setup-linux.sh` は OS package, `rustup`, dotfiles link までを担当し、Nix 側の反映は `home-manager switch` を明示的に続ける。
 
+## macOS Shortest Path
+
+macOS の最短 bootstrap は、まず入口 script を実行してから必要な手動 step を続ける。
+
+```sh
+./scripts/setup-mac.sh
+```
+
+`setup-mac.sh` は Homebrew install, `darwin-rebuild switch --flake ./nix#KokiAoyagi`, dotfiles link を順に呼ぶ orchestrator として保つ。
+
+初回は `darwin-rebuild` command がまだ存在しない場合がある。その場合の手動 step はこれ。
+
+```sh
+sudo nix --extra-experimental-features 'nix-command flakes' run nix-darwin -- switch --flake ./nix#KokiAoyagi
+./scripts/setup-mac.sh
+```
+
+追加の手動 step:
+
+```sh
+gcloud init
+```
+
 ## Canonical Structure
 
 将来的な正規構成はこれです。
