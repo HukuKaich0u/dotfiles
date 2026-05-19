@@ -36,7 +36,6 @@
 
     casks = [
       "codex"
-      "cursor-cli"
       "gcloud-cli"
       "ghostty"
       "github"

@@ -9,6 +9,7 @@ linux_default_nix="$repo_root/nix/modules/linux/default.nix"
 linux_zsh_nix="$repo_root/nix/modules/linux/zsh.nix"
 starship_nix="$repo_root/nix/modules/home/programs/starship.nix"
 zsh_nix="$repo_root/nix/modules/home/programs/zsh.nix"
+zoxide_nix="$repo_root/nix/modules/home/programs/zoxide.nix"
 install_script="$repo_root/scripts/link-dotfiles.sh"
 linux_zsh_dir="$repo_root/zsh"
 
@@ -54,6 +55,8 @@ assert_not_contains "$home_default_nix" "./programs/zsh.nix" \
     "modules/home/default.nix should not import programs/zsh.nix once Linux splits off file-based zsh config"
 assert_contains "$home_default_nix" "./programs/starship.nix" \
     "modules/home/default.nix should import programs/starship.nix"
+assert_contains "$home_default_nix" "./programs/zoxide.nix" \
+    "modules/home/default.nix should import programs/zoxide.nix"
 assert_contains "$darwin_default_nix" "../home/programs/zsh.nix" \
     "modules/darwin/default.nix should import the Home Manager zsh module for macOS"
 assert_contains "$linux_default_nix" "./zsh.nix" \
@@ -69,6 +72,11 @@ if [ ! -f "$zsh_nix" ]; then
     exit 1
 fi
 
+if [ ! -f "$zoxide_nix" ]; then
+    echo "zoxide.nix should exist"
+    exit 1
+fi
+
 if [ ! -f "$linux_zsh_nix" ]; then
     echo "linux zsh module should exist"
     exit 1
@@ -81,6 +89,11 @@ fi
 
 if ! nix-instantiate --parse "$zsh_nix" >/dev/null; then
     echo "zsh.nix should parse as valid Nix"
+    exit 1
+fi
+
+if ! nix-instantiate --parse "$zoxide_nix" >/dev/null; then
+    echo "zoxide.nix should parse as valid Nix"
     exit 1
 fi
 
@@ -161,6 +174,12 @@ assert_contains "$starship_nix" 'docker_context = {' \
     "starship.nix should keep the custom docker context module"
 assert_missing "$repo_root/.config/starship.toml" \
     "repo root should not keep a hand-managed starship.toml source"
+assert_contains "$zoxide_nix" 'programs.zoxide = {' \
+    "zoxide.nix should configure programs.zoxide"
+assert_contains "$zoxide_nix" 'enable = true;' \
+    "zoxide.nix should enable zoxide"
+assert_contains "$zoxide_nix" 'enableZshIntegration = true;' \
+    "zoxide.nix should enable zsh integration explicitly"
 
 assert_contains "$linux_zsh_nix" 'home.file.".zshenv"' \
     "linux zsh module should install ~/.zshenv directly"
@@ -198,6 +217,8 @@ assert_contains "$linux_zsh_dir/.zshrc" 'eval "$(starship init zsh)"' \
     "linux zshrc template should initialize starship without programs.zsh"
 assert_contains "$linux_zsh_dir/.zshrc" 'eval "$(mise activate zsh)"' \
     "linux zshrc template should initialize mise without programs.zsh"
+assert_contains "$linux_zsh_dir/.zshrc" 'eval "$(zoxide init zsh)"' \
+    "linux zshrc template should initialize zoxide"
 assert_not_contains "$linux_zsh_dir/.zshrc" '$HOME/.cargo/env' \
     "linux zshrc template should no longer initialize cargo in interactive-only config"
 assert_not_contains "$linux_zsh_dir/.zshrc" '$HOME/.local/share/pnpm' \

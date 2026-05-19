@@ -101,7 +101,6 @@ terminal-notifier
 
 expected_casks='
 codex
-cursor-cli
 gcloud-cli
 ghostty
 github
@@ -126,5 +125,8 @@ for cask in $expected_casks; do
   assert_contains "$homebrew_nix" "\"$cask\"" \
     "homebrew.nix must declare cask $cask"
 done
+
+assert_not_contains "$homebrew_nix" '"cursor-cli"' \
+  "homebrew.nix should no longer declare cursor-cli"
 
 echo "nix-darwin reset test passed"
