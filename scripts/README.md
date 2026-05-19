@@ -2,6 +2,9 @@
 
 このディレクトリには、dotfiles repo の bootstrap を役割ごとに分けた script を置く。
 
+end-to-end の環境構築手順は repo root の `README.md` を参照。
+この README は script catalog と各 script の責務整理に集中する。
+
 ## 方針
 
 - `setup-*` は OS ごとの入口 script

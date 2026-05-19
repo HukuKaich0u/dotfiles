@@ -10,6 +10,9 @@
 
 今後 `nix/` 配下を触るときは、まずこの README に従います。
 
+zero-to-working の全体手順は repo root の `README.md` を参照。
+この README は `nix/` 配下の source of truth と責務整理に集中する。
+
 ## Goal
 
 - macOS は `nix-darwin` を入口に使う
