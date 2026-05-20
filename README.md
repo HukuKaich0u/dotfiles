@@ -7,16 +7,24 @@ end-to-end の環境構築手順はこの `README.md` を基準にする。
 - `scripts/README.md`: bootstrap script catalog
 - `nix/README.md`: `nix/` 配下の source of truth
 
-## Setup Overview
+## Resume
 
-前提:
+- clone 先は `~/Documents/repos/personal/dotfiles` を前提にする
+- Nix 自体の install は手動で行う
+- Linux は `./scripts/setup-linux.sh` の後に `home-manager switch`、`mise install`、`npm i -g @openai/codex` まで進める
+- macOS は `./scripts/setup-mac.sh` を入口にし、必要なら `nix-darwin` の初回 fallback を挟む
+
+- [Setup Overview](#setup-overview)
+- [Linux Setup](#linux-setup)
+- [macOS Setup](#macos-setup)
+- [References](#references)
+
+## Setup Overview
 
 - clone 先は `~/Documents/repos/personal/dotfiles` を前提にしている
 - Linux は standalone Home Manager を使う
 - macOS は `nix-darwin` を使う
 - Nix 自体の install は手動で行う
-
-## Linux Setup
 
 ### 1. Clone
 
@@ -28,15 +36,16 @@ cd ~/Documents/repos/personal/dotfiles
 
 ### 2. Install Nix Manually
 
-Determinate Nix か公式 Nix installer で Nix を入れる。  
-そのうえで standalone Home Manager が使える状態にする。
+Determinate Nix か公式 Nix installer で Nix を入れる。
 
-確認:
+Linux では standalone Home Manager も使える状態にする。
 
 ```sh
 nix --version
 home-manager --version
 ```
+
+## Linux Setup
 
 ### 3. Run The Pre-Nix Bootstrap
 
@@ -52,8 +61,7 @@ Docker も必要:
 ./scripts/setup-linux.sh --with-docker
 ```
 
-この段階では OS package install、`rustup` install、dotfiles link までを行う。  
-Codex install はまだやらない。
+この段階では OS package install、`rustup` install、dotfiles link までを行う。
 
 ### 4. Apply Home Manager
 
@@ -62,8 +70,6 @@ home-manager switch --flake ./nix#kokiaoyagi
 ```
 
 ### 5. Install Mise-Managed Runtimes
-
-`mise` が見つからない場合は新しい shell を開いてから実行する。
 
 ```sh
 mise install
@@ -75,12 +81,9 @@ mise install
 npm -v
 ```
 
-`npm` が見つからない場合も、新しい shell を開いてから再確認する。
-
 ### 7. Install Codex Manually
 
-Linux では Codex 本体は shell script ではなく手動 install にする。  
-理由は、Codex が `mise` 管理の Node / npm に依存するため。
+`mise` / `npm` が見つからない場合は新しい shell を開いてから再確認する。
 
 ```sh
 npm i -g @openai/codex
@@ -101,24 +104,6 @@ chsh -s "$(command -v zsh)"
 ```
 
 ## macOS Setup
-
-### 1. Clone
-
-```sh
-mkdir -p ~/Documents/repos/personal
-git clone <your-dotfiles-repo-url> ~/Documents/repos/personal/dotfiles
-cd ~/Documents/repos/personal/dotfiles
-```
-
-### 2. Install Nix Manually
-
-Determinate Nix か公式 Nix installer で Nix を入れる。
-
-確認:
-
-```sh
-nix --version
-```
 
 ### 3. Run The Bootstrap Entrypoint
 
