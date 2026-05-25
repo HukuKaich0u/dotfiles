@@ -140,8 +140,12 @@ assert_not_contains "$zsh_nix" 'path_append_if_dir "/usr/.local/bin"' \
     "zsh.nix should not append unused local system bin paths manually"
 assert_not_contains "$zsh_nix" '$HOME/Library/pnpm' \
     "zsh.nix should not initialize pnpm globals when pnpm is provided via corepack"
-assert_contains "$zsh_nix" 'if [ -x "$HOME/miniconda3/bin/conda" ]; then' \
-    "zsh.nix should own conda PATH initialization"
+assert_contains "$zsh_nix" 'path_prepend_if_dir "$HOME/miniconda3/condabin"' \
+    "zsh.nix should add condabin so conda remains discoverable without eager initialization"
+assert_contains "$zsh_nix" 'conda() {' \
+    "zsh.nix should lazy-load conda instead of eagerly running the shell hook"
+assert_not_contains "$zsh_nix" '__conda_setup="$("$HOME/miniconda3/bin/conda" '\''shell.zsh'\'' '\''hook'\'' 2> /dev/null)"' \
+    "zsh.nix should not eagerly run the conda shell hook during login"
 assert_contains "$zsh_nix" '$HOMEBREW_PREFIX/share/google-cloud-sdk/path.zsh.inc' \
     "zsh.nix should own Homebrew gcloud PATH initialization"
 assert_not_contains "$zsh_nix" 'if [ -f "$HOME/.local/bin/env" ]; then' \
@@ -160,8 +164,8 @@ assert_not_contains "$zsh_nix" '/opt/homebrew/opt/openjdk' \
     "zsh.nix should no longer contain Homebrew openjdk initialization"
 assert_contains "$zsh_nix" 'export CPLUS_INCLUDE_PATH="'"''"'${CPLUS_INCLUDE_PATH:+$CPLUS_INCLUDE_PATH:}$HOME/include"' \
     "zsh.nix should own CPLUS_INCLUDE_PATH initialization"
-assert_contains "$zsh_nix" '$HOMEBREW_PREFIX/share/google-cloud-sdk/completion.zsh.inc' \
-    "zsh.nix should own Homebrew gcloud completion initialization"
+assert_contains "$zsh_nix" 'ENABLE_GCLOUD_COMPLETION' \
+    "zsh.nix should gate Homebrew gcloud completion behind an opt-in environment variable"
 assert_not_contains "$zsh_nix" 'source "$ZDOTDIR/homebrew.zsh"' \
     "zsh.nix should not depend on a separate homebrew.zsh file anymore"
 assert_not_contains "$zsh_nix" 'source "$ZDOTDIR/env.zsh"' \
@@ -205,14 +209,18 @@ assert_contains "$linux_zsh_nix" 'zsh-syntax-highlighting' \
     "linux zsh module should still install zsh syntax highlighting explicitly"
 assert_contains "$linux_zsh_dir/.zshrc" 'autoload -Uz compinit' \
     "linux zshrc template should initialize completion"
+assert_contains "$linux_zsh_dir/.zshrc" 'compinit -C -d "$ZSH_COMPDUMP"' \
+    "linux zshrc template should reuse the compinit cache when available"
 assert_contains "$linux_zsh_dir/.zprofile" 'if [ -f "$HOME/.cargo/env" ]; then' \
     "linux zsh profile template should initialize cargo for login shells"
 assert_contains "$linux_zsh_dir/.zprofile" '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh' \
     "linux zsh profile template should source nix-daemon.sh when available"
 assert_not_contains "$linux_zsh_dir/.zprofile" '$HOME/.local/share/pnpm' \
     "linux zsh profile template should not initialize pnpm globals when pnpm is provided via corepack"
-assert_contains "$linux_zsh_dir/.zprofile" 'if [ -x "$HOME/miniconda3/bin/conda" ]; then' \
-    "linux zsh profile template should initialize conda for login shells"
+assert_contains "$linux_zsh_dir/.zprofile" 'path_prepend_if_dir "$HOME/miniconda3/condabin"' \
+    "linux zsh profile template should add condabin for lazy conda initialization"
+assert_contains "$linux_zsh_dir/.zprofile" 'conda() {' \
+    "linux zsh profile template should lazy-load conda on first use"
 assert_contains "$linux_zsh_dir/.zshenv" 'export BAT_THEME="1337"' \
     "linux zsh env template should export the shared bat theme"
 assert_contains "$linux_zsh_dir/.zshrc" 'eval "$(starship init zsh)"' \
@@ -225,6 +233,8 @@ assert_not_contains "$linux_zsh_dir/.zshrc" '$HOME/.cargo/env' \
     "linux zshrc template should no longer initialize cargo in interactive-only config"
 assert_not_contains "$linux_zsh_dir/.zshrc" '$HOME/.local/share/pnpm' \
     "linux zshrc template should no longer initialize pnpm in interactive-only config"
+assert_not_contains "$linux_zsh_dir/.zprofile" '__conda_setup="$("$HOME/miniconda3/bin/conda" '\''shell.zsh'\'' '\''hook'\'' 2> /dev/null)"' \
+    "linux zsh profile template should not eagerly run the conda shell hook"
 assert_not_contains "$linux_zsh_dir/.zshrc" 'miniconda3/bin/conda' \
     "linux zshrc template should no longer initialize conda in interactive-only config"
 assert_not_contains "$linux_zsh_dir/.zshrc" 'path.zsh.inc' \
