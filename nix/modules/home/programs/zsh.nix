@@ -16,8 +16,13 @@ in {
 
       export ZSH_CACHE_DIR="''${XDG_CACHE_HOME:-$HOME/.cache}/zsh"
       mkdir -p "$ZSH_CACHE_DIR"
+      export ZSH_COMPDUMP="$ZSH_CACHE_DIR/.zcompdump"
 
-      compinit -d "$ZSH_CACHE_DIR/.zcompdump"
+      if [ -f "$ZSH_COMPDUMP" ]; then
+        compinit -C -d "$ZSH_COMPDUMP"
+      else
+        compinit -d "$ZSH_COMPDUMP"
+      fi
     '';
     autosuggestion.enable = true;
     syntaxHighlighting.enable = true;
@@ -57,29 +62,33 @@ in {
 
       # 標準では見つからない個人用コマンドだけを明示的に追加する。
       path_prepend_if_dir "$HOME/.npm-global/bin"
+      path_prepend_if_dir "$HOME/miniconda3/condabin"
+      path_prepend_if_dir "$HOME/miniconda3/bin"
 
       # rustup/cargo が管理する PATH をそのまま読む。
       if [ -f "$HOME/.cargo/env" ]; then
         . "$HOME/.cargo/env"
       fi
 
-      # conda は公式が生成する hook を優先し、だめなら profile script / bin を使う。
-      # >>> conda initialize >>>
-      # !! Contents within this block are managed by 'conda init' !!
+      # conda の重い shell hook は初回利用時にだけ読み込む。
       if [ -x "$HOME/miniconda3/bin/conda" ]; then
-        __conda_setup="$("$HOME/miniconda3/bin/conda" 'shell.zsh' 'hook' 2> /dev/null)"
-        if [ $? -eq 0 ]; then
+        conda() {
+          unset -f conda
+
+          local conda_exe="$HOME/miniconda3/bin/conda"
+          local __conda_setup
+
+          __conda_setup="$("$conda_exe" 'shell.zsh' 'hook' 2> /dev/null)"
+          if [ $? -eq 0 ]; then
             eval "$__conda_setup"
-        else
-            if [ -f "$HOME/miniconda3/etc/profile.d/conda.sh" ]; then
-                . "$HOME/miniconda3/etc/profile.d/conda.sh"
-            else
-                export PATH="$HOME/miniconda3/bin:$PATH"
-            fi
-        fi
-        unset __conda_setup
+          elif [ -f "$HOME/miniconda3/etc/profile.d/conda.sh" ]; then
+            . "$HOME/miniconda3/etc/profile.d/conda.sh"
+          fi
+
+          unset __conda_setup conda_exe
+          conda "$@"
+        }
       fi
-      # <<< conda initialize <<<
 
       # Homebrew 管理の gcloud は prefix 配下の shell hook を使う。
       if [ -n "''${HOMEBREW_PREFIX:-}" ] && [ -f "$HOMEBREW_PREFIX/share/google-cloud-sdk/path.zsh.inc" ]; then
@@ -96,11 +105,6 @@ in {
       if [ -d "$HOME/include" ]; then
         export CPLUS_INCLUDE_PATH="''${CPLUS_INCLUDE_PATH:+$CPLUS_INCLUDE_PATH:}$HOME/include"
       fi
-
-      # gcloud の補完は PATH 変更とは別なので最後に有効化する。
-      if [ -n "''${HOMEBREW_PREFIX:-}" ] && [ -f "$HOMEBREW_PREFIX/share/google-cloud-sdk/completion.zsh.inc" ]; then
-        . "$HOMEBREW_PREFIX/share/google-cloud-sdk/completion.zsh.inc"
-      fi
     '';
     initContent = lib.mkMerge [
       (lib.mkOrder 600 ''
@@ -108,6 +112,12 @@ in {
         # repo に入れないマシン固有の調整を最後に差し込む。
         if [ -f "$ZDOTDIR/local.zsh" ]; then
           . "$ZDOTDIR/local.zsh"
+        fi
+      '')
+      (lib.mkOrder 700 ''
+        # gcloud の補完は重いので、必要な端末だけ明示的に有効化する。
+        if [ -n "''${ENABLE_GCLOUD_COMPLETION:-}" ] && [ -n "''${HOMEBREW_PREFIX:-}" ] && [ -f "$HOMEBREW_PREFIX/share/google-cloud-sdk/completion.zsh.inc" ]; then
+          . "$HOMEBREW_PREFIX/share/google-cloud-sdk/completion.zsh.inc"
         fi
       '')
       (lib.mkOrder 1000 ''

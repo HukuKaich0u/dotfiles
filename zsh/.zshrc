@@ -10,8 +10,13 @@ autoload -Uz compinit
 
 export ZSH_CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/zsh"
 mkdir -p "$ZSH_CACHE_DIR"
+export ZSH_COMPDUMP="$ZSH_CACHE_DIR/.zcompdump"
 
-compinit -d "$ZSH_CACHE_DIR/.zcompdump"
+if [ -f "$ZSH_COMPDUMP" ]; then
+  compinit -C -d "$ZSH_COMPDUMP"
+else
+  compinit -d "$ZSH_COMPDUMP"
+fi
 
 if [ -f "@zshAutosuggestions@" ]; then
   source "@zshAutosuggestions@"
