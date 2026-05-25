@@ -203,6 +203,10 @@ test_mac_readmes() {
     "nix/README.md must point macOS bootstrap to setup-mac.sh"
   assert_contains "$nix_readme" 'darwin-rebuild switch --flake ./nix#KokiAoyagi' \
     "nix/README.md must document the nix-darwin apply command"
+  assert_contains "$nix_readme" 'ghostty' \
+    "nix/README.md must mention Ghostty in the macOS bootstrap documentation"
+  assert_contains "$nix_readme" 'modules/darwin/homebrew.nix' \
+    "nix/README.md must point macOS Homebrew package ownership at modules/darwin/homebrew.nix"
 }
 
 test_mac_scripts_exist_and_document_guards
