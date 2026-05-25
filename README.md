@@ -125,7 +125,7 @@ chsh -s "$(command -v zsh)"
 ./scripts/setup-mac.sh
 ```
 
-この中で `darwin-rebuild` を通して `nix/modules/darwin/homebrew.nix` の Homebrew cask 群も適用される。`ghostty` はここで入る。
+この中で `sudo darwin-rebuild switch --flake ./nix#KokiAoyagi` を通して `nix/modules/darwin/homebrew.nix` の Homebrew cask 群も適用される。`ghostty` はここで入る。
 
 ### 4. If `darwin-rebuild` Is Missing On First Run
 

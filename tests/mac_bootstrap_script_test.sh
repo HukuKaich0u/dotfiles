@@ -91,8 +91,10 @@ test_mac_scripts_exist_and_document_guards() {
     "apply-nix-darwin.sh must check for nix first"
   assert_contains "$apply_nix_darwin_script" 'command -v darwin-rebuild' \
     "apply-nix-darwin.sh must check for darwin-rebuild first"
-  assert_contains "$apply_nix_darwin_script" 'darwin-rebuild switch --flake ./nix#KokiAoyagi' \
-    "apply-nix-darwin.sh must apply the KokiAoyagi flake target"
+  assert_contains "$apply_nix_darwin_script" 'sudo ' \
+    "apply-nix-darwin.sh must run darwin-rebuild via sudo"
+  assert_contains "$apply_nix_darwin_script" 'darwin-rebuild' \
+    "apply-nix-darwin.sh must invoke darwin-rebuild"
 }
 
 test_setup_mac_order() {
@@ -201,12 +203,14 @@ test_mac_readmes() {
     "nix/README.md must document the macOS shortest path"
   assert_contains "$nix_readme" './scripts/setup-mac.sh' \
     "nix/README.md must point macOS bootstrap to setup-mac.sh"
-  assert_contains "$nix_readme" 'darwin-rebuild switch --flake ./nix#KokiAoyagi' \
-    "nix/README.md must document the nix-darwin apply command"
+  assert_contains "$nix_readme" 'sudo darwin-rebuild switch --flake ./nix#KokiAoyagi' \
+    "nix/README.md must document the sudo-based nix-darwin apply command"
   assert_contains "$nix_readme" 'ghostty' \
     "nix/README.md must mention Ghostty in the macOS bootstrap documentation"
   assert_contains "$nix_readme" 'modules/darwin/homebrew.nix' \
     "nix/README.md must point macOS Homebrew package ownership at modules/darwin/homebrew.nix"
+  assert_contains "$scripts_readme" 'sudo darwin-rebuild switch --flake ./nix#KokiAoyagi' \
+    "scripts/README.md must document the sudo-based nix-darwin apply command"
 }
 
 test_mac_scripts_exist_and_document_guards

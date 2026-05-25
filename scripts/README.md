@@ -60,7 +60,7 @@ gcloud init
 ./scripts/setup-mac.sh
 ```
 
-`setup-mac.sh` は orchestrator だけを担当する。Homebrew の導入確認、`darwin-rebuild switch --flake ./nix#KokiAoyagi`、dotfiles link の実装詳細は個別 script 側に置く。`ghostty` 自体の package ownership は `nix/modules/darwin/homebrew.nix` にある。
+`setup-mac.sh` は orchestrator だけを担当する。Homebrew の導入確認、`sudo darwin-rebuild switch --flake ./nix#KokiAoyagi`、dotfiles link の実装詳細は個別 script 側に置く。`ghostty` 自体の package ownership は `nix/modules/darwin/homebrew.nix` にある。
 
 手動 step:
 
@@ -102,7 +102,7 @@ gcloud init
 ### `apply-nix-darwin.sh`
 
 - 役割: macOS の `nix-darwin` apply
-- やること: macOS 判定、`nix` と `darwin-rebuild` の前提確認、repo root で `darwin-rebuild switch --flake ./nix#KokiAoyagi` 実行
+- やること: macOS 判定、`nix` と `darwin-rebuild` の前提確認、repo root で `sudo darwin-rebuild switch --flake ./nix#KokiAoyagi` 実行
 - やらないこと: Nix installer 自体の導入、`darwin-rebuild` 初回導入の完全自動化、dotfiles 配布
 - 例: `./scripts/apply-nix-darwin.sh`
 
