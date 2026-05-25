@@ -43,8 +43,13 @@ main() {
     exit 1
   fi
 
+  if ! command -v sudo >/dev/null 2>&1; then
+    echo "sudo is required before applying nix-darwin. Install or enable sudo first." >&2
+    exit 1
+  fi
+
   cd "$REPO_ROOT"
-  darwin-rebuild switch --flake ./nix#KokiAoyagi
+  sudo "$(command -v darwin-rebuild)" switch --flake ./nix#KokiAoyagi
 }
 
 main "$@"
