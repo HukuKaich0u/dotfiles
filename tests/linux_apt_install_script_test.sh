@@ -6,6 +6,9 @@ repo_root="$(CDPATH= cd -- "$(dirname "$0")/.." && pwd)"
 packages_script="$repo_root/scripts/install-linux-packages.sh"
 setup_script="$repo_root/scripts/setup-linux.sh"
 rustup_script="$repo_root/scripts/install-rustup.sh"
+ghostty_script="$repo_root/scripts/install-ghostty-linux.sh"
+root_readme="$repo_root/README.md"
+scripts_readme="$repo_root/scripts/README.md"
 
 assert_contains() {
   file="$1"
@@ -275,6 +278,101 @@ link-dotfiles:" \
   )
 }
 
+test_setup_linux_with_ghostty_order() {
+  (
+    tmpdir="$(create_temp_dir)"
+    trap 'rm -rf "$tmpdir"' EXIT HUP INT TERM
+
+    scripts_dir="$tmpdir/scripts"
+    log_file="$tmpdir/calls.log"
+    mkdir -p "$scripts_dir"
+
+    cp "$setup_script" "$scripts_dir/setup-linux.sh"
+    make_executable "$scripts_dir/setup-linux.sh"
+
+    cat >"$scripts_dir/install-linux-packages.sh" <<EOF
+#!/bin/sh
+echo "install-linux-packages:\$*" >>"$log_file"
+EOF
+    make_executable "$scripts_dir/install-linux-packages.sh"
+
+    cat >"$scripts_dir/install-ghostty-linux.sh" <<EOF
+#!/bin/sh
+echo "install-ghostty-linux:\$*" >>"$log_file"
+EOF
+    make_executable "$scripts_dir/install-ghostty-linux.sh"
+
+    cat >"$scripts_dir/install-rustup.sh" <<EOF
+#!/bin/sh
+echo "install-rustup:\$*" >>"$log_file"
+EOF
+    make_executable "$scripts_dir/install-rustup.sh"
+
+    cat >"$scripts_dir/link-dotfiles.sh" <<EOF
+#!/bin/sh
+echo "link-dotfiles:\$*" >>"$log_file"
+EOF
+    make_executable "$scripts_dir/link-dotfiles.sh"
+
+    HOME="$tmpdir/home" PATH="/bin:/usr/bin" /bin/sh "$scripts_dir/setup-linux.sh" --with-ghostty
+
+    assert_file_equals "$log_file" \
+"install-linux-packages:core
+install-ghostty-linux:
+install-rustup:
+link-dotfiles:" \
+      "setup-linux.sh should call Ghostty install between core packages and rustup when --with-ghostty is set"
+  )
+}
+
+test_setup_linux_with_docker_and_ghostty_order() {
+  (
+    tmpdir="$(create_temp_dir)"
+    trap 'rm -rf "$tmpdir"' EXIT HUP INT TERM
+
+    scripts_dir="$tmpdir/scripts"
+    log_file="$tmpdir/calls.log"
+    mkdir -p "$scripts_dir"
+
+    cp "$setup_script" "$scripts_dir/setup-linux.sh"
+    make_executable "$scripts_dir/setup-linux.sh"
+
+    cat >"$scripts_dir/install-linux-packages.sh" <<EOF
+#!/bin/sh
+echo "install-linux-packages:\$*" >>"$log_file"
+EOF
+    make_executable "$scripts_dir/install-linux-packages.sh"
+
+    cat >"$scripts_dir/install-ghostty-linux.sh" <<EOF
+#!/bin/sh
+echo "install-ghostty-linux:\$*" >>"$log_file"
+EOF
+    make_executable "$scripts_dir/install-ghostty-linux.sh"
+
+    cat >"$scripts_dir/install-rustup.sh" <<EOF
+#!/bin/sh
+echo "install-rustup:\$*" >>"$log_file"
+EOF
+    make_executable "$scripts_dir/install-rustup.sh"
+
+    cat >"$scripts_dir/link-dotfiles.sh" <<EOF
+#!/bin/sh
+echo "link-dotfiles:\$*" >>"$log_file"
+EOF
+    make_executable "$scripts_dir/link-dotfiles.sh"
+
+    HOME="$tmpdir/home" PATH="/bin:/usr/bin" /bin/sh "$scripts_dir/setup-linux.sh" --with-docker --with-ghostty
+
+    assert_file_equals "$log_file" \
+"install-linux-packages:core
+install-linux-packages:linux-extra
+install-ghostty-linux:
+install-rustup:
+link-dotfiles:" \
+      "setup-linux.sh should install docker before Ghostty and finish with rustup and dotfiles when both flags are set"
+  )
+}
+
 prepare_patched_linux_packages_script() {
   target_script="$1"
   fake_root="$2"
@@ -296,6 +394,24 @@ EOF
     -e "s|/usr/share/keyrings|$fake_root/usr/share/keyrings|g" \
     -e "s|/etc/apt/keyrings|$fake_root/etc/apt/keyrings|g" \
     "$packages_script" >"$target_script"
+  make_executable "$target_script"
+}
+
+prepare_patched_ghostty_script() {
+  target_script="$1"
+  fake_root="$2"
+  os_release_path="$fake_root/os-release"
+
+  mkdir -p "$fake_root"
+
+  cat >"$os_release_path" <<'EOF'
+ID=ubuntu
+VERSION_CODENAME=noble
+EOF
+
+  sed \
+    -e "s|/etc/os-release|$os_release_path|g" \
+    "$ghostty_script" >"$target_script"
   make_executable "$target_script"
 }
 
@@ -757,6 +873,87 @@ EOF
   )
 }
 
+test_install_ghostty_linux_requires_curl() {
+  (
+    tmpdir="$(create_temp_dir)"
+    trap 'rm -rf "$tmpdir"' EXIT HUP INT TERM
+
+    stderr_log="$tmpdir/stderr.log"
+    fake_bin="$tmpdir/bin"
+    mkdir -p "$fake_bin"
+
+    if PATH="$fake_bin" /bin/sh "$ghostty_script" 2>"$stderr_log"; then
+      echo "install-ghostty-linux.sh should fail when curl is unavailable"
+      exit 1
+    fi
+
+    assert_file_contains "$stderr_log" 'curl is required before installing Ghostty' \
+      "install-ghostty-linux.sh should explain the missing curl prerequisite"
+  )
+}
+
+test_install_ghostty_linux_skips_when_present() {
+  (
+    tmpdir="$(create_temp_dir)"
+    trap 'rm -rf "$tmpdir"' EXIT HUP INT TERM
+
+    fake_bin="$tmpdir/bin"
+    curl_log="$tmpdir/curl.log"
+    mkdir -p "$fake_bin"
+    : >"$curl_log"
+
+    cat >"$fake_bin/ghostty" <<'EOF'
+#!/bin/sh
+exit 0
+EOF
+    make_executable "$fake_bin/ghostty"
+
+    cat >"$fake_bin/curl" <<EOF
+#!/bin/sh
+echo curl >>"$curl_log"
+exit 0
+EOF
+    make_executable "$fake_bin/curl"
+
+    PATH="$fake_bin:/bin:/usr/bin" /bin/sh "$ghostty_script"
+
+    assert_file_equals "$curl_log" "" \
+      "install-ghostty-linux.sh should not invoke curl when ghostty is already installed"
+  )
+}
+
+test_install_ghostty_linux_runs_official_installer() {
+  (
+    tmpdir="$(create_temp_dir)"
+    trap 'rm -rf "$tmpdir"' EXIT HUP INT TERM
+
+    fake_root="$tmpdir/root"
+    fake_bin="$tmpdir/bin"
+    script_under_test="$tmpdir/install-ghostty-linux.sh"
+    curl_log="$tmpdir/curl.log"
+    installer_log="$tmpdir/installer.log"
+    mkdir -p "$fake_bin"
+
+    prepare_patched_ghostty_script "$script_under_test" "$fake_root"
+
+    cat >"$fake_bin/curl" <<EOF
+#!/bin/sh
+echo "\$*" >>"$curl_log"
+cat <<'SCRIPT'
+echo ran >>"$installer_log"
+SCRIPT
+EOF
+    make_executable "$fake_bin/curl"
+
+    PATH="$fake_bin:/bin:/usr/bin" /bin/sh "$script_under_test"
+
+    assert_file_contains "$curl_log" 'https://raw.githubusercontent.com/mkasberg/ghostty-ubuntu/HEAD/install.sh' \
+      "install-ghostty-linux.sh should fetch the documented Ghostty Ubuntu installer"
+    assert_file_equals "$installer_log" "ran" \
+      "install-ghostty-linux.sh should execute the downloaded installer body"
+  )
+}
+
 if [ ! -x "$packages_script" ]; then
   echo "apt install script is not executable: $packages_script"
   exit 1
@@ -769,6 +966,11 @@ fi
 
 if [ ! -x "$rustup_script" ]; then
   echo "rustup install script is not executable: $rustup_script"
+  exit 1
+fi
+
+if [ ! -x "$ghostty_script" ]; then
+  echo "ghostty install script is not executable: $ghostty_script"
   exit 1
 fi
 
@@ -813,13 +1015,25 @@ assert_contains "$setup_script" 'install-linux-packages.sh core' \
   "setup-linux.sh should install the core apt profile"
 assert_contains "$setup_script" 'install-rustup.sh' \
   "setup-linux.sh should delegate rustup installation to the shared script"
+assert_contains "$setup_script" 'install-ghostty-linux.sh' \
+  "setup-linux.sh should delegate Ghostty installation to a dedicated script"
 assert_contains "$setup_script" 'link-dotfiles.sh' \
   "setup-linux.sh should install dotfiles after package bootstrap"
 assert_contains "$setup_script" 'with-docker' \
   "setup-linux.sh should offer an opt-in Docker setup flag"
+assert_contains "$setup_script" 'with-ghostty' \
+  "setup-linux.sh should offer an opt-in Ghostty setup flag"
+assert_contains "$root_readme" './scripts/setup-linux.sh --with-ghostty' \
+  "README.md must document the opt-in Ghostty Linux bootstrap command"
+assert_contains "$scripts_readme" './scripts/setup-linux.sh --with-ghostty' \
+  "scripts/README.md must document the Ghostty desktop bootstrap command"
+assert_contains "$scripts_readme" 'install-ghostty-linux.sh' \
+  "scripts/README.md must describe install-ghostty-linux.sh"
 
 test_install_rustup_behaviors
 test_setup_linux_order
+test_setup_linux_with_ghostty_order
+test_setup_linux_with_docker_and_ghostty_order
 test_linux_package_repo_idempotency
 test_linux_package_keyring_mode_repair
 test_linux_package_keyring_download_failure
@@ -828,5 +1042,8 @@ test_install_linux_packages_requires_apt_get
 test_install_linux_packages_requires_curl
 test_install_linux_packages_requires_gpg
 test_install_linux_packages_requires_dpkg_for_linux_extra
+test_install_ghostty_linux_requires_curl
+test_install_ghostty_linux_skips_when_present
+test_install_ghostty_linux_runs_official_installer
 
 echo "linux apt install script test passed"

@@ -31,7 +31,7 @@ Linux の最短 bootstrap は 2 段階です。
 home-manager switch --flake ./nix#kokiaoyagi
 ```
 
-Docker も必要なら最初の command だけ `./scripts/setup-linux.sh --with-docker` に置き換える。`setup-linux.sh` は OS package, `rustup`, dotfiles link までを担当し、Nix 側の反映は `home-manager switch` を明示的に続ける。
+Ubuntu Desktop で Ghostty も必要なら最初の command だけ `./scripts/setup-linux.sh --with-ghostty` に置き換える。Docker も必要なら `./scripts/setup-linux.sh --with-docker`、両方必要なら `./scripts/setup-linux.sh --with-docker --with-ghostty` を使う。`setup-linux.sh` は OS package, `rustup`, dotfiles link、必要なら Ghostty install までを担当し、Nix 側の反映は `home-manager switch` を明示的に続ける。
 
 ## macOS Shortest Path
 
@@ -41,7 +41,7 @@ macOS の最短 bootstrap は、まず入口 script を実行してから必要�
 ./scripts/setup-mac.sh
 ```
 
-`setup-mac.sh` は Homebrew install, `darwin-rebuild switch --flake ./nix#KokiAoyagi`, dotfiles link を順に呼ぶ orchestrator として保つ。
+`setup-mac.sh` は Homebrew install, `darwin-rebuild switch --flake ./nix#KokiAoyagi`, dotfiles link を順に呼ぶ orchestrator として保つ。`ghostty` は `modules/darwin/homebrew.nix` の Homebrew cask としてここで適用される。
 
 初回は `darwin-rebuild` command がまだ存在しない場合がある。その場合の手動 step はこれ。
 

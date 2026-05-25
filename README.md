@@ -12,7 +12,9 @@ end-to-end の環境構築手順はこの `README.md` を基準にする。
 - clone 先は `~/Documents/repos/personal/dotfiles` を前提にする
 - Nix 自体の install は手動で行う
 - Linux は `./scripts/setup-linux.sh` の後に `home-manager switch`、`mise install`、`npm i -g @openai/codex` まで進める
+- Ubuntu Desktop で `ghostty` も必要なら `./scripts/setup-linux.sh --with-ghostty` を使う
 - macOS は `./scripts/setup-mac.sh` を入口にし、必要なら `nix-darwin` の初回 fallback を挟む
+- macOS の `ghostty` は `nix/modules/darwin/homebrew.nix` の Homebrew cask で管理している
 
 - [Setup Overview](#setup-overview)
 - [Linux Setup](#linux-setup)
@@ -59,6 +61,18 @@ Docker も必要:
 
 ```sh
 ./scripts/setup-linux.sh --with-docker
+```
+
+Ubuntu Desktop で Ghostty も必要:
+
+```sh
+./scripts/setup-linux.sh --with-ghostty
+```
+
+Docker と Ghostty の両方が必要:
+
+```sh
+./scripts/setup-linux.sh --with-docker --with-ghostty
 ```
 
 この段階では OS package install、`rustup` install、dotfiles link までを行う。
@@ -110,6 +124,8 @@ chsh -s "$(command -v zsh)"
 ```sh
 ./scripts/setup-mac.sh
 ```
+
+この中で `darwin-rebuild` を通して `nix/modules/darwin/homebrew.nix` の Homebrew cask 群も適用される。`ghostty` はここで入る。
 
 ### 4. If `darwin-rebuild` Is Missing On First Run
 

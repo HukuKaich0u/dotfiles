@@ -28,6 +28,14 @@ home-manager switch --flake ./nix#kokiaoyagi
 gcloud init
 ```
 
+Ubuntu Desktop で Ghostty も必要:
+
+```sh
+./scripts/setup-linux.sh --with-ghostty
+home-manager switch --flake ./nix#kokiaoyagi
+gcloud init
+```
+
 Docker も必要:
 
 ```sh
@@ -36,7 +44,15 @@ home-manager switch --flake ./nix#kokiaoyagi
 gcloud init
 ```
 
-`setup-linux.sh` は orchestrator だけを担当する。apt repository 追加、package install、`rustup` install、dotfiles link の実装詳細は個別 script 側に置く。
+Docker と Ghostty の両方が必要:
+
+```sh
+./scripts/setup-linux.sh --with-docker --with-ghostty
+home-manager switch --flake ./nix#kokiaoyagi
+gcloud init
+```
+
+`setup-linux.sh` は orchestrator だけを担当する。apt repository 追加、package install、Ghostty install、`rustup` install、dotfiles link の実装詳細は個別 script 側に置く。
 
 ## macOS 最短手順
 
@@ -44,7 +60,7 @@ gcloud init
 ./scripts/setup-mac.sh
 ```
 
-`setup-mac.sh` は orchestrator だけを担当する。Homebrew の導入確認、`darwin-rebuild switch --flake ./nix#KokiAoyagi`、dotfiles link の実装詳細は個別 script 側に置く。
+`setup-mac.sh` は orchestrator だけを担当する。Homebrew の導入確認、`darwin-rebuild switch --flake ./nix#KokiAoyagi`、dotfiles link の実装詳細は個別 script 側に置く。`ghostty` 自体の package ownership は `nix/modules/darwin/homebrew.nix` にある。
 
 手動 step:
 
@@ -65,9 +81,9 @@ gcloud init
 ### `setup-linux.sh`
 
 - 役割: Linux bootstrap の入口
-- 実行順: `install-linux-packages.sh core` → 必要なら `install-linux-packages.sh linux-extra` → `install-rustup.sh` → `link-dotfiles.sh`
+- 実行順: `install-linux-packages.sh core` → 必要なら `install-linux-packages.sh linux-extra` → 必要なら `install-ghostty-linux.sh` → `install-rustup.sh` → `link-dotfiles.sh`
 - やらないこと: `home-manager switch`、Docker daemon の post-install 調整、`gcloud init`
-- 例: `./scripts/setup-linux.sh`, `./scripts/setup-linux.sh --with-docker`
+- 例: `./scripts/setup-linux.sh`, `./scripts/setup-linux.sh --with-docker`, `./scripts/setup-linux.sh --with-ghostty`
 
 ### `setup-mac.sh`
 
@@ -105,6 +121,13 @@ gcloud init
 - やること: 既存 install の検知、未導入時のみ公式 installer を non-interactive で実行
 - やらないこと: `apt` package install、dotfiles 配布、toolchain/channel カスタマイズ
 - 例: `./scripts/install-rustup.sh`
+
+### `install-ghostty-linux.sh`
+
+- 役割: Ubuntu 向け `ghostty` installer
+- やること: Ubuntu 判定、既存 `ghostty` の skip、Ghostty docs が案内している Ubuntu installer 実行
+- やらないこと: `apt` profile 管理、dotfiles 配布、`ghostty` 設定ファイル管理
+- 例: `./scripts/install-ghostty-linux.sh`
 
 ### `link-dotfiles.sh`
 

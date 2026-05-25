@@ -4,10 +4,11 @@ set -eu
 
 SCRIPT_DIR="$(CDPATH= cd -- "$(dirname "$0")" && pwd)"
 WITH_DOCKER=0
+WITH_GHOSTTY=0
 
 usage() {
   cat <<'EOF'
-Usage: ./scripts/setup-linux.sh [--with-docker]
+Usage: ./scripts/setup-linux.sh [--with-docker] [--with-ghostty]
 
 Bootstraps a Linux machine for this dotfiles repo by:
   1. Installing core apt packages
@@ -16,6 +17,7 @@ Bootstraps a Linux machine for this dotfiles repo by:
 
 Options:
   --with-docker  Also install the linux-extra Docker profile
+  --with-ghostty Also install Ghostty via the official Linux installer
 EOF
 }
 
@@ -24,6 +26,9 @@ main() {
     case "$1" in
       --with-docker)
         WITH_DOCKER=1
+        ;;
+      --with-ghostty)
+        WITH_GHOSTTY=1
         ;;
       -h|--help)
         usage
@@ -43,6 +48,9 @@ main() {
   "$SCRIPT_DIR"/install-linux-packages.sh core
   if [ "$WITH_DOCKER" -eq 1 ]; then
     "$SCRIPT_DIR"/install-linux-packages.sh linux-extra
+  fi
+  if [ "$WITH_GHOSTTY" -eq 1 ]; then
+    "$SCRIPT_DIR"/install-ghostty-linux.sh
   fi
   "$SCRIPT_DIR"/install-rustup.sh
   "$SCRIPT_DIR"/link-dotfiles.sh
