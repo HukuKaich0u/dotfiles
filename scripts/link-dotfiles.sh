@@ -19,7 +19,7 @@ EXPLICIT_LINKS=(
     ".codex/AGENTS.md:$HOME/.codex/AGENTS.md"
     ".claude/CLAUDE.md:$HOME/.claude/CLAUDE.md"
 )
-SKIP_CONFIG_DIRS="tmux zsh starship.toml yazi bacon wezterm nvim"
+SKIP_CONFIG_DIRS="tmux zsh starship.toml yazi bacon wezterm ghostty nvim"
 
 ensure_parent_dir() {
     local target="$1"

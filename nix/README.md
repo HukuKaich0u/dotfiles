@@ -31,7 +31,7 @@ Linux の最短 bootstrap は 2 段階です。
 home-manager switch --flake ./nix#kokiaoyagi
 ```
 
-Ubuntu Desktop で Ghostty も必要なら最初の command だけ `./scripts/setup-linux.sh --with-ghostty` に置き換える。Docker も必要なら `./scripts/setup-linux.sh --with-docker`、両方必要なら `./scripts/setup-linux.sh --with-docker --with-ghostty` を使う。`setup-linux.sh` は OS package, `rustup`, dotfiles link、必要なら Ghostty install までを担当し、Nix 側の反映は `home-manager switch` を明示的に続ける。
+Ubuntu Desktop で Ghostty も必要なら最初の command だけ `./scripts/setup-linux.sh --with-ghostty` に置き換える。Docker も必要なら `./scripts/setup-linux.sh --with-docker`、両方必要なら `./scripts/setup-linux.sh --with-docker --with-ghostty` を使う。`setup-linux.sh` は OS package, `rustup`, dotfiles link、必要なら Ghostty install までを担当し、Ghostty config を含む Nix 側の反映は `home-manager switch` を明示的に続ける。
 
 ## macOS Shortest Path
 
@@ -41,7 +41,7 @@ macOS の最短 bootstrap は、まず入口 script を実行してから必要�
 ./scripts/setup-mac.sh
 ```
 
-`setup-mac.sh` は Homebrew install, `sudo darwin-rebuild switch --flake ./nix#KokiAoyagi`, dotfiles link を順に呼ぶ orchestrator として保つ。`ghostty` は `modules/darwin/homebrew.nix` の Homebrew cask としてここで適用される。
+`setup-mac.sh` は Homebrew install, `sudo darwin-rebuild switch --flake ./nix#KokiAoyagi`, dotfiles link を順に呼ぶ orchestrator として保つ。`ghostty` の install は `modules/darwin/homebrew.nix` の Homebrew cask が担当し、config は Home Manager module が担当する。
 
 初回は `darwin-rebuild` command がまだ存在しない場合がある。その場合の手動 step はこれ。
 
@@ -78,6 +78,7 @@ nix/
     │   │   ├── bacon.nix
     │   │   ├── gh.nix
     │   │   ├── git.nix
+    │   │   ├── ghostty.nix
     │   │   ├── mise.nix
     │   │   ├── nvim.nix
     │   │   ├── starship.nix
@@ -86,6 +87,7 @@ nix/
     │   │   ├── yazi.nix
     │   │   └── zsh.nix
     │   └── assets/
+    │       ├── ghostty/
     │       ├── nvim/
     │       ├── tmux/
     │       └── wezterm/
@@ -196,6 +198,7 @@ package 一覧を `default.nix` に直接肥大化させないこと。
 
 - `git.nix`
 - `gh.nix`
+- `ghostty.nix`
 - `codex.nix`
 - `mise.nix`
 - `nvim.nix`
@@ -210,6 +213,7 @@ program module から参照される実ファイル群を置きます。
 
 - Neovim の Lua / lockfile
 - tmux の `tmux.conf`
+- Ghostty の `config`
 - WezTerm の Lua config
 
 Lua や tmux conf のような asset を `programs/` と同じ階層に散らさないこと。

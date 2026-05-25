@@ -14,7 +14,8 @@ end-to-end の環境構築手順はこの `README.md` を基準にする。
 - Linux は `./scripts/setup-linux.sh` の後に `home-manager switch`、`mise install`、`npm i -g @openai/codex` まで進める
 - Ubuntu Desktop で `ghostty` も必要なら `./scripts/setup-linux.sh --with-ghostty` を使う
 - macOS は `./scripts/setup-mac.sh` を入口にし、必要なら `nix-darwin` の初回 fallback を挟む
-- macOS の `ghostty` は `nix/modules/darwin/homebrew.nix` の Homebrew cask で管理している
+- `ghostty` の install は Linux では `scripts/install-ghostty-linux.sh`、macOS では `nix/modules/darwin/homebrew.nix` が担当する
+- `ghostty` の config は Home Manager で管理する
 
 - [Setup Overview](#setup-overview)
 - [Linux Setup](#linux-setup)
@@ -75,7 +76,7 @@ Docker と Ghostty の両方が必要:
 ./scripts/setup-linux.sh --with-docker --with-ghostty
 ```
 
-この段階では OS package install、`rustup` install、dotfiles link までを行う。
+この段階では OS package install、必要なら `ghostty` install、`rustup` install、dotfiles link までを行う。`ghostty` の config 自体は次の `home-manager switch` で反映する。
 
 ### 4. Apply Home Manager
 
@@ -125,7 +126,7 @@ chsh -s "$(command -v zsh)"
 ./scripts/setup-mac.sh
 ```
 
-この中で `sudo darwin-rebuild switch --flake ./nix#KokiAoyagi` を通して `nix/modules/darwin/homebrew.nix` の Homebrew cask 群も適用される。`ghostty` はここで入る。
+この中で `sudo darwin-rebuild switch --flake ./nix#KokiAoyagi` を通して `nix/modules/darwin/homebrew.nix` の Homebrew cask 群も適用される。`ghostty` の install はここで入り、config は Home Manager 側で反映する。
 
 ### 4. If `darwin-rebuild` Is Missing On First Run
 

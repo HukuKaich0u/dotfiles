@@ -134,7 +134,7 @@ gcloud init
 - 役割: repo 管理の dotfiles / config を home directory 配下へ link
 - やること: `~/.config` 配下の symlink 配布、AI 関連ファイルの明示 link、legacy link cleanup、terminfo compile
 - やらないこと: `apt` package install、`rustup` install、Home Manager 管理領域の配布
-- link 対象外: `nvim`, `tmux`, `zsh`, `wezterm`, `yazi`, `bacon`, `starship.toml`
+- link 対象外: `nvim`, `tmux`, `zsh`, `wezterm`, `ghostty`, `yazi`, `bacon`, `starship.toml`
 - 例: `./scripts/link-dotfiles.sh`
 
 ## 推奨手順

@@ -8,6 +8,7 @@
     ./programs/codex
     ./programs/git.nix
     ./programs/gh.nix
+    ./programs/ghostty.nix
     ./programs/mise.nix
     ./programs/nvim.nix
     ./programs/starship.nix
