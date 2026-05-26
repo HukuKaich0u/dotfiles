@@ -37,19 +37,27 @@ if [ ! -f "$ghostty_nix" ]; then
   exit 1
 fi
 
-if [ ! -f "$ghostty_dir/config" ]; then
+if [ ! -f "$ghostty_dir/config.ghostty" ]; then
   echo "home-manager ghostty config should exist"
   exit 1
 fi
 
-assert_contains "$ghostty_nix" 'xdg.configFile."ghostty/config"' \
+assert_contains "$ghostty_nix" 'xdg.configFile."ghostty/config.ghostty"' \
   "ghostty.nix should manage config through xdg.configFile"
-assert_contains "$ghostty_nix" 'source = ../assets/ghostty/config;' \
+assert_contains "$ghostty_nix" 'source = ../assets/ghostty/config.ghostty;' \
   "ghostty.nix should source config from the assets tree"
 assert_contains "$install_sh" 'SKIP_CONFIG_DIRS="tmux zsh starship.toml yazi bacon wezterm ghostty nvim"' \
   "link-dotfiles.sh should skip ghostty after the home-manager migration"
-assert_contains "$ghostty_dir/config" 'Managed by Home Manager.' \
-  "home-manager ghostty config should be repo-managed"
+assert_contains "$ghostty_dir/config.ghostty" 'font-family = "JetBrainsMono Nerd Font"' \
+  "ghostty config should carry over the primary WezTerm font"
+assert_contains "$ghostty_dir/config.ghostty" 'background-opacity = 0.8' \
+  "ghostty config should keep the WezTerm-like opacity baseline"
+assert_contains "$ghostty_dir/config.ghostty" 'keybind = ctrl+q>shift+h=new_split:left' \
+  "ghostty config should map WezTerm-style split creation onto Ghostty"
+assert_contains "$ghostty_dir/config.ghostty" 'keybind = ctrl+q>h=goto_split:left' \
+  "ghostty config should map WezTerm-style split navigation onto Ghostty"
+assert_not_exists "$repo_root/.config/ghostty/config.ghostty" \
+  "legacy ghostty config.ghostty should not exist in the symlink-managed config tree"
 assert_not_exists "$repo_root/.config/ghostty/config" \
   "legacy ghostty config should not exist in the symlink-managed config tree"
 
