@@ -63,12 +63,12 @@ assert_contains "$tmux_nix" "battery_script=" \
     "tmux.nix should define a direct battery status command"
 assert_contains "$tmux_nix" "wifi_status_script=" \
     "tmux.nix should define a direct wifi status command"
-assert_contains "$tmux_nix" 'fg=#{@thm_blue}] #(${battery_script}/battery_icon.sh)' \
-    "battery status segment should use the blue theme accent"
-assert_contains "$tmux_nix" 'fg=#{@thm_blue}] #(${wifi_status_script})' \
-    "wifi status segment should use the blue theme accent"
-assert_not_contains "$tmux_nix" 'fg=#{@thm_green}] #(${battery_script}/battery_icon.sh)' \
-    "battery status segment should no longer use the green accent"
+assert_contains "$tmux_nix" 'fg=#{@thm_sapphire}] #(${battery_script}/battery_icon.sh)' \
+    "battery status segment should use the sapphire theme accent"
+assert_contains "$tmux_nix" 'fg=#{@thm_sapphire}] #(${wifi_status_script})' \
+    "wifi status segment should use the sapphire theme accent"
+assert_not_contains "$tmux_nix" 'fg=#{@thm_blue}] #(${battery_script}/battery_icon.sh)' \
+    "battery status segment should no longer use the blue accent"
 assert_not_contains "$tmux_nix" 'fg=#{@thm_rosewater}] #(${wifi_status_script})' \
     "wifi status segment should no longer use the rosewater accent"
 assert_contains "$tmux_nix" "pkgs.writeShellScript" \
@@ -86,10 +86,22 @@ assert_not_contains "$tmux_nix" "elif ping -c 1 -W 3 1.1.1.1" \
 
 assert_contains "$tmux_nix_conf" "@catppuccin_flavor 'macchiato'" \
     "tmux config should keep catppuccin settings"
-assert_contains "$tmux_nix_conf" "fg=#{@thm_red}" \
-    "tmux status-left session segment should use the theme red accent"
-assert_not_contains "$tmux_nix_conf" "fg=#{@thm_green}]  #S" \
-    "tmux status-left session segment should no longer use the green accent"
+assert_contains "$tmux_nix_conf" "@catppuccin_pane_status_enabled 'off'" \
+    "tmux config should disable catppuccin pane status with the correct option name"
+assert_contains "$tmux_nix_conf" '@catppuccin_pane_border_status "off"' \
+    "tmux config should disable catppuccin pane border status with the correct option name"
+assert_not_contains "$tmux_nix_conf" "@catpuccin_" \
+    "tmux config should not keep misspelled catppuccin option names"
+assert_contains "$tmux_nix_conf" "fg=#a6e3a1" \
+    "tmux status-left session segment should use the light green accent"
+assert_not_contains "$tmux_nix_conf" "fg=#{@thm_red}]  #S" \
+    "tmux status-left session segment should no longer use the red accent"
+assert_contains "$tmux_nix_conf" "#[bg=#1a1a1a,fg=#a6e3a1,#{?client_prefix,bold,none}] #{?client_prefix,,} #S " \
+    "tmux status-left should render prefix and normal session icons through a safe conditional"
+assert_not_contains "$tmux_nix_conf" "#{#[bg=" \
+    "tmux status-left should not wrap style segments in a broken tmux format expression"
+assert_not_contains "$tmux_nix_conf" "#{?client_prefix,#[bg=" \
+    "tmux status-left should not put comma-delimited style fragments directly inside a tmux conditional"
 assert_contains "$tmux_nix_conf" "setw -g pane-border-lines heavy" \
     "tmux config should use heavy pane border lines"
 assert_contains "$tmux_nix_conf" "setw -g pane-active-border-style \"fg=#{@thm_yellow},bold\"" \
