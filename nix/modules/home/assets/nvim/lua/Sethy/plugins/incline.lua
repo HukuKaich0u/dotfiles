@@ -2,7 +2,7 @@ return {
     -- Adding a filename to the Top Right
     {
         "b0o/incline.nvim",
-        enabled = true, -- change to false to disable
+        enabled = false, -- Disabled to hide the top-right filename; set back to true to restore it.
         dependencies = { "nvim-tree/nvim-web-devicons" },
         config = function()
             local devicons = require("nvim-web-devicons")
