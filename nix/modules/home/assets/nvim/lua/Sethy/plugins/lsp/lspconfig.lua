@@ -191,6 +191,7 @@ return {
             settings = {
                 python = {
                     analysis = {
+                        diagnosticMode = "openFilesOnly",
                         typeCheckingMode = "basic",
                         autoSearchPaths = true,
                         useLibraryCodeForTypes = true,
