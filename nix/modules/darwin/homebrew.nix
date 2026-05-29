@@ -35,6 +35,7 @@
     ];
 
     casks = [
+      "claude-code"
       "codex"
       "gcloud-cli"
       "ghostty"

@@ -199,6 +199,7 @@ package 一覧を `default.nix` に直接肥大化させないこと。
 - `git.nix`
 - `gh.nix`
 - `ghostty.nix`
+- `claude/`
 - `codex.nix`
 - `mise.nix`
 - `nvim.nix`
@@ -229,6 +230,17 @@ Codex 固有の Home Manager module 群です。
   - Codex module の束ね役
 
 ここには Codex 固有 config だけを書き、skills の export は `modules/home/programs/agent-skills/` へ分離します。
+
+#### `modules/home/programs/claude/`
+
+Claude 固有の Home Manager module 群です。
+
+- `config.nix`
+  - `~/.claude/CLAUDE.md` を repo root の `/.claude/CLAUDE.md` へ向ける
+- `default.nix`
+  - Claude module の束ね役
+
+Claude Code 本体の install ownership はここではなく platform ごとに分けます。
 
 #### `modules/home/programs/agent-skills/`
 
@@ -302,7 +314,9 @@ Homebrew 専用です。
 
 現状の Codex install もここで管理します。
 
+- `claude-code` の install は Homebrew cask
 - `codex` の install は Homebrew cask
+- Claude の設定ファイル配布は `modules/home/programs/claude/`
 - Codex の設定ファイル配布は `modules/home/programs/codex/`
 
 Nix package で足りるものはまず Nix を優先し、Homebrew は macOS 依存や運用上必要なものだけに寄せます。
@@ -359,6 +373,29 @@ open_external_editor = []
 
 現状の `/.codex/AGENTS.md` は `/.agents/AGENTS.md` への tracked symlink です。
 つまり adapter 層の入口だけ `/.codex/` に残し、実体は `/.agents/` に寄せます。
+
+## Claude Layout
+
+Claude まわりも install / config / prompt assets を分けて考えます。
+
+### install
+
+- macOS: `modules/darwin/homebrew.nix`
+- Linux: `scripts/install-claude-code.sh`
+
+Linux 側は `mise install` で Node / npm を入れた後に `./scripts/install-claude-code.sh` を実行する。
+
+### config
+
+- `modules/home/programs/claude/config.nix`
+- `~/.claude/CLAUDE.md` は repo root `/.claude/CLAUDE.md` への symlink
+
+### prompt assets / adapters
+
+- repo root `/.claude/`
+- repo root `/.agents/AGENTS.md`
+
+`/.claude/CLAUDE.md` は Claude 用 adapter 層の入口で、現状は `/.agents/AGENTS.md` への tracked symlink です。
 
 ### skills export
 

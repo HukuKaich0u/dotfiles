@@ -11,7 +11,7 @@ end-to-end の環境構築手順はこの `README.md` を基準にする。
 
 - clone 先は `~/Documents/repos/personal/dotfiles` を前提にする
 - Nix 自体の install は手動で行う
-- Linux は `./scripts/setup-linux.sh` の後に `home-manager switch`、`mise install`、`npm i -g @openai/codex` まで進める
+- Linux は `./scripts/setup-linux.sh` の後に `home-manager switch`、`mise install`、`./scripts/install-claude-code.sh`、`npm i -g @openai/codex` まで進める
 - Ubuntu Desktop で `ghostty` も必要なら `./scripts/setup-linux.sh --with-ghostty` を使う
 - macOS は `./scripts/setup-mac.sh` を入口にし、必要なら `nix-darwin` の初回 fallback を挟む
 - `ghostty` の install は Linux では `scripts/install-ghostty-linux.sh`、macOS では `nix/modules/darwin/homebrew.nix` が担当する
@@ -96,7 +96,17 @@ mise install
 npm -v
 ```
 
-### 7. Install Codex Manually
+### 7. Install Claude Code
+
+`mise` / `npm` が見つからない場合は新しい shell を開いてから再確認する。
+
+```sh
+./scripts/install-claude-code.sh
+```
+
+Claude Code の Linux install ownership はこの script が持つ。macOS では `nix/modules/darwin/homebrew.nix` の Homebrew cask `claude-code` で管理する。
+
+### 8. Install Codex Manually
 
 `mise` / `npm` が見つからない場合は新しい shell を開いてから再確認する。
 
@@ -104,7 +114,7 @@ npm -v
 npm i -g @openai/codex
 ```
 
-### 8. Optional Manual Steps
+### 9. Optional Manual Steps
 
 `gcloud` を使うなら:
 

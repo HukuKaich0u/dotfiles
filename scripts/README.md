@@ -52,7 +52,13 @@ home-manager switch --flake ./nix#kokiaoyagi
 gcloud init
 ```
 
-`setup-linux.sh` は orchestrator だけを担当する。apt repository 追加、package install、Ghostty install、`rustup` install、dotfiles link の実装詳細は個別 script 側に置く。
+Claude Code も必要なら `mise install` の後にこれを実行する。
+
+```sh
+./scripts/install-claude-code.sh
+```
+
+`setup-linux.sh` は orchestrator だけを担当する。apt repository 追加、package install、Ghostty install、`rustup` install、dotfiles link の実装詳細は個別 script 側に置く。Claude Code は Node / npm を `mise` 側に依存するので、別 script で post-`mise install` の step として管理する。
 
 ## macOS 最短手順
 
@@ -121,6 +127,13 @@ gcloud init
 - やること: 既存 install の検知、未導入時のみ公式 installer を non-interactive で実行
 - やらないこと: `apt` package install、dotfiles 配布、toolchain/channel カスタマイズ
 - 例: `./scripts/install-rustup.sh`
+
+### `install-claude-code.sh`
+
+- 役割: Claude Code の user-level installer
+- やること: 既存 `claude` の skip、`npm` 前提確認、`npm install -g @anthropic-ai/claude-code` 実行、install 後の `claude` 確認
+- やらないこと: Node / npm 自体の install、macOS の install、dotfiles 配布
+- 例: `./scripts/install-claude-code.sh`
 
 ### `install-ghostty-linux.sh`
 

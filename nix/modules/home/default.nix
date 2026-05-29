@@ -5,6 +5,7 @@
     ./packages.nix
     ./programs/agent-skills
     ./programs/bacon.nix
+    ./programs/claude
     ./programs/codex
     ./programs/git.nix
     ./programs/gh.nix
