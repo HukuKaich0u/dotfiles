@@ -36,6 +36,53 @@ assert_equal(env.supports_luarocks({
     return false
   end,
 }), false, "luarocks support should be disabled when rocks directories are missing")
+do
+  local old_path = package.path
+  local old_cpath = package.cpath
+  local old_supports = env.supports_luarocks
+  local original_expand = vim.fn.expand
+
+  env.supports_luarocks = function()
+    return true
+  end
+  vim.fn.expand = function(value)
+    if value == "$HOME" then
+      return "/tmp/test-home"
+    end
+    return original_expand(value)
+  end
+
+  env.setup_luarocks()
+  local path_after_first = package.path
+  local cpath_after_first = package.cpath
+  env.setup_luarocks()
+
+  local init_pattern = "/tmp/test%-home/%.luarocks/share/lua/5%.1/%?/init%.lua"
+  local lua_pattern = "/tmp/test%-home/%.luarocks/share/lua/5%.1/%?%.lua"
+  local so_pattern = "/tmp/test%-home/%.luarocks/lib/lua/5%.1/%?%.so"
+
+  assert_truthy(path_after_first:match(init_pattern),
+    "setup_luarocks should append luarocks init path")
+  assert_truthy(path_after_first:match(lua_pattern),
+    "setup_luarocks should append luarocks lua path")
+  assert_truthy(cpath_after_first:match(so_pattern),
+    "setup_luarocks should append luarocks cpath")
+  assert_equal(select(2, path_after_first:gsub(init_pattern, "")), 1,
+    "setup_luarocks should append init path only once")
+  assert_equal(select(2, path_after_first:gsub(lua_pattern, "")), 1,
+    "setup_luarocks should append lua path only once")
+  assert_equal(select(2, cpath_after_first:gsub(so_pattern, "")), 1,
+    "setup_luarocks should append cpath only once")
+  assert_equal(package.path, path_after_first,
+    "setup_luarocks should be idempotent for package.path")
+  assert_equal(package.cpath, cpath_after_first,
+    "setup_luarocks should be idempotent for package.cpath")
+
+  package.path = old_path
+  package.cpath = old_cpath
+  env.supports_luarocks = old_supports
+  vim.fn.expand = original_expand
+end
 assert_equal(env.image_backend({
   executable = function()
     return false

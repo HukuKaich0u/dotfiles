@@ -1,5 +1,13 @@
 local M = {}
 
+local function append_unique_package_entry(field, entry)
+    if package[field]:find(entry, 1, true) then
+        return
+    end
+
+    package[field] = package[field] .. ";" .. entry
+end
+
 local function default_directory_exists(path)
     return vim.fn.isdirectory(vim.fn.expand(path)) == 1
 end
@@ -41,9 +49,9 @@ function M.setup_luarocks()
     end
 
     local home = vim.fn.expand("$HOME")
-    package.path = package.path .. ";" .. home .. "/.luarocks/share/lua/5.1/?/init.lua"
-    package.path = package.path .. ";" .. home .. "/.luarocks/share/lua/5.1/?.lua"
-    package.cpath = package.cpath .. ";" .. home .. "/.luarocks/lib/lua/5.1/?.so"
+    append_unique_package_entry("path", home .. "/.luarocks/share/lua/5.1/?/init.lua")
+    append_unique_package_entry("path", home .. "/.luarocks/share/lua/5.1/?.lua")
+    append_unique_package_entry("cpath", home .. "/.luarocks/lib/lua/5.1/?.so")
 end
 
 function M.image_backend(deps)
