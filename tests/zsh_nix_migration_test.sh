@@ -116,6 +116,12 @@ assert_contains "$zsh_nix" 'shellAliases = {' \
     "zsh.nix should manage aliases through programs.zsh.shellAliases"
 assert_contains "$zsh_nix" 'nv = "nvim";' \
     "zsh.nix should keep core shell aliases"
+assert_contains "$zsh_nix" 'codex = "codex --no-alt-screen";' \
+    "zsh.nix should keep the default inline Codex alias"
+assert_contains "$zsh_nix" 'codex-alt = "command codex";' \
+    "zsh.nix should keep the direct Codex alias for alt-screen use"
+assert_contains "$zsh_nix" 'codex-work = "CODEX_HOME=$HOME/.codex-work codex";' \
+    "zsh.nix should provide a work-scoped Codex alias with a separate CODEX_HOME"
 assert_contains "$zsh_nix" 'autoload -Uz compinit' \
     "zsh.nix should inline completion initialization"
 assert_contains "$zsh_nix" "bindkey '^[^M' self-insert-unmeta" \

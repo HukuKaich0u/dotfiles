@@ -17,7 +17,7 @@
   };
 in {
   home.activation.writeCodexConfig = lib.hm.dag.entryAfter ["writeBoundary"] ''
-    mkdir -p "$HOME/.codex"
+    mkdir -p "$HOME/.codex" "$HOME/.codex-work"
     cp --no-preserve=mode,ownership ${tomlFormat.generate "codex-config" settings} "$HOME/.codex/config.toml"
     chmod 644 "$HOME/.codex/config.toml"
   '';

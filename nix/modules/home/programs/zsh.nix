@@ -32,6 +32,7 @@ in {
       tm = "tmux";
       codex = "codex --no-alt-screen";
       codex-alt = "command codex";
+      codex-work = "CODEX_HOME=$HOME/.codex-work codex";
       tmls = "tmux list-sessions";
       tma = "tmux a -t";
       tmnew = "tmux new -s";
