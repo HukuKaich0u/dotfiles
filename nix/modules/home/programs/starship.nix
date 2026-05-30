@@ -1,10 +1,8 @@
-{
-  ...
-}: {
+{...}: {
   programs.starship = {
     enable = true;
     settings = {
-      add_newline = true;
+      add_newline = false;
 
       format = builtins.concatStringsSep "" [
         "$hostname"
@@ -111,9 +109,9 @@
 
       terraform = {
         symbol = "󱁢";
-        detect_extensions = [ "tf" "tfplan" "tfstate" ];
-        detect_files = [ ".terraform.lock.hcl" ];
-        detect_folders = [ ".terraform" ];
+        detect_extensions = ["tf" "tfplan" "tfstate"];
+        detect_files = [".terraform.lock.hcl"];
+        detect_folders = [".terraform"];
         style = "bold fg:#fdeeff bg:#4f18d8";
         format = "[](fg:#4f18d8)[ $symbol $workspace ]($style)[](fg:#4f18d8)";
       };
@@ -137,8 +135,8 @@
 
       cmd_duration = {
         min_time = 1;
-        style = "bold fg:#fdefff bg:#43178f";
-        format = "[](fg:#43178f)[ $duration ]($style)[](fg:#43178f)";
+        style = "bold fg:#eef5ff bg:#2f6feb";
+        format = "[](fg:#2f6feb)[ $duration ]($style)[](fg:#2f6feb)";
       };
 
       time = {
