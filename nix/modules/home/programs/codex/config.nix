@@ -12,6 +12,7 @@
     model_reasoning_effort = "medium";
     web_search = "live";
     personality = "pragmatic";
+    features.terminal_resize_reflow = true;
 
     tui.keymap.global.open_external_editor = [];
   };
