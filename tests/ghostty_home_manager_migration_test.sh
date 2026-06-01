@@ -42,16 +42,22 @@ if [ ! -f "$ghostty_dir/config.ghostty" ]; then
   exit 1
 fi
 
-assert_contains "$ghostty_nix" 'xdg.configFile."ghostty/config.ghostty"' \
-  "ghostty.nix should manage config through xdg.configFile"
-assert_contains "$ghostty_nix" 'source = ../assets/ghostty/config.ghostty;' \
+assert_contains "$ghostty_nix" 'Library/Application Support/com.mitchellh.ghostty/config".source = ghosttyConfig;' \
+  "ghostty.nix should manage macOS Ghostty config in Application Support"
+assert_contains "$ghostty_nix" 'xdg.configFile = lib.mkIf (!pkgs.stdenv.isDarwin)' \
+  "ghostty.nix should keep XDG Ghostty config for Linux"
+assert_contains "$ghostty_nix" 'ghostty/config.ghostty".source = ghosttyConfig;' \
+  "ghostty.nix should source the Linux XDG config from the same asset"
+assert_contains "$ghostty_nix" 'ghosttyConfig = ../assets/ghostty/config.ghostty;' \
   "ghostty.nix should source config from the assets tree"
 assert_contains "$install_sh" 'SKIP_CONFIG_DIRS="tmux zsh starship.toml yazi bacon wezterm ghostty nvim"' \
   "link-dotfiles.sh should skip ghostty after the home-manager migration"
 assert_contains "$ghostty_dir/config.ghostty" 'font-family = "JetBrainsMono Nerd Font"' \
   "ghostty config should carry over the primary WezTerm font"
-assert_contains "$ghostty_dir/config.ghostty" 'background-opacity = 0.8' \
-  "ghostty config should keep the WezTerm-like opacity baseline"
+assert_contains "$ghostty_dir/config.ghostty" 'background-opacity = 0.9' \
+  "ghostty config should use the updated opacity baseline"
+assert_contains "$ghostty_dir/config.ghostty" 'keybind = ctrl+@=text:\x1b' \
+  "ghostty config should map JIS Ctrl-@ to Escape for terminal apps such as Neovim"
 assert_contains "$ghostty_dir/config.ghostty" 'keybind = ctrl+q>shift+h=new_split:left' \
   "ghostty config should map WezTerm-style split creation onto Ghostty"
 assert_contains "$ghostty_dir/config.ghostty" 'keybind = ctrl+q>h=goto_split:left' \
