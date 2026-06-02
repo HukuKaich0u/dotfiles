@@ -106,6 +106,8 @@ assert_contains "$tmux_nix_conf" "setw -g pane-border-lines heavy" \
     "tmux config should use heavy pane border lines"
 assert_contains "$tmux_nix_conf" "setw -g pane-active-border-style \"fg=#{@thm_yellow},bold\"" \
     "tmux config should strongly highlight the active pane border"
+assert_contains "$tmux_nix_conf" "bind-key -n C-Space send-keys Escape" \
+    "tmux config should let JIS Ctrl-@ leave insert mode inside terminal apps"
 assert_not_contains "$tmux_nix_conf" "@plugin '" \
     "tmux nix config should not declare plugins through TPM syntax"
 assert_not_contains "$tmux_nix_conf" "__TMUX_PLUGIN_" \
