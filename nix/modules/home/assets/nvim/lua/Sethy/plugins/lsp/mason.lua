@@ -45,6 +45,7 @@ return {
                 "gopls",        -- Go
                 "pyright",      -- Python (type checking)
                 "ruff",         -- Python (linter/formatter)
+                "jdtls",        -- Java
                 "clangd",       -- C/C++
                 "zls",          -- Zig
                 "nil_ls",       -- Nix

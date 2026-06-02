@@ -55,6 +55,7 @@ return {
                 astro = true,
                 svelte = true,
                 nix = true,
+                java = true,
                 sh = true,
                 bash = true,
                 zsh = true,

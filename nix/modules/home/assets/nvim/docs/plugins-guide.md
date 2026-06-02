@@ -205,6 +205,7 @@ func(a, b, c)
 | Shell (sh/bash/zsh) | shfmt |
 | Rust | LSP (rust_analyzer → rustfmt) |
 | Python | LSP (ruff) |
+| Java | jdtls (LSP) |
 | Go | LSP (gopls → gofumpt) |
 | C/C++ | clang-format |
 
