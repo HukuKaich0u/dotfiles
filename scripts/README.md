@@ -66,7 +66,7 @@ Claude Code も必要なら `mise install` の後にこれを実行する。
 ./scripts/setup-mac.sh
 ```
 
-`setup-mac.sh` は orchestrator だけを担当する。Homebrew の導入確認、`sudo darwin-rebuild switch --flake ./nix#KokiAoyagi`、dotfiles link の実装詳細は個別 script 側に置く。`ghostty` 自体の package ownership は `nix/modules/darwin/homebrew.nix` にある。
+`setup-mac.sh` は orchestrator だけを担当する。Homebrew の導入確認、`sudo darwin-rebuild switch --flake ./nix#KokiAoyagi`、dotfiles link の実装詳細は個別 script 側に置く。`cmux` 自体の package ownership は `nix/modules/darwin/homebrew.nix` にある。ghostty config は Home Manager module として repo に残すが、macOS では Homebrew install 対象にしない。
 
 手動 step:
 

@@ -62,6 +62,8 @@ assert_contains "$homebrew_nix" 'homebrew = {' \
   "homebrew.nix must define the Homebrew attrset"
 assert_contains "$homebrew_nix" 'enable = true;' \
   "homebrew.nix must enable Homebrew through nix-darwin"
+assert_contains "$homebrew_nix" 'onActivation.cleanup = "uninstall";' \
+  "homebrew.nix must uninstall Homebrew packages removed from nix-darwin"
 assert_contains "$homebrew_nix" 'taps = [' \
   "homebrew.nix must declare Homebrew taps"
 assert_contains "$homebrew_nix" 'brews = [' \
@@ -101,8 +103,8 @@ terminal-notifier
 
 expected_casks='
 codex
+cmux
 gcloud-cli
-ghostty
 github
 ngrok
 rectangle

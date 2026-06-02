@@ -3,6 +3,7 @@
   # Keep the top-level packages that are intentionally present on this Mac here.
   homebrew = {
     enable = true;
+    onActivation.cleanup = "uninstall";
 
     taps = [
       "k1low/tap"
@@ -37,8 +38,8 @@
     casks = [
       "claude-code"
       "codex"
+      "cmux"
       "gcloud-cli"
-      "ghostty"
       "github"
       "ngrok"
       "rectangle"

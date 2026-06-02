@@ -41,7 +41,7 @@ macOS の最短 bootstrap は、まず入口 script を実行してから必要�
 ./scripts/setup-mac.sh
 ```
 
-`setup-mac.sh` は Homebrew install, `sudo darwin-rebuild switch --flake ./nix#KokiAoyagi`, dotfiles link を順に呼ぶ orchestrator として保つ。`ghostty` の install は `modules/darwin/homebrew.nix` の Homebrew cask が担当し、config は Home Manager module が担当する。
+`setup-mac.sh` は Homebrew install, `sudo darwin-rebuild switch --flake ./nix#KokiAoyagi`, dotfiles link を順に呼ぶ orchestrator として保つ。`cmux` の install は `modules/darwin/homebrew.nix` の Homebrew cask が担当する。ghostty config は Home Manager module として repo に残すが、macOS では Homebrew install 対象にしない。
 
 初回は `darwin-rebuild` command がまだ存在しない場合がある。その場合の手動 step はこれ。
 
