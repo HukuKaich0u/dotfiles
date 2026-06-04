@@ -63,32 +63,10 @@ in {
 
       # 標準では見つからない個人用コマンドだけを明示的に追加する。
       path_prepend_if_dir "$HOME/.npm-global/bin"
-      path_prepend_if_dir "$HOME/miniconda3/condabin"
-      path_prepend_if_dir "$HOME/miniconda3/bin"
 
       # rustup/cargo が管理する PATH をそのまま読む。
       if [ -f "$HOME/.cargo/env" ]; then
         . "$HOME/.cargo/env"
-      fi
-
-      # conda の重い shell hook は初回利用時にだけ読み込む。
-      if [ -x "$HOME/miniconda3/bin/conda" ]; then
-        conda() {
-          unset -f conda
-
-          local conda_exe="$HOME/miniconda3/bin/conda"
-          local __conda_setup
-
-          __conda_setup="$("$conda_exe" 'shell.zsh' 'hook' 2> /dev/null)"
-          if [ $? -eq 0 ]; then
-            eval "$__conda_setup"
-          elif [ -f "$HOME/miniconda3/etc/profile.d/conda.sh" ]; then
-            . "$HOME/miniconda3/etc/profile.d/conda.sh"
-          fi
-
-          unset __conda_setup conda_exe
-          conda "$@"
-        }
       fi
 
       # Homebrew 管理の gcloud は prefix 配下の shell hook を使う。
