@@ -122,6 +122,8 @@ assert_contains "$zsh_nix" 'codex-alt = "command codex";' \
     "zsh.nix should keep the direct Codex alias for alt-screen use"
 assert_contains "$zsh_nix" 'codex-work = "CODEX_HOME=$HOME/.codex-work codex";' \
     "zsh.nix should provide a work-scoped Codex alias with a separate CODEX_HOME"
+assert_contains "$zsh_nix" 'ghmp = "gh markdown-preview";' \
+    "zsh.nix should provide a gh markdown preview alias"
 assert_contains "$zsh_nix" 'autoload -Uz compinit' \
     "zsh.nix should inline completion initialization"
 assert_contains "$zsh_nix" "bindkey '^[^M' self-insert-unmeta" \
