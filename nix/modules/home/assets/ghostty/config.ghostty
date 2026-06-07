@@ -7,9 +7,12 @@ font-size = 12
 
 background = "#000000"
 foreground = "#FFFFFF"
-background-opacity = 0.8
+background-opacity = 0.9
 background-opacity-cells = true
 background-blur = false
+cursor-style = block
+cursor-color = "#7DCFFF"
+cursor-text = "#0B1020"
 
 scrollback-limit = 50000000
 copy-on-select = false
@@ -25,14 +28,16 @@ split-divider-color = "#5c6d74"
 split-preserve-zoom = navigation
 
 shell-integration = detect
+shell-integration-features = no-cursor
 window-inherit-working-directory = true
 tab-inherit-working-directory = true
 split-inherit-working-directory = true
 
-window-decoration = auto
-window-new-tab-position = current
-window-show-tab-bar = auto
-macos-titlebar-style = tabs
+window-decoration = none
+window-new-tab-position = end
+window-show-tab-bar = never
+macos-titlebar-style = hidden
+macos-window-buttons = hidden
 gtk-titlebar-style = tabs
 gtk-toolbar-style = flat
 
@@ -55,10 +60,9 @@ keybind = super+7=goto_tab:7
 keybind = super+8=goto_tab:8
 keybind = super+9=last_tab
 
-keybind = super+equal=increase_font_size
-keybind = super+plus=increase_font_size
-keybind = super+minus=decrease_font_size
-keybind = ctrl+0=reset_font_size
+keybind = super+==increase_font_size:1
+keybind = super+-=decrease_font_size:1
+keybind = super+0=reset_font_size
 
 keybind = alt+enter=toggle_fullscreen
 keybind = super+shift+o=toggle_window_float_on_top
@@ -66,8 +70,8 @@ keybind = ctrl+shift+r=reload_config
 
 keybind = ctrl+q>n=new_window
 keybind = ctrl+q>w=toggle_tab_overview
-keybind = ctrl+q>{=move_tab:-1
-keybind = ctrl+q>}=move_tab:1
+keybind = ctrl+q>b=move_tab:-1
+keybind = ctrl+q>f=move_tab:1
 
 keybind = ctrl+q>shift+h=new_split:left
 keybind = ctrl+q>shift+j=new_split:down
