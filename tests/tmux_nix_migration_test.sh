@@ -108,6 +108,10 @@ assert_contains "$tmux_nix_conf" "setw -g pane-active-border-style \"fg=#{@thm_y
     "tmux config should strongly highlight the active pane border"
 assert_contains "$tmux_nix_conf" "bind-key -n C-Space send-keys Escape" \
     "tmux config should let JIS Ctrl-@ leave insert mode inside terminal apps"
+assert_contains "$tmux_nix_conf" "bind-key < swap-window -d -t -1" \
+    "tmux config should swap the current window with the previous one"
+assert_contains "$tmux_nix_conf" "bind-key > swap-window -d -t +1" \
+    "tmux config should swap the current window with the next one"
 assert_not_contains "$tmux_nix_conf" "@plugin '" \
     "tmux nix config should not declare plugins through TPM syntax"
 assert_not_contains "$tmux_nix_conf" "__TMUX_PLUGIN_" \
