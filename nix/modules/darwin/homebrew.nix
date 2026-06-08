@@ -4,6 +4,7 @@
   homebrew = {
     enable = true;
     onActivation.cleanup = "uninstall";
+    onActivation.extraFlags = [ "--force-cleanup" ];
 
     taps = [
       "k1low/tap"
