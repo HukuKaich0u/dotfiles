@@ -182,6 +182,12 @@ assert_contains "$starship_nix" 'enable = true;' \
     "starship.nix should enable starship through Home Manager"
 assert_contains "$starship_nix" 'settings = {' \
     "starship.nix should generate starship config from settings"
+assert_contains "$starship_nix" '"$fill"' \
+    "starship.nix should keep fill padding so duration and time stay right-aligned on the first prompt line"
+assert_contains "$starship_nix" 'fill.symbol = "─";' \
+    "starship.nix should render the fill separator with the original solid line"
+assert_contains "$starship_nix" '"\n$character"' \
+    "starship.nix should keep the input character alone on the second prompt line"
 assert_contains "$starship_nix" 'docker_context = {' \
     "starship.nix should keep the custom docker context module"
 assert_missing "$repo_root/.config/starship.toml" \
