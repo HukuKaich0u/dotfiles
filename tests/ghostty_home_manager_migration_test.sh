@@ -42,8 +42,10 @@ if [ ! -f "$ghostty_dir/config.ghostty" ]; then
   exit 1
 fi
 
-assert_contains "$ghostty_nix" 'Library/Application Support/com.mitchellh.ghostty/config".source = ghosttyConfig;' \
+assert_contains "$ghostty_nix" 'source = ghosttyConfig;' \
   "ghostty.nix should manage macOS Ghostty config in Application Support"
+assert_contains "$ghostty_nix" 'force = true;' \
+  "ghostty.nix should overwrite legacy macOS Ghostty config during Home Manager activation"
 assert_contains "$ghostty_nix" 'xdg.configFile = lib.mkIf (!pkgs.stdenv.isDarwin)' \
   "ghostty.nix should keep XDG Ghostty config for Linux"
 assert_contains "$ghostty_nix" 'ghostty/config.ghostty".source = ghosttyConfig;' \

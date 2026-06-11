@@ -7,7 +7,10 @@
 in {
   # Ghostty on macOS reads from Application Support; keep XDG for Linux.
   home.file = lib.mkIf pkgs.stdenv.isDarwin {
-    "Library/Application Support/com.mitchellh.ghostty/config".source = ghosttyConfig;
+    "Library/Application Support/com.mitchellh.ghostty/config" = {
+      source = ghosttyConfig;
+      force = true;
+    };
   };
 
   xdg.configFile = lib.mkIf (!pkgs.stdenv.isDarwin) {
