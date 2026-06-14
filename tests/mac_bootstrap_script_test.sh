@@ -3,9 +3,10 @@
 set -eu
 
 repo_root="$(CDPATH= cd -- "$(dirname "$0")/.." && pwd)"
-install_homebrew_script="$repo_root/scripts/install-homebrew.sh"
-apply_nix_darwin_script="$repo_root/scripts/apply-nix-darwin.sh"
-setup_mac_script="$repo_root/scripts/setup-mac.sh"
+install_homebrew_script="$repo_root/scripts/mac/install-homebrew.sh"
+apply_nix_darwin_script="$repo_root/scripts/mac/apply-nix-darwin.sh"
+setup_mac_script="$repo_root/scripts/mac/setup.sh"
+legacy_setup_mac_script="$repo_root/scripts/setup-mac.sh"
 scripts_readme="$repo_root/scripts/README.md"
 nix_readme="$repo_root/nix/README.md"
 
@@ -81,7 +82,8 @@ EOF
 test_mac_scripts_exist_and_document_guards() {
   assert_file_exists "$install_homebrew_script" "install-homebrew.sh must exist"
   assert_file_exists "$apply_nix_darwin_script" "apply-nix-darwin.sh must exist"
-  assert_file_exists "$setup_mac_script" "setup-mac.sh must exist"
+  assert_file_exists "$setup_mac_script" "scripts/mac/setup.sh must exist"
+  assert_file_exists "$legacy_setup_mac_script" "legacy setup-mac.sh wrapper must exist"
 
   assert_contains "$install_homebrew_script" 'command -v brew' \
     "install-homebrew.sh must skip when brew already exists"
@@ -95,6 +97,8 @@ test_mac_scripts_exist_and_document_guards() {
     "apply-nix-darwin.sh must run darwin-rebuild via sudo"
   assert_contains "$apply_nix_darwin_script" 'darwin-rebuild' \
     "apply-nix-darwin.sh must invoke darwin-rebuild"
+  assert_contains "$apply_nix_darwin_script" 'REPO_ROOT="$(CDPATH= cd -- "$SCRIPT_DIR/../.." && pwd)"' \
+    "apply-nix-darwin.sh must resolve the repo root from scripts/mac"
 }
 
 test_setup_mac_order() {
@@ -103,31 +107,33 @@ test_setup_mac_order() {
     trap 'rm -rf "$tmpdir"' EXIT HUP INT TERM
 
     scripts_dir="$tmpdir/scripts"
+    mac_dir="$scripts_dir/mac"
+    common_dir="$scripts_dir/common"
     log_file="$tmpdir/calls.log"
-    mkdir -p "$scripts_dir"
+    mkdir -p "$mac_dir" "$common_dir"
 
-    cp "$setup_mac_script" "$scripts_dir/setup-mac.sh"
-    make_executable "$scripts_dir/setup-mac.sh"
+    cp "$setup_mac_script" "$mac_dir/setup.sh"
+    make_executable "$mac_dir/setup.sh"
 
-    cat >"$scripts_dir/install-homebrew.sh" <<EOF
+    cat >"$mac_dir/install-homebrew.sh" <<EOF
 #!/bin/sh
 echo "install-homebrew:\$*" >>"$log_file"
 EOF
-    make_executable "$scripts_dir/install-homebrew.sh"
+    make_executable "$mac_dir/install-homebrew.sh"
 
-    cat >"$scripts_dir/apply-nix-darwin.sh" <<EOF
+    cat >"$mac_dir/apply-nix-darwin.sh" <<EOF
 #!/bin/sh
 echo "apply-nix-darwin:\$*" >>"$log_file"
 EOF
-    make_executable "$scripts_dir/apply-nix-darwin.sh"
+    make_executable "$mac_dir/apply-nix-darwin.sh"
 
-    cat >"$scripts_dir/link-dotfiles.sh" <<EOF
+    cat >"$common_dir/link-dotfiles.sh" <<EOF
 #!/bin/sh
 echo "link-dotfiles:\$*" >>"$log_file"
 EOF
-    make_executable "$scripts_dir/link-dotfiles.sh"
+    make_executable "$common_dir/link-dotfiles.sh"
 
-    HOME="$tmpdir/home" PATH="/bin:/usr/bin" /bin/sh "$scripts_dir/setup-mac.sh"
+    HOME="$tmpdir/home" PATH="/bin:/usr/bin" /bin/sh "$mac_dir/setup.sh"
 
     assert_file_equals "$log_file" \
 "install-homebrew:
@@ -188,8 +194,8 @@ test_mac_readmes() {
 
   assert_contains "$scripts_readme" '## macOS 最短手順' \
     "scripts/README.md must document the macOS shortest path"
-  assert_contains "$scripts_readme" './scripts/setup-mac.sh' \
-    "scripts/README.md must point macOS bootstrap to setup-mac.sh"
+  assert_contains "$scripts_readme" './scripts/mac/setup.sh' \
+    "scripts/README.md must point macOS bootstrap to scripts/mac/setup.sh"
   assert_contains "$scripts_readme" 'install-homebrew.sh' \
     "scripts/README.md must describe install-homebrew.sh"
   assert_contains "$scripts_readme" 'apply-nix-darwin.sh' \
@@ -201,8 +207,8 @@ test_mac_readmes() {
 
   assert_contains "$nix_readme" '## macOS Shortest Path' \
     "nix/README.md must document the macOS shortest path"
-  assert_contains "$nix_readme" './scripts/setup-mac.sh' \
-    "nix/README.md must point macOS bootstrap to setup-mac.sh"
+  assert_contains "$nix_readme" './scripts/mac/setup.sh' \
+    "nix/README.md must point macOS bootstrap to scripts/mac/setup.sh"
   assert_contains "$nix_readme" 'sudo darwin-rebuild switch --flake ./nix#KokiAoyagi' \
     "nix/README.md must document the sudo-based nix-darwin apply command"
   assert_contains "$nix_readme" 'cmux' \

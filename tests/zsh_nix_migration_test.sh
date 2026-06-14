@@ -10,7 +10,7 @@ linux_zsh_nix="$repo_root/nix/modules/linux/zsh.nix"
 starship_nix="$repo_root/nix/modules/home/programs/starship.nix"
 zsh_nix="$repo_root/nix/modules/home/programs/zsh.nix"
 zoxide_nix="$repo_root/nix/modules/home/programs/zoxide.nix"
-install_script="$repo_root/scripts/link-dotfiles.sh"
+install_script="$repo_root/scripts/common/link-dotfiles.sh"
 linux_zsh_dir="$repo_root/zsh"
 
 assert_contains() {
@@ -124,6 +124,16 @@ assert_contains "$zsh_nix" 'codex-work = "CODEX_HOME=$HOME/.codex-work codex";' 
     "zsh.nix should provide a work-scoped Codex alias with a separate CODEX_HOME"
 assert_contains "$zsh_nix" 'ghmp = "gh markdown-preview";' \
     "zsh.nix should provide a gh markdown preview alias"
+assert_not_contains "$zsh_nix" 'mo = "mo -w";' \
+    "zsh.nix should not alias mo to an invalid watch flag"
+assert_not_contains "$zsh_nix" 'mor = "mo -wR";' \
+    "zsh.nix should not alias mor to the removed recursive short flag"
+assert_not_contains "$zsh_nix" 'function mo() {' \
+    "zsh.nix should not override mo with a shell wrapper"
+assert_not_contains "$zsh_nix" 'function mor() {' \
+    "zsh.nix should not define a recursive mo wrapper helper"
+assert_not_contains "$zsh_nix" '_mo_watch_pattern' \
+    "zsh.nix should not define mo watch pattern helpers"
 assert_contains "$zsh_nix" 'autoload -Uz compinit' \
     "zsh.nix should inline completion initialization"
 assert_contains "$zsh_nix" "bindkey '^[^M' self-insert-unmeta" \

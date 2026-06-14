@@ -27,27 +27,27 @@ zero-to-working の全体手順は repo root の `README.md` を参照。
 Linux の最短 bootstrap は 2 段階です。
 
 ```sh
-./scripts/setup-linux.sh
+./scripts/linux/setup.sh
 home-manager switch --flake ./nix#kokiaoyagi
 ```
 
-Ubuntu Desktop で Ghostty も必要なら最初の command だけ `./scripts/setup-linux.sh --with-ghostty` に置き換える。Docker も必要なら `./scripts/setup-linux.sh --with-docker`、両方必要なら `./scripts/setup-linux.sh --with-docker --with-ghostty` を使う。`setup-linux.sh` は OS package, `rustup`, dotfiles link、必要なら Ghostty install までを担当し、Ghostty config を含む Nix 側の反映は `home-manager switch` を明示的に続ける。
+Ubuntu Desktop で Ghostty も必要なら最初の command だけ `./scripts/linux/setup.sh --with-ghostty` に置き換える。Docker も必要なら `./scripts/linux/setup.sh --with-docker`、両方必要なら `./scripts/linux/setup.sh --with-docker --with-ghostty` を使う。`scripts/linux/setup.sh` は OS package, `rustup`, dotfiles link、必要なら Ghostty install までを担当し、Ghostty config を含む Nix 側の反映は `home-manager switch` を明示的に続ける。
 
 ## macOS Shortest Path
 
 macOS の最短 bootstrap は、まず入口 script を実行してから必要な手動 step を続ける。
 
 ```sh
-./scripts/setup-mac.sh
+./scripts/mac/setup.sh
 ```
 
-`setup-mac.sh` は Homebrew install, `sudo darwin-rebuild switch --flake ./nix#KokiAoyagi`, dotfiles link を順に呼ぶ orchestrator として保つ。`cmux` の install は `modules/darwin/homebrew.nix` の Homebrew cask が担当する。ghostty config は Home Manager module として repo に残すが、macOS では Homebrew install 対象にしない。
+`scripts/mac/setup.sh` は Homebrew install, `sudo darwin-rebuild switch --flake ./nix#KokiAoyagi`, dotfiles link を順に呼ぶ orchestrator として保つ。`cmux` の install は `modules/darwin/homebrew.nix` の Homebrew cask が担当する。ghostty config は Home Manager module として repo に残すが、macOS では Homebrew install 対象にしない。
 
 初回は `darwin-rebuild` command がまだ存在しない場合がある。その場合の手動 step はこれ。
 
 ```sh
 sudo nix --extra-experimental-features 'nix-command flakes' run nix-darwin -- switch --flake ./nix#KokiAoyagi
-./scripts/setup-mac.sh
+./scripts/mac/setup.sh
 ```
 
 追加の手動 step:
@@ -312,14 +312,15 @@ Homebrew 専用です。
 - brews
 - casks
 
-現状の Codex install もここで管理します。
+現状の Codex install もここで管理します。Claude Code は公式 native installer 側に寄せます。
 
-- `claude-code` の install は Homebrew cask
 - `codex` の install は Homebrew cask
+- `mo` は当面 macOS の Homebrew brew だけで管理する
 - Claude の設定ファイル配布は `modules/home/programs/claude/`
 - Codex の設定ファイル配布は `modules/home/programs/codex/`
 
 Nix package で足りるものはまず Nix を優先し、Homebrew は macOS 依存や運用上必要なものだけに寄せます。
+`k1LoW/mo` は nixpkgs の `mo` と別物なので、Linux へ入れる場合は `k1low-mo` のような名前で overlay/package 化してから `modules/linux/packages.nix` に追加する。
 
 ## Codex Layout
 
@@ -328,7 +329,7 @@ Codex まわりは install / config / prompt assets を分けて考えます。
 ### install
 
 - macOS: `modules/darwin/homebrew.nix`
-- Linux: `scripts/install-linux-packages.sh` で apt install
+- Linux: `scripts/linux/install-packages.sh` で apt install
 
 ### config
 
@@ -380,10 +381,10 @@ Claude まわりも install / config / prompt assets を分けて考えます。
 
 ### install
 
-- macOS: `modules/darwin/homebrew.nix`
-- Linux: `scripts/install-claude-code.sh`
+- macOS: `scripts/common/install-claude-code.sh`
+- Linux: `scripts/common/install-claude-code.sh`
 
-Linux 側は `mise install` で Node / npm を入れた後に `./scripts/install-claude-code.sh` を実行する。
+macOS / Linux とも `./scripts/common/install-claude-code.sh` が公式 native installer を `latest` 指定で実行する。普段の shell が zsh でも installer script は `bash` で実行する。
 
 ### config
 
@@ -420,8 +421,8 @@ Linux 側は `mise install` で Node / npm を入れた後に `./scripts/install
 
 Linux は standalone Home Manager を使っているので、login shell の変更までは Nix で自動化しません。
 
-- zsh の install は `scripts/install-linux-packages.sh core`
-- `google-cloud-cli` の install も `scripts/install-linux-packages.sh core`
+- zsh の install は `scripts/linux/install-packages.sh core`
+- `google-cloud-cli` の install も `scripts/linux/install-packages.sh core`
 - default shell の変更は手動で `chsh -s "$(command -v zsh)"`
 - shell 設定ファイルは repo root の `zsh/` を source of truth にする
 - `modules/linux/zsh.nix` はその `zsh/.zshenv` / `zsh/.zshrc` を `home.file` で配布する
@@ -431,8 +432,8 @@ Linux は standalone Home Manager を使っているので、login shell の変�
 
 Linux 初回セットアップは次の順で実行します。
 
-1. `./scripts/setup-linux.sh`
-2. Docker も必要なら `./scripts/setup-linux.sh --with-docker`
+1. `./scripts/linux/setup.sh`
+2. Docker も必要なら `./scripts/linux/setup.sh --with-docker`
 3. `home-manager switch --flake ./nix#kokiaoyagi`
 4. `gcloud` を使うなら `gcloud init`
 
@@ -455,6 +456,7 @@ Linux 用 Home Manager wrapper です。
 Linux だけに必要な package や import を置きます。
 
 Linux 固有差分を `modules/home/` の条件分岐で増やしすぎないこと。
+`mo` はまだ Linux には入れない。必要になったら `k1LoW/mo` 用 package を overlay に追加し、nixpkgs の別物 `mo` と衝突しない attr 名でここへ入れる。
 
 ## Common Tasks
 

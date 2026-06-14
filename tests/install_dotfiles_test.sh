@@ -3,10 +3,16 @@
 set -eu
 
 repo_root="$(CDPATH= cd -- "$(dirname "$0")/.." && pwd)"
-script="$repo_root/scripts/link-dotfiles.sh"
+script="$repo_root/scripts/common/link-dotfiles.sh"
+legacy_script="$repo_root/scripts/link-dotfiles.sh"
 
 if [ ! -x "$script" ]; then
   echo "install script is not executable: $script"
+  exit 1
+fi
+
+if [ ! -x "$legacy_script" ]; then
+  echo "legacy install script wrapper is not executable: $legacy_script"
   exit 1
 fi
 

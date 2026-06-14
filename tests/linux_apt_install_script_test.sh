@@ -3,10 +3,11 @@
 set -eu
 
 repo_root="$(CDPATH= cd -- "$(dirname "$0")/.." && pwd)"
-packages_script="$repo_root/scripts/install-linux-packages.sh"
-setup_script="$repo_root/scripts/setup-linux.sh"
-rustup_script="$repo_root/scripts/install-rustup.sh"
-ghostty_script="$repo_root/scripts/install-ghostty-linux.sh"
+packages_script="$repo_root/scripts/linux/install-packages.sh"
+setup_script="$repo_root/scripts/linux/setup.sh"
+rustup_script="$repo_root/scripts/linux/install-rustup.sh"
+ghostty_script="$repo_root/scripts/linux/install-ghostty.sh"
+legacy_setup_script="$repo_root/scripts/setup-linux.sh"
 root_readme="$repo_root/README.md"
 scripts_readme="$repo_root/scripts/README.md"
 
@@ -244,31 +245,33 @@ test_setup_linux_order() {
     trap 'rm -rf "$tmpdir"' EXIT HUP INT TERM
 
     scripts_dir="$tmpdir/scripts"
+    linux_dir="$scripts_dir/linux"
+    common_dir="$scripts_dir/common"
     log_file="$tmpdir/calls.log"
-    mkdir -p "$scripts_dir"
+    mkdir -p "$linux_dir" "$common_dir"
 
-    cp "$setup_script" "$scripts_dir/setup-linux.sh"
-    make_executable "$scripts_dir/setup-linux.sh"
+    cp "$setup_script" "$linux_dir/setup.sh"
+    make_executable "$linux_dir/setup.sh"
 
-    cat >"$scripts_dir/install-linux-packages.sh" <<EOF
+    cat >"$linux_dir/install-packages.sh" <<EOF
 #!/bin/sh
 echo "install-linux-packages:\$*" >>"$log_file"
 EOF
-    make_executable "$scripts_dir/install-linux-packages.sh"
+    make_executable "$linux_dir/install-packages.sh"
 
-    cat >"$scripts_dir/install-rustup.sh" <<EOF
+    cat >"$linux_dir/install-rustup.sh" <<EOF
 #!/bin/sh
 echo "install-rustup:\$*" >>"$log_file"
 EOF
-    make_executable "$scripts_dir/install-rustup.sh"
+    make_executable "$linux_dir/install-rustup.sh"
 
-    cat >"$scripts_dir/link-dotfiles.sh" <<EOF
+    cat >"$common_dir/link-dotfiles.sh" <<EOF
 #!/bin/sh
 echo "link-dotfiles:\$*" >>"$log_file"
 EOF
-    make_executable "$scripts_dir/link-dotfiles.sh"
+    make_executable "$common_dir/link-dotfiles.sh"
 
-    HOME="$tmpdir/home" PATH="/bin:/usr/bin" /bin/sh "$scripts_dir/setup-linux.sh"
+    HOME="$tmpdir/home" PATH="/bin:/usr/bin" /bin/sh "$linux_dir/setup.sh"
 
     assert_file_equals "$log_file" \
 "install-linux-packages:core
@@ -284,37 +287,39 @@ test_setup_linux_with_ghostty_order() {
     trap 'rm -rf "$tmpdir"' EXIT HUP INT TERM
 
     scripts_dir="$tmpdir/scripts"
+    linux_dir="$scripts_dir/linux"
+    common_dir="$scripts_dir/common"
     log_file="$tmpdir/calls.log"
-    mkdir -p "$scripts_dir"
+    mkdir -p "$linux_dir" "$common_dir"
 
-    cp "$setup_script" "$scripts_dir/setup-linux.sh"
-    make_executable "$scripts_dir/setup-linux.sh"
+    cp "$setup_script" "$linux_dir/setup.sh"
+    make_executable "$linux_dir/setup.sh"
 
-    cat >"$scripts_dir/install-linux-packages.sh" <<EOF
+    cat >"$linux_dir/install-packages.sh" <<EOF
 #!/bin/sh
 echo "install-linux-packages:\$*" >>"$log_file"
 EOF
-    make_executable "$scripts_dir/install-linux-packages.sh"
+    make_executable "$linux_dir/install-packages.sh"
 
-    cat >"$scripts_dir/install-ghostty-linux.sh" <<EOF
+    cat >"$linux_dir/install-ghostty.sh" <<EOF
 #!/bin/sh
 echo "install-ghostty-linux:\$*" >>"$log_file"
 EOF
-    make_executable "$scripts_dir/install-ghostty-linux.sh"
+    make_executable "$linux_dir/install-ghostty.sh"
 
-    cat >"$scripts_dir/install-rustup.sh" <<EOF
+    cat >"$linux_dir/install-rustup.sh" <<EOF
 #!/bin/sh
 echo "install-rustup:\$*" >>"$log_file"
 EOF
-    make_executable "$scripts_dir/install-rustup.sh"
+    make_executable "$linux_dir/install-rustup.sh"
 
-    cat >"$scripts_dir/link-dotfiles.sh" <<EOF
+    cat >"$common_dir/link-dotfiles.sh" <<EOF
 #!/bin/sh
 echo "link-dotfiles:\$*" >>"$log_file"
 EOF
-    make_executable "$scripts_dir/link-dotfiles.sh"
+    make_executable "$common_dir/link-dotfiles.sh"
 
-    HOME="$tmpdir/home" PATH="/bin:/usr/bin" /bin/sh "$scripts_dir/setup-linux.sh" --with-ghostty
+    HOME="$tmpdir/home" PATH="/bin:/usr/bin" /bin/sh "$linux_dir/setup.sh" --with-ghostty
 
     assert_file_equals "$log_file" \
 "install-linux-packages:core
@@ -331,37 +336,39 @@ test_setup_linux_with_docker_and_ghostty_order() {
     trap 'rm -rf "$tmpdir"' EXIT HUP INT TERM
 
     scripts_dir="$tmpdir/scripts"
+    linux_dir="$scripts_dir/linux"
+    common_dir="$scripts_dir/common"
     log_file="$tmpdir/calls.log"
-    mkdir -p "$scripts_dir"
+    mkdir -p "$linux_dir" "$common_dir"
 
-    cp "$setup_script" "$scripts_dir/setup-linux.sh"
-    make_executable "$scripts_dir/setup-linux.sh"
+    cp "$setup_script" "$linux_dir/setup.sh"
+    make_executable "$linux_dir/setup.sh"
 
-    cat >"$scripts_dir/install-linux-packages.sh" <<EOF
+    cat >"$linux_dir/install-packages.sh" <<EOF
 #!/bin/sh
 echo "install-linux-packages:\$*" >>"$log_file"
 EOF
-    make_executable "$scripts_dir/install-linux-packages.sh"
+    make_executable "$linux_dir/install-packages.sh"
 
-    cat >"$scripts_dir/install-ghostty-linux.sh" <<EOF
+    cat >"$linux_dir/install-ghostty.sh" <<EOF
 #!/bin/sh
 echo "install-ghostty-linux:\$*" >>"$log_file"
 EOF
-    make_executable "$scripts_dir/install-ghostty-linux.sh"
+    make_executable "$linux_dir/install-ghostty.sh"
 
-    cat >"$scripts_dir/install-rustup.sh" <<EOF
+    cat >"$linux_dir/install-rustup.sh" <<EOF
 #!/bin/sh
 echo "install-rustup:\$*" >>"$log_file"
 EOF
-    make_executable "$scripts_dir/install-rustup.sh"
+    make_executable "$linux_dir/install-rustup.sh"
 
-    cat >"$scripts_dir/link-dotfiles.sh" <<EOF
+    cat >"$common_dir/link-dotfiles.sh" <<EOF
 #!/bin/sh
 echo "link-dotfiles:\$*" >>"$log_file"
 EOF
-    make_executable "$scripts_dir/link-dotfiles.sh"
+    make_executable "$common_dir/link-dotfiles.sh"
 
-    HOME="$tmpdir/home" PATH="/bin:/usr/bin" /bin/sh "$scripts_dir/setup-linux.sh" --with-docker --with-ghostty
+    HOME="$tmpdir/home" PATH="/bin:/usr/bin" /bin/sh "$linux_dir/setup.sh" --with-docker --with-ghostty
 
     assert_file_equals "$log_file" \
 "install-linux-packages:core
@@ -1011,11 +1018,12 @@ assert_contains "$packages_script" 'docker-compose-plugin' \
 assert_contains "$packages_script" 'download.docker.com' \
   "install-linux-packages.sh should configure the Docker apt repository"
 
-assert_contains "$setup_script" 'install-linux-packages.sh core' \
+assert_file_exists "$legacy_setup_script" "legacy setup-linux.sh wrapper must exist"
+assert_contains "$setup_script" 'install-packages.sh core' \
   "setup-linux.sh should install the core apt profile"
 assert_contains "$setup_script" 'install-rustup.sh' \
   "setup-linux.sh should delegate rustup installation to the shared script"
-assert_contains "$setup_script" 'install-ghostty-linux.sh' \
+assert_contains "$setup_script" 'install-ghostty.sh' \
   "setup-linux.sh should delegate Ghostty installation to a dedicated script"
 assert_contains "$setup_script" 'link-dotfiles.sh' \
   "setup-linux.sh should install dotfiles after package bootstrap"
@@ -1023,12 +1031,12 @@ assert_contains "$setup_script" 'with-docker' \
   "setup-linux.sh should offer an opt-in Docker setup flag"
 assert_contains "$setup_script" 'with-ghostty' \
   "setup-linux.sh should offer an opt-in Ghostty setup flag"
-assert_contains "$root_readme" './scripts/setup-linux.sh --with-ghostty' \
+assert_contains "$root_readme" './scripts/linux/setup.sh --with-ghostty' \
   "README.md must document the opt-in Ghostty Linux bootstrap command"
-assert_contains "$scripts_readme" './scripts/setup-linux.sh --with-ghostty' \
+assert_contains "$scripts_readme" './scripts/linux/setup.sh --with-ghostty' \
   "scripts/README.md must document the Ghostty desktop bootstrap command"
-assert_contains "$scripts_readme" 'install-ghostty-linux.sh' \
-  "scripts/README.md must describe install-ghostty-linux.sh"
+assert_contains "$scripts_readme" 'scripts/linux/install-ghostty.sh' \
+  "scripts/README.md must describe scripts/linux/install-ghostty.sh"
 
 test_install_rustup_behaviors
 test_setup_linux_order

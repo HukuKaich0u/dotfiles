@@ -1,0 +1,289 @@
+#!/bin/sh
+
+set -eu
+
+usage() {
+  cat <<'EOF'
+Usage: ./scripts/linux/install-packages.sh <profile>
+
+Profiles:
+  core         Install base Linux packages required before Home Manager setup
+  linux-extra  Install Docker CE packages from Docker's official apt repository
+EOF
+}
+
+require_command() {
+  command_name="$1"
+  message="$2"
+
+  if ! command -v "$command_name" >/dev/null 2>&1; then
+    echo "$message" >&2
+    exit 1
+  fi
+}
+
+require_supported_distro() {
+  if [ ! -r /etc/os-release ]; then
+    echo "Unsupported Linux distribution: /etc/os-release not found" >&2
+    exit 1
+  fi
+
+  . /etc/os-release
+
+  case "${ID:-}" in
+    ubuntu|debian)
+      :
+      ;;
+    *)
+      echo "Unsupported Linux distribution: ${ID:-unknown}. This script supports Debian/Ubuntu only." >&2
+      exit 1
+      ;;
+  esac
+}
+
+require_base_commands() {
+  require_command sudo \
+    "sudo is required before installing Linux packages. Install or enable sudo first."
+  require_command apt-get \
+    "apt-get is required before installing Linux packages. This script supports Debian/Ubuntu only."
+}
+
+require_repo_commands() {
+  require_command curl \
+    "curl is required before configuring apt repositories. Install curl first."
+  require_command gpg \
+    "gpg is required before configuring apt repositories. Install gnupg first."
+}
+
+apt_install() {
+  sudo apt-get update
+  sudo apt-get install -y "$@"
+}
+
+install_file_if_changed() {
+  src="$1"
+  dest="$2"
+  mode="$3"
+  dest_dir="$(dirname "$dest")"
+
+  if sudo test -f "$dest" && sudo cmp -s "$src" "$dest"; then
+    return 2
+  fi
+
+  sudo install -d -m 0755 "$dest_dir"
+  sudo install -m "$mode" "$src" "$dest"
+}
+
+normalize_managed_file() {
+  dest="$1"
+  mode="$2"
+
+  sudo chown root:root "$dest"
+  sudo chmod "$mode" "$dest"
+}
+
+sync_keyring() {
+  url="$1"
+  dest="$2"
+  raw_tmp="$(mktemp)"
+  dearmored_tmp="$(mktemp)"
+
+  cleanup() {
+    rm -f "$raw_tmp" "$dearmored_tmp"
+  }
+
+  trap cleanup EXIT HUP INT TERM
+  if ! curl -fsSL -o "$raw_tmp" "$url"; then
+    trap - EXIT HUP INT TERM
+    cleanup
+    return 1
+  fi
+
+  if ! gpg --dearmor --output "$dearmored_tmp" "$raw_tmp"; then
+    trap - EXIT HUP INT TERM
+    cleanup
+    return 1
+  fi
+
+  if install_file_if_changed "$dearmored_tmp" "$dest" 0644; then
+    status=0
+  else
+    status=$?
+  fi
+
+  if [ "$status" -eq 0 ]; then
+    normalize_managed_file "$dest" 0644
+    trap - EXIT HUP INT TERM
+    cleanup
+    return 0
+  fi
+
+  if [ "$status" -ne 2 ]; then
+    trap - EXIT HUP INT TERM
+    cleanup
+    return "$status"
+  fi
+
+  normalize_managed_file "$dest" 0644
+  trap - EXIT HUP INT TERM
+  cleanup
+  return 2
+}
+
+sync_apt_source() {
+  dest="$1"
+  source_line="$2"
+  tmp="$(mktemp)"
+
+  cleanup() {
+    rm -f "$tmp"
+  }
+
+  trap cleanup EXIT HUP INT TERM
+  printf '%s\n' "$source_line" >"$tmp"
+
+  if install_file_if_changed "$tmp" "$dest" 0644; then
+    status=0
+  else
+    status=$?
+  fi
+
+  if [ "$status" -eq 0 ]; then
+    trap - EXIT HUP INT TERM
+    cleanup
+    return 0
+  fi
+
+  if [ "$status" -ne 2 ]; then
+    trap - EXIT HUP INT TERM
+    cleanup
+    return "$status"
+  fi
+
+  trap - EXIT HUP INT TERM
+  cleanup
+  return 2
+}
+
+install_google_cloud_repo() {
+  apt_install apt-transport-https ca-certificates curl gnupg
+  repo_changed=0
+
+  if sync_keyring \
+    https://packages.cloud.google.com/apt/doc/apt-key.gpg \
+    /usr/share/keyrings/cloud.google.gpg; then
+    status=0
+  else
+    status=$?
+  fi
+  if [ "$status" -eq 0 ]; then
+    repo_changed=1
+  elif [ "$status" -ne 2 ]; then
+    return "$status"
+  fi
+
+  if sync_apt_source \
+    /etc/apt/sources.list.d/google-cloud-sdk.list \
+    "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main"; then
+    status=0
+  else
+    status=$?
+  fi
+  if [ "$status" -eq 0 ]; then
+    repo_changed=1
+  elif [ "$status" -ne 2 ]; then
+    return "$status"
+  fi
+
+  if [ "$repo_changed" -eq 1 ]; then
+    sudo apt-get update
+  fi
+}
+
+install_core() {
+  install_google_cloud_repo
+  apt_install \
+    zsh \
+    unzip \
+    build-essential \
+    locales \
+    google-cloud-cli
+}
+
+install_linux_extra() {
+  require_supported_distro
+  . /etc/os-release
+
+  apt_install ca-certificates curl gnupg
+  repo_changed=0
+
+  if sync_keyring \
+    "https://download.docker.com/linux/${ID}/gpg" \
+    /etc/apt/keyrings/docker.gpg; then
+    status=0
+  else
+    status=$?
+  fi
+  if [ "$status" -eq 0 ]; then
+    repo_changed=1
+  elif [ "$status" -ne 2 ]; then
+    return "$status"
+  fi
+
+  if sync_apt_source \
+    /etc/apt/sources.list.d/docker.list \
+    "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/${ID} ${VERSION_CODENAME} stable"; then
+    status=0
+  else
+    status=$?
+  fi
+  if [ "$status" -eq 0 ]; then
+    repo_changed=1
+  elif [ "$status" -ne 2 ]; then
+    return "$status"
+  fi
+
+  if [ "$repo_changed" -eq 1 ]; then
+    sudo apt-get update
+  fi
+  sudo apt-get install -y \
+    docker-ce \
+    docker-ce-cli \
+    containerd.io \
+    docker-buildx-plugin \
+    docker-compose-plugin
+}
+
+main() {
+  if [ "$#" -ne 1 ]; then
+    usage >&2
+    exit 1
+  fi
+
+  case "$1" in
+    -h|--help)
+      usage
+      ;;
+    core)
+      require_supported_distro
+      require_base_commands
+      require_repo_commands
+      install_core
+      ;;
+    linux-extra)
+      require_supported_distro
+      require_base_commands
+      require_repo_commands
+      require_command dpkg \
+        "dpkg is required before configuring the Docker apt repository."
+      install_linux_extra
+      ;;
+    *)
+      echo "Unknown profile: $1" >&2
+      usage >&2
+      exit 1
+      ;;
+  esac
+}
+
+main "$@"

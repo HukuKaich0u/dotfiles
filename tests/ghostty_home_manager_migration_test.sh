@@ -6,7 +6,7 @@ repo_root="$(CDPATH= cd -- "$(dirname "$0")/.." && pwd)"
 ghostty_nix="$repo_root/nix/modules/home/programs/ghostty.nix"
 ghostty_dir="$repo_root/nix/modules/home/assets/ghostty"
 home_default_nix="$repo_root/nix/modules/home/default.nix"
-install_sh="$repo_root/scripts/link-dotfiles.sh"
+install_sh="$repo_root/scripts/common/link-dotfiles.sh"
 
 assert_contains() {
   file="$1"

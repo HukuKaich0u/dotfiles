@@ -5,7 +5,7 @@ set -eu
 repo_root="$(CDPATH= cd -- "$(dirname "$0")/.." && pwd)"
 home_default_nix="$repo_root/nix/modules/home/default.nix"
 yazi_nix="$repo_root/nix/modules/home/programs/yazi.nix"
-install_sh="$repo_root/scripts/link-dotfiles.sh"
+install_sh="$repo_root/scripts/common/link-dotfiles.sh"
 
 assert_contains() {
   file="$1"

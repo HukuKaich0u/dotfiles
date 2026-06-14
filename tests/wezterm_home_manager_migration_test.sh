@@ -5,7 +5,7 @@ set -eu
 repo_root="$(CDPATH= cd -- "$(dirname "$0")/.." && pwd)"
 darwin_default_nix="$repo_root/nix/modules/darwin/default.nix"
 wezterm_nix="$repo_root/nix/modules/home/programs/wezterm.nix"
-install_sh="$repo_root/scripts/link-dotfiles.sh"
+install_sh="$repo_root/scripts/common/link-dotfiles.sh"
 wezterm_dir="$repo_root/nix/modules/home/assets/wezterm"
 
 assert_contains() {

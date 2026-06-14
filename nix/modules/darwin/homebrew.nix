@@ -37,7 +37,6 @@
     ];
 
     casks = [
-      "claude-code"
       "codex"
       "cmux"
       "gcloud-cli"

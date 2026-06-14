@@ -11,11 +11,12 @@ end-to-end の環境構築手順はこの `README.md` を基準にする。
 
 - clone 先は `~/Documents/repos/personal/dotfiles` を前提にする
 - Nix 自体の install は手動で行う
-- Linux は `./scripts/setup-linux.sh` の後に `home-manager switch`、`mise install`、`./scripts/install-claude-code.sh`、`npm i -g @openai/codex` まで進める
-- Ubuntu Desktop で `ghostty` も必要なら `./scripts/setup-linux.sh --with-ghostty` を使う
-- macOS は `./scripts/setup-mac.sh` を入口にし、必要なら `nix-darwin` の初回 fallback を挟む
-- `ghostty` の install は Linux では `scripts/install-ghostty-linux.sh` が担当する
+- Linux は `./scripts/linux/setup.sh` の後に `home-manager switch`、`mise install`、`./scripts/common/install-claude-code.sh`、`npm i -g @openai/codex` まで進める
+- Ubuntu Desktop で `ghostty` も必要なら `./scripts/linux/setup.sh --with-ghostty` を使う
+- macOS は `./scripts/mac/setup.sh` を入口にし、必要なら `nix-darwin` の初回 fallback を挟む
+- `ghostty` の install は Linux では `scripts/linux/install-ghostty.sh` が担当する
 - macOS では `cmux` を `nix/modules/darwin/homebrew.nix` の Homebrew cask で管理する
+- `mo` は当面 macOS の Homebrew brew だけで管理し、Linux にはまだ導入しない
 - `ghostty` の config は Home Manager で管理し、repo に残す
 
 - [Setup Overview](#setup-overview)
@@ -56,25 +57,25 @@ home-manager --version
 Docker 不要:
 
 ```sh
-./scripts/setup-linux.sh
+./scripts/linux/setup.sh
 ```
 
 Docker も必要:
 
 ```sh
-./scripts/setup-linux.sh --with-docker
+./scripts/linux/setup.sh --with-docker
 ```
 
 Ubuntu Desktop で Ghostty も必要:
 
 ```sh
-./scripts/setup-linux.sh --with-ghostty
+./scripts/linux/setup.sh --with-ghostty
 ```
 
 Docker と Ghostty の両方が必要:
 
 ```sh
-./scripts/setup-linux.sh --with-docker --with-ghostty
+./scripts/linux/setup.sh --with-docker --with-ghostty
 ```
 
 この段階では OS package install、必要なら `ghostty` install、`rustup` install、dotfiles link までを行う。`ghostty` の config 自体は次の `home-manager switch` で反映する。
@@ -99,13 +100,13 @@ npm -v
 
 ### 7. Install Claude Code
 
-`mise` / `npm` が見つからない場合は新しい shell を開いてから再確認する。
-
 ```sh
-./scripts/install-claude-code.sh
+./scripts/common/install-claude-code.sh
 ```
 
-Claude Code の Linux install ownership はこの script が持つ。macOS では `nix/modules/darwin/homebrew.nix` の Homebrew cask `claude-code` で管理する。
+Claude Code の install ownership は macOS / Linux ともこの script が持つ。公式 native installer を `latest` 指定で実行する。
+
+install 後に `claude` が見つからない場合は新しい zsh を開いて PATH を再確認する。
 
 ### 8. Install Codex Manually
 
@@ -134,10 +135,10 @@ chsh -s "$(command -v zsh)"
 ### 3. Run The Bootstrap Entrypoint
 
 ```sh
-./scripts/setup-mac.sh
+./scripts/mac/setup.sh
 ```
 
-この中で `sudo darwin-rebuild switch --flake ./nix#KokiAoyagi` を通して `nix/modules/darwin/homebrew.nix` の Homebrew cask 群も適用される。`cmux` の install はここで入る。`ghostty` config は Home Manager 側の設定資産として repo に残すが、macOS では Homebrew install しない。
+この中で `sudo darwin-rebuild switch --flake ./nix#KokiAoyagi` を通して `nix/modules/darwin/homebrew.nix` の Homebrew cask / brew 群も適用される。`cmux` と `mo` の install はここで入る。`mo` は当面 macOS のみで管理し、Linux にはまだ導入しない。`ghostty` config は Home Manager 側の設定資産として repo に残すが、macOS では Homebrew install しない。
 
 ### 4. If `darwin-rebuild` Is Missing On First Run
 
@@ -145,7 +146,7 @@ chsh -s "$(command -v zsh)"
 
 ```sh
 sudo nix --extra-experimental-features 'nix-command flakes' run nix-darwin -- switch --flake ./nix#KokiAoyagi
-./scripts/setup-mac.sh
+./scripts/mac/setup.sh
 ```
 
 ### 5. Optional Manual Steps
