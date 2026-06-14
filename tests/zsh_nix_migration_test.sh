@@ -140,8 +140,8 @@ assert_contains "$zsh_nix" 'if [ -f "$HOME/.cargo/env" ]; then' \
     "zsh.nix should own cargo PATH initialization"
 assert_contains "$zsh_nix" 'path_prepend_if_dir "$HOME/.npm-global/bin"' \
     "zsh.nix should own the npm-global base path layer"
-assert_not_contains "$zsh_nix" 'path_prepend_if_dir "$HOME/.local/bin"' \
-    "zsh.nix should not add ~/.local/bin when those tools are unmanaged"
+assert_contains "$zsh_nix" 'path_prepend_if_dir "$HOME/.local/bin"' \
+    "zsh.nix should put native user-level tools such as Claude Code before app-bundled shims"
 assert_not_contains "$zsh_nix" 'path_append_if_dir "/usr/local/bin"' \
     "zsh.nix should rely on system path setup instead of appending /usr/local/bin manually"
 assert_not_contains "$zsh_nix" 'path_append_if_dir "/usr/.local/bin"' \

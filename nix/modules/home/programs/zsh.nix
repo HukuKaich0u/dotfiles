@@ -63,6 +63,7 @@ in {
       }
 
       # 標準では見つからない個人用コマンドだけを明示的に追加する。
+      path_prepend_if_dir "$HOME/.local/bin"
       path_prepend_if_dir "$HOME/.npm-global/bin"
 
       # rustup/cargo が管理する PATH をそのまま読む。
