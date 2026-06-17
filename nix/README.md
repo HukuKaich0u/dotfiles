@@ -239,6 +239,7 @@ Claude 固有の Home Manager module 群です。
 - `config.nix`
   - `~/CLAUDE.md` を repo root の `/.claude/CLAUDE.md` へ向ける
   - `~/.claude/CLAUDE.md` を repo root の `/.claude/CLAUDE.md` へ向ける
+  - `~/.claude/settings.json` は activation で既存 JSON に Nix 側の設定キーを merge する
 - `default.nix`
   - Claude module の束ね役
 
@@ -398,6 +399,7 @@ macOS / Linux とも `./scripts/common/install-claude-code.sh` が公式 native 
 - `modules/home/programs/claude/config.nix`
 - `~/CLAUDE.md` は repo root `/.claude/CLAUDE.md` への symlink
 - `~/.claude/CLAUDE.md` は repo root `/.claude/CLAUDE.md` への symlink
+- `~/.claude/settings.json` は丸ごと置換ではなく、既存 JSON に Nix 側の設定キーを merge
 
 ### prompt assets / adapters
 

@@ -89,6 +89,12 @@ test_claude_module_wiring() {
     "modules/home/default.nix must import the Claude Home Manager module"
   assert_contains "$claude_default" './config.nix' \
     "Claude Home Manager default module must import config.nix"
+  assert_contains "$claude_config" 'home.activation.mergeClaudeSettings' \
+    "Claude Home Manager config module must merge Claude settings during activation"
+  assert_contains "$claude_config" '${pkgs.jq}/bin/jq -S -s' \
+    "Claude Home Manager config module must merge JSON via jq"
+  assert_not_contains "$claude_config" 'settings = {' \
+    "Claude Home Manager config module must not clobber settings.json via programs.claude-code.settings"
   assert_contains "$claude_config" '"CLAUDE.md"' \
     "Claude Home Manager config module must manage ~/CLAUDE.md"
   assert_contains "$claude_config" '".claude/CLAUDE.md"' \
