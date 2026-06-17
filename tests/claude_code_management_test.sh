@@ -89,10 +89,12 @@ test_claude_module_wiring() {
     "modules/home/default.nix must import the Claude Home Manager module"
   assert_contains "$claude_default" './config.nix' \
     "Claude Home Manager default module must import config.nix"
+  assert_contains "$claude_config" '"CLAUDE.md"' \
+    "Claude Home Manager config module must manage ~/CLAUDE.md"
   assert_contains "$claude_config" '".claude/CLAUDE.md"' \
     "Claude Home Manager config module must manage ~/.claude/CLAUDE.md"
   assert_contains "$claude_config" 'source = config.lib.file.mkOutOfStoreSymlink "${claudeDotfilesDir}/CLAUDE.md";' \
-    "Claude Home Manager config module must point ~/.claude/CLAUDE.md at the repo CLAUDE adapter"
+    "Claude Home Manager config module must point both Claude entrypoints at the repo CLAUDE adapter"
 }
 
 test_darwin_homebrew_does_not_own_claude_code() {

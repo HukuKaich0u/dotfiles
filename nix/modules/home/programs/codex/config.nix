@@ -24,6 +24,10 @@ in {
   '';
 
   home.file = {
+    "AGENTS.md" = {
+      force = true;
+      source = config.lib.file.mkOutOfStoreSymlink "${codexDotfilesDir}/AGENTS.md";
+    };
     ".codex/AGENTS.md" = {
       force = true;
       source = config.lib.file.mkOutOfStoreSymlink "${codexDotfilesDir}/AGENTS.md";

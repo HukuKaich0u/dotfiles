@@ -25,7 +25,11 @@ assert_contains "$codex_nix" 'mkdir -p "$HOME/.codex" "$HOME/.codex-work"' \
     "codex config module should create both personal and work Codex homes"
 assert_contains "$codex_nix" 'cp --no-preserve=mode,ownership' \
     "codex config module should materialize config.toml from generated settings"
+assert_contains "$codex_nix" '"AGENTS.md"' \
+    "codex config module should manage the global ~/AGENTS.md entrypoint"
 assert_contains "$codex_nix" '".codex/AGENTS.md"' \
     "codex config module should continue linking the shared AGENTS.md"
+assert_contains "$codex_nix" 'source = config.lib.file.mkOutOfStoreSymlink "${codexDotfilesDir}/AGENTS.md";' \
+    "codex config module should point both AGENTS.md entrypoints at the repo Codex adapter"
 
 echo "codex home manager tests passed"

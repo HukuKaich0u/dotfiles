@@ -11,14 +11,7 @@ REPO_CONFIG_DIR="$DOTFILES_DIR/.config"
 HOME_CONFIG_DIR="$HOME/.config"
 HOME_DOTFILES=""
 TERMINFO_SOURCE_DIR="$DOTFILES_DIR/terminfo"
-EXPLICIT_LINKS=(
-    ".agents/AGENTS.md:$HOME/AGENTS.md"
-    ".claude/CLAUDE.md:$HOME/CLAUDE.md"
-    ".agents/AGENTS.md:$HOME/.agents/AGENTS.md"
-    ".agents/skills:$HOME/.agents/skills"
-    ".codex/AGENTS.md:$HOME/.codex/AGENTS.md"
-    ".claude/CLAUDE.md:$HOME/.claude/CLAUDE.md"
-)
+EXPLICIT_LINKS=()
 SKIP_CONFIG_DIRS="tmux zsh starship.toml yazi bacon wezterm ghostty nvim"
 
 ensure_parent_dir() {
@@ -86,31 +79,14 @@ install_explicit_links() {
     local relative_source=""
     local target=""
 
+    if [ "${#EXPLICIT_LINKS[@]}" -eq 0 ]; then
+        return
+    fi
+
     for entry in "${EXPLICIT_LINKS[@]}"; do
         relative_source="${entry%%:*}"
         target="${entry#*:}"
         link_path "$DOTFILES_DIR/$relative_source" "$target" "$relative_source"
-    done
-}
-
-cleanup_legacy_ai_links() {
-    local target=""
-    local current_target=""
-
-    for target in \
-        "$HOME/.claude/skills"
-    do
-        if [ ! -L "$target" ]; then
-            continue
-        fi
-
-        current_target="$(readlink "$target")"
-        case "$current_target" in
-            "$DOTFILES_DIR"/*)
-                rm "$target"
-                echo "✓ removed legacy AI link $target"
-                ;;
-        esac
     done
 }
 
@@ -188,7 +164,6 @@ echo "Installing dotfiles from $DOTFILES_DIR"
 echo ""
 
 install_config_tree
-cleanup_legacy_ai_links
 cleanup_legacy_nix_link
 install_explicit_links
 install_home_dotfiles

@@ -225,6 +225,7 @@ Codex 固有の Home Manager module 群です。
 
 - `config.nix`
   - `~/.codex/config.toml` を activation で実ファイル生成する
+  - `~/AGENTS.md` を repo root の `/.codex/AGENTS.md` へ向ける
   - `~/.codex/AGENTS.md` を repo root の `/.codex/AGENTS.md` へ向ける
 - `default.nix`
   - Codex module の束ね役
@@ -236,6 +237,7 @@ Codex 固有の Home Manager module 群です。
 Claude 固有の Home Manager module 群です。
 
 - `config.nix`
+  - `~/CLAUDE.md` を repo root の `/.claude/CLAUDE.md` へ向ける
   - `~/.claude/CLAUDE.md` を repo root の `/.claude/CLAUDE.md` へ向ける
 - `default.nix`
   - Claude module の束ね役
@@ -249,9 +251,13 @@ agent skills の Home Manager 側の接着層です。
 - `local-skills.nix`
   - repo root `/.agents/skills/` にある local skill を `~/.agents/skills/` へ export する
   - 旧 `~/.agents/skills -> repo` symlink を migration する
+- `claude-skills.nix`
+  - local skill と superpowers を `~/.claude/skills/` へも link する
+  - Codex は `~/.agents/skills/` を再帰探索するが Claude Code は `~/.claude/skills/<name>/SKILL.md` を1階層しか見ないため、superpowers のような collection skill は leaf ごとに展開して link する
+  - 旧来の手動 symlink / `skills.dirlink.backup` を activation で掃除する
 - `external/`
   - upstream pin のまま扱う skill collection を置く
-  - 現状は `superpowers.nix` のみ
+  - `superpowers-src.nix` が source derivation を返し、`superpowers.nix` と `claude-skills.nix` が共有する
 - `default.nix`
   - skills export module の束ね役
 
@@ -335,6 +341,7 @@ Codex まわりは install / config / prompt assets を分けて考えます。
 
 - `modules/home/programs/codex/config.nix`
 - `~/.codex/config.toml` を Home Manager activation で実ファイル生成
+- `~/AGENTS.md` は repo root `/.codex/AGENTS.md` への symlink
 - `~/.codex/AGENTS.md` は repo root `/.codex/AGENTS.md` への symlink
 
 現状 `config.toml` に入れている設定はこれです。
@@ -389,6 +396,7 @@ macOS / Linux とも `./scripts/common/install-claude-code.sh` が公式 native 
 ### config
 
 - `modules/home/programs/claude/config.nix`
+- `~/CLAUDE.md` は repo root `/.claude/CLAUDE.md` への symlink
 - `~/.claude/CLAUDE.md` は repo root `/.claude/CLAUDE.md` への symlink
 
 ### prompt assets / adapters
