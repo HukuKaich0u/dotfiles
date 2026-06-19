@@ -12,6 +12,10 @@ legacy_install_script="$repo_root/scripts/install-claude-code.sh"
 root_readme="$repo_root/README.md"
 scripts_readme="$repo_root/scripts/README.md"
 nix_readme="$repo_root/nix/README.md"
+drawio_skill="$repo_root/.agents/skills/drawio/SKILL.md"
+drawio_shapes="$repo_root/.agents/skills/drawio/data/shape-index.json.gz"
+drawio_repair_png="$repo_root/.agents/skills/drawio/scripts/repair_png.py"
+drawio_troubleshooting="$repo_root/.agents/skills/drawio/references/troubleshooting.md"
 
 assert_contains() {
   file="$1"
@@ -293,6 +297,19 @@ test_claude_docs() {
     "nix/README.md must document Claude Code install ownership"
 }
 
+test_vendored_drawio_skill() {
+  assert_file_exists "$drawio_skill" \
+    "drawio skill should be vendored under .agents/skills"
+  assert_contains "$drawio_skill" 'name: drawio-skill' \
+    "vendored drawio skill should keep its upstream metadata"
+  assert_file_exists "$drawio_shapes" \
+    "drawio skill should include its packaged shape index"
+  assert_file_exists "$drawio_repair_png" \
+    "drawio skill should include its PNG repair helper"
+  assert_file_exists "$drawio_troubleshooting" \
+    "drawio skill should include its troubleshooting reference"
+}
+
 test_claude_module_wiring
 test_darwin_homebrew_does_not_own_claude_code
 test_install_claude_code_requires_curl
@@ -301,5 +318,6 @@ test_install_claude_code_skips_when_claude_exists
 test_install_claude_code_does_not_skip_cmux_bundled_claude
 test_install_claude_code_runs_native_latest_install
 test_claude_docs
+test_vendored_drawio_skill
 
 echo "claude code management test passed"

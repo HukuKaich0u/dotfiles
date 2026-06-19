@@ -39,6 +39,7 @@
     casks = [
       "codex"
       "cmux"
+      "drawio"
       "gcloud-cli"
       "github"
       "ngrok"
