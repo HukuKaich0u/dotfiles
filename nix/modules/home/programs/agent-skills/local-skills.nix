@@ -6,22 +6,24 @@
   dotfilesDir = "${config.home.homeDirectory}/Documents/repos/personal/dotfiles";
   repoSkillsDir = ../../../../../.agents/skills;
   repoSkillsOutOfStoreDir = "${dotfilesDir}/.agents/skills";
-  externalSkillNames = [
-    "superpowers"
-  ];
-  localSkillNames =
+
+  skillsLib = import ./lib.nix {inherit lib;};
+  # All leaf skills under the repo, with their path relative to .agents/skills.
+  allLeaves = skillsLib.leaves repoSkillsDir;
+  # superpowers is an external collection linked by external/superpowers.nix;
+  # exclude its leaves here so we don't double-manage them.
+  localLeaves =
     builtins.filter
-    (name:
-      let
-        entryType = builtins.getAttr name (builtins.readDir repoSkillsDir);
-      in
-        entryType == "directory" && !(builtins.elem name externalSkillNames))
-    (builtins.attrNames (builtins.readDir repoSkillsDir));
-  localSkillFiles = builtins.listToAttrs (map (name: {
-      name = ".agents/skills/${name}";
-      value.source = config.lib.file.mkOutOfStoreSymlink "${repoSkillsOutOfStoreDir}/${name}";
+    (l: !(lib.hasPrefix "superpowers/" l.relPath) && l.relPath != "superpowers")
+    allLeaves;
+
+  # Codex discovers skills recursively, so keep the category structure:
+  #   .agents/skills/lang/rust -> ~/.agents/skills/lang/rust
+  localSkillFiles = builtins.listToAttrs (map (l: {
+      name = ".agents/skills/${l.relPath}";
+      value.source = config.lib.file.mkOutOfStoreSymlink "${repoSkillsOutOfStoreDir}/${l.relPath}";
     })
-    localSkillNames);
+    localLeaves);
 in {
   home.activation.migrateAgentsSkillsDir = lib.hm.dag.entryBefore ["checkLinkTargets"] ''
     mkdir -p "$HOME/.agents"

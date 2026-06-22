@@ -8,39 +8,37 @@
   repoSkillsDir = ../../../../../.agents/skills;
   repoSkillsOutOfStoreDir = "${dotfilesDir}/.agents/skills";
 
+  skillsLib = import ./lib.nix {inherit lib;};
+
   # Claude Code only scans ONE level under ~/.claude/skills/, expecting
-  # ~/.claude/skills/<name>/SKILL.md. Codex discovers skills recursively under
-  # ~/.agents/skills/, so a "collection" skill (a dir of sub-skills, no top-level
-  # SKILL.md) works for Codex but is invisible to Claude. We bridge that here by
-  # flattening collections into one symlink per leaf skill.
+  # ~/.claude/skills/<name>/SKILL.md. So every leaf skill is flattened to a
+  # single symlink keyed by its own directory name (category dropped).
 
-  isDir = path: name: (builtins.getAttr name (builtins.readDir path)) == "directory";
-  hasSkillMd = path: builtins.pathExists "${path}/SKILL.md";
-  subdirs = path:
-    builtins.filter (name: isDir path name)
-    (builtins.attrNames (builtins.readDir path));
-
-  # Local repo skills: kept as out-of-store symlinks so edits in the repo apply
-  # live, matching local-skills.nix. These are all leaf skills today.
-  localSkillNames = builtins.filter (isDir repoSkillsDir) (subdirs repoSkillsDir);
-  localSkillLinks = builtins.listToAttrs (map (name: {
-      name = ".claude/skills/${name}";
-      value.source = config.lib.file.mkOutOfStoreSymlink "${repoSkillsOutOfStoreDir}/${name}";
+  # Local repo leaves (out-of-store so edits apply live). Exclude superpowers,
+  # which is sourced from the nix store below.
+  allLeaves = skillsLib.leaves repoSkillsDir;
+  localLeaves =
+    builtins.filter
+    (l: !(lib.hasPrefix "superpowers/" l.relPath) && l.relPath != "superpowers")
+    allLeaves;
+  localSkillLinks = builtins.listToAttrs (map (l: {
+      name = ".claude/skills/${l.name}";
+      value.source = config.lib.file.mkOutOfStoreSymlink "${repoSkillsOutOfStoreDir}/${l.relPath}";
     })
-    localSkillNames);
+    localLeaves);
 
-  # Superpowers ships as a collection: one sub-dir per leaf skill, each with its
-  # own SKILL.md. Link each leaf so Claude can see them individually.
+  # Superpowers ships as a collection of leaf skills; flatten each via the same
+  # recursive helper against its store path.
   superpowersSrc = import ./external/superpowers-src.nix {inherit pkgs;};
   superpowersSkillsDir = "${superpowersSrc}/skills";
-  superpowersLeafNames =
-    builtins.filter (name: hasSkillMd "${superpowersSkillsDir}/${name}")
-    (subdirs superpowersSkillsDir);
-  superpowersLinks = builtins.listToAttrs (map (name: {
-      name = ".claude/skills/${name}";
-      value.source = "${superpowersSkillsDir}/${name}";
+  superpowersLeaves = skillsLib.leaves superpowersSkillsDir;
+  superpowersLinks = builtins.listToAttrs (map (l: {
+      name = ".claude/skills/${l.name}";
+      value.source = "${superpowersSkillsDir}/${l.relPath}";
     })
-    superpowersLeafNames);
+    superpowersLeaves);
+
+  allFlatNames = (map (l: l.name) localLeaves) ++ (map (l: l.name) superpowersLeaves);
 in {
   home.activation.migrateClaudeSkillsDir = lib.hm.dag.entryBefore ["checkLinkTargets"] ''
     mkdir -p "$HOME/.claude"
@@ -52,7 +50,7 @@ in {
     mkdir -p "$HOME/.claude/skills"
     # Remove any pre-existing per-skill symlinks we are about to recreate, so
     # checkLinkTargets does not abort on a manual link colliding with ours.
-    for name in ${lib.escapeShellArgs (localSkillNames ++ superpowersLeafNames)}; do
+    for name in ${lib.escapeShellArgs allFlatNames}; do
       if [ -L "$HOME/.claude/skills/$name" ]; then
         rm "$HOME/.claude/skills/$name"
       fi
