@@ -7,4 +7,4 @@ targets:
   - codex
 dependencies:
   apm:
-    - HukuKaich0u/agent-kit/instructions/core#b106a0edc9ce5f1fc0e1587052b86538b9b7310c
+    - HukuKaich0u/agent-kit/instructions/core
