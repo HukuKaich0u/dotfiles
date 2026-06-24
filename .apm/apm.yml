@@ -7,4 +7,6 @@ targets:
   - codex
 dependencies:
   apm:
-    - HukuKaich0u/agent-kit#1191b3897cbe7b677b5ebc75aa40d6b243fa0e92
+    - git: https://github.com/HukuKaich0u/agent-kit.git
+      path: instructions/core
+      ref: ed662b85fd61081ad2f41a9b8f18d42b369f1d1a
