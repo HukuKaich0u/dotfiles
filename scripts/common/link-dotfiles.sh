@@ -11,7 +11,9 @@ REPO_CONFIG_DIR="$DOTFILES_DIR/.config"
 HOME_CONFIG_DIR="$HOME/.config"
 HOME_DOTFILES=""
 TERMINFO_SOURCE_DIR="$DOTFILES_DIR/terminfo"
-EXPLICIT_LINKS=()
+EXPLICIT_LINKS=(
+    ".apm/apm.yml:$HOME/.apm/apm.yml"
+)
 SKIP_CONFIG_DIRS="tmux zsh starship.toml yazi bacon wezterm ghostty nvim"
 
 ensure_parent_dir() {

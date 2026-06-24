@@ -1,0 +1,10 @@
+name: koki-global
+version: 0.1.0
+description: Global APM manifest for KokiAoyagi
+author: HukuKaich0u
+targets:
+  - claude
+  - codex
+dependencies:
+  apm:
+    - HukuKaich0u/agent-kit#1191b3897cbe7b677b5ebc75aa40d6b243fa0e92
