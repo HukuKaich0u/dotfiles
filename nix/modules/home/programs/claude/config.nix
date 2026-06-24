@@ -1,10 +1,9 @@
 {
-  config,
+  agentKitSrc,
   lib,
   pkgs,
   ...
 }: let
-  claudeDotfilesDir = "${config.home.homeDirectory}/Documents/repos/personal/dotfiles/.claude";
   claudeSettings = {
     model = "opus[1m]";
     alwaysThinkingEnabled = false;
@@ -43,16 +42,15 @@ in {
     chmod 644 "$settings_target"
   '';
 
-  # CLAUDE.md はリポジトリ編集を即反映させるため out-of-store symlink を維持する
-  # (モジュールの context は store コピーになるので使わない)。
+  # CLAUDE.md は agent-kit の pinned source から配布する。
   home.file = {
     "CLAUDE.md" = {
       force = true;
-      source = config.lib.file.mkOutOfStoreSymlink "${claudeDotfilesDir}/CLAUDE.md";
+      source = agentKitSrc + "/claude/CLAUDE.md";
     };
     ".claude/CLAUDE.md" = {
       force = true;
-      source = config.lib.file.mkOutOfStoreSymlink "${claudeDotfilesDir}/CLAUDE.md";
+      source = agentKitSrc + "/claude/CLAUDE.md";
     };
   };
 }

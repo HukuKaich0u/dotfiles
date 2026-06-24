@@ -12,7 +12,8 @@ Usage: ./scripts/mac/setup.sh
 Bootstraps a macOS machine for this dotfiles repo by:
   1. Installing Homebrew if needed
   2. Applying nix-darwin
-  3. Linking dotfiles
+  3. Installing APM if needed
+  4. Linking dotfiles
 EOF
 }
 
@@ -33,6 +34,7 @@ main() {
 
   "$SCRIPT_DIR"/install-homebrew.sh
   "$SCRIPT_DIR"/apply-nix-darwin.sh
+  "$COMMON_DIR"/install-apm.sh
   "$COMMON_DIR"/link-dotfiles.sh
 }
 

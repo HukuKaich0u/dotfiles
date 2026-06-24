@@ -7,6 +7,10 @@
     #
     # Inputs declare which upstream projects provide those building blocks.
     nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
+    agent-kit = {
+      url = "github:HukuKaich0u/agent-kit";
+      flake = false;
+    };
     home-manager = {
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -17,13 +21,14 @@
     };
   };
 
-  outputs = {
+  outputs = inputs@{
     self,
     nixpkgs,
     home-manager,
     nix-darwin,
     ...
   }: let
+    agentKitSrc = inputs."agent-kit";
     sharedNixpkgs = import ./lib/nixpkgs.nix;
     mkPkgs = system: import nixpkgs {
       inherit system;
@@ -35,7 +40,9 @@
     # moves through nix-darwin below.
     homeConfigurations."kokiaoyagi" = home-manager.lib.homeManagerConfiguration {
       pkgs = mkPkgs "aarch64-linux";
-      extraSpecialArgs = {inherit self;};
+      extraSpecialArgs = {
+        inherit self agentKitSrc;
+      };
       modules = [
         ./modules/home/default.nix
         ./modules/linux/default.nix
@@ -46,7 +53,9 @@
     # homebrew, system.defaults, security, and users will eventually live.
     darwinConfigurations."KokiAoyagi" = nix-darwin.lib.darwinSystem {
       system = "aarch64-darwin";
-      specialArgs = {inherit self;};
+      specialArgs = {
+        inherit self agentKitSrc;
+      };
       modules = [
         ./modules/darwin/system.nix
         # Without this bridge module, nix-darwin cannot understand the

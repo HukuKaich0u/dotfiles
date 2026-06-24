@@ -1,14 +1,13 @@
 {
-  config,
+  agentKitSrc,
   lib,
   ...
 }: let
-  dotfilesDir = "${config.home.homeDirectory}/Documents/repos/personal/dotfiles";
-  repoSkillsDir = ../../../../../.agents/skills;
-  repoSkillsOutOfStoreDir = "${dotfilesDir}/.agents/skills";
+  repoSkillsDir = agentKitSrc + "/skills";
 
   skillsLib = import ./lib.nix {inherit lib;};
-  # All leaf skills under the repo, with their path relative to .agents/skills.
+  # All leaf skills under the pinned agent-kit source, with their path relative
+  # to skills/.
   allLeaves = skillsLib.leaves repoSkillsDir;
   # superpowers is an external collection linked by external/superpowers.nix;
   # exclude its leaves here so we don't double-manage them.
@@ -21,7 +20,7 @@
   #   .agents/skills/lang/rust -> ~/.agents/skills/lang/rust
   localSkillFiles = builtins.listToAttrs (map (l: {
       name = ".agents/skills/${l.relPath}";
-      value.source = config.lib.file.mkOutOfStoreSymlink "${repoSkillsOutOfStoreDir}/${l.relPath}";
+      value.source = repoSkillsDir + "/${l.relPath}";
     })
     localLeaves);
 in {
@@ -35,7 +34,7 @@ in {
 
   home.file =
     {
-      ".agents/AGENTS.md".source = config.lib.file.mkOutOfStoreSymlink "${dotfilesDir}/.agents/AGENTS.md";
+      ".agents/AGENTS.md".source = agentKitSrc + "/agents/AGENTS.md";
     }
     // localSkillFiles;
 }

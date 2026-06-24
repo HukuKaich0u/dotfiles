@@ -67,7 +67,7 @@ Claude Code も必要ならこれを実行する。
 ./scripts/mac/setup.sh
 ```
 
-`scripts/mac/setup.sh` は orchestrator だけを担当する。Homebrew の導入確認、`sudo darwin-rebuild switch --flake ./nix#KokiAoyagi`、dotfiles link の実装詳細は個別 script 側に置く。`cmux` 自体の package ownership は `nix/modules/darwin/homebrew.nix` にある。ghostty config は Home Manager module として repo に残すが、macOS では Homebrew install 対象にしない。
+`scripts/mac/setup.sh` は orchestrator だけを担当する。Homebrew の導入確認、`sudo darwin-rebuild switch --flake ./nix#KokiAoyagi`、APM の user-level install、dotfiles link の実装詳細は個別 script 側に置く。`cmux` 自体の package ownership は `nix/modules/darwin/homebrew.nix` にある。ghostty config は Home Manager module として repo に残すが、macOS では Homebrew install 対象にしない。
 
 手動 step:
 
@@ -95,7 +95,7 @@ gcloud init
 ### `mac/setup.sh`
 
 - 役割: macOS bootstrap の入口
-- 実行順: `mac/install-homebrew.sh` → `mac/apply-nix-darwin.sh` → `common/link-dotfiles.sh`
+- 実行順: `mac/install-homebrew.sh` → `mac/apply-nix-darwin.sh` → `common/install-apm.sh` → `common/link-dotfiles.sh`
 - やらないこと: `darwin-rebuild` 初回導入の完全自動化、GUI app 側の認証や初期設定、`gcloud init`
 - 例: `./scripts/mac/setup.sh`
 
@@ -135,6 +135,13 @@ gcloud init
 - やること: 既存 `claude` の skip、`curl` / `bash` 前提確認、公式 native installer の `latest` 実行、install 後の `claude` 確認
 - やらないこと: Homebrew / npm install、dotfiles 配布
 - 例: `./scripts/common/install-claude-code.sh`
+
+### `common/install-apm.sh`
+
+- 役割: APM の user-level installer
+- やること: 既存 `apm` の skip、`curl` / `sh` 前提確認、公式 unix installer 実行、install 後の `apm` 確認
+- やらないこと: Homebrew install、APM package deploy、dotfiles 配布
+- 例: `./scripts/common/install-apm.sh`
 
 ### `linux/install-ghostty.sh`
 

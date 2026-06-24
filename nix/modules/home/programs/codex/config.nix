@@ -1,10 +1,9 @@
 {
-  config,
+  agentKitSrc,
   lib,
   pkgs,
   ...
 }: let
-  codexDotfilesDir = "${config.home.homeDirectory}/Documents/repos/personal/dotfiles/.codex";
   tomlFormat = pkgs.formats.toml {};
   settings = {
     model = "gpt-5.4";
@@ -26,11 +25,11 @@ in {
   home.file = {
     "AGENTS.md" = {
       force = true;
-      source = config.lib.file.mkOutOfStoreSymlink "${codexDotfilesDir}/AGENTS.md";
+      source = agentKitSrc + "/codex/AGENTS.md";
     };
     ".codex/AGENTS.md" = {
       force = true;
-      source = config.lib.file.mkOutOfStoreSymlink "${codexDotfilesDir}/AGENTS.md";
+      source = agentKitSrc + "/codex/AGENTS.md";
     };
   };
 }

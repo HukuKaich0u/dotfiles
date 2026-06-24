@@ -1,12 +1,12 @@
 {
+  agentKitSrc,
   config,
   lib,
   pkgs,
   ...
 }: let
   dotfilesDir = "${config.home.homeDirectory}/Documents/repos/personal/dotfiles";
-  repoSkillsDir = ../../../../../.agents/skills;
-  repoSkillsOutOfStoreDir = "${dotfilesDir}/.agents/skills";
+  repoSkillsDir = agentKitSrc + "/skills";
 
   skillsLib = import ./lib.nix {inherit lib;};
 
@@ -14,7 +14,7 @@
   # ~/.claude/skills/<name>/SKILL.md. So every leaf skill is flattened to a
   # single symlink keyed by its own directory name (category dropped).
 
-  # Local repo leaves (out-of-store so edits apply live). Exclude superpowers,
+  # Local agent-kit leaves from the pinned flake input. Exclude superpowers,
   # which is sourced from the nix store below.
   allLeaves = skillsLib.leaves repoSkillsDir;
   localLeaves =
@@ -23,7 +23,7 @@
     allLeaves;
   localSkillLinks = builtins.listToAttrs (map (l: {
       name = ".claude/skills/${l.name}";
-      value.source = config.lib.file.mkOutOfStoreSymlink "${repoSkillsOutOfStoreDir}/${l.relPath}";
+      value.source = repoSkillsDir + "/${l.relPath}";
     })
     localLeaves);
 
