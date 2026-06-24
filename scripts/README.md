@@ -10,7 +10,7 @@ end-to-end の環境構築手順は repo root の `README.md` を参照。
 - `mac/` は macOS 専用の入口と installer
 - `linux/` は Linux 専用の入口と installer
 - `common/` は macOS / Linux 共通の user-level installer と dotfiles 配布
-- repo root の `*.sh` は旧パス互換 wrapper
+- `scripts/` 直下に wrapper は置かない
 - script は複数回実行しても壊れにくい前提で保つ
 
 権限も責務も混ぜない。
@@ -68,6 +68,8 @@ Claude Code も必要ならこれを実行する。
 ```
 
 `scripts/mac/setup.sh` は orchestrator だけを担当する。Homebrew の導入確認、`sudo darwin-rebuild switch --flake ./nix#KokiAoyagi`、APM の user-level install、dotfiles link の実装詳細は個別 script 側に置く。`cmux` 自体の package ownership は `nix/modules/darwin/homebrew.nix` にある。ghostty config は Home Manager module として repo に残すが、macOS では Homebrew install 対象にしない。
+
+この repo では `scripts/mac/`, `scripts/linux/`, `scripts/common/` の実体 path をそのまま使う。
 
 手動 step:
 
