@@ -3,11 +3,11 @@
     "agent-kit": {
       "flake": false,
       "locked": {
-        "lastModified": 1782290808,
-        "narHash": "sha256-PQ+sRGmlHHhbd8+GpFWkFyPFpm7HiumAwylyG5kDswc=",
+        "lastModified": 1782304485,
+        "narHash": "sha256-6l94g+k5brUhemUzw97r2xJ1izez0u1zS17LajVk7KU=",
         "owner": "HukuKaich0u",
         "repo": "agent-kit",
-        "rev": "81b500ed6cf136ec358b13ff8d8aecf5b0461755",
+        "rev": "b0a93da045adf9ebefa80bbc4283c13efe76f9a3",
         "type": "github"
       },
       "original": {
