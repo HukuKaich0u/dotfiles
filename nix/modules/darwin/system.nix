@@ -10,6 +10,12 @@
   # ../home. As we rebuild darwin-side management, macOS-wide settings
   # such as homebrew, system.defaults, security, and users belong here.
 
+  # Enable flakes / the new nix CLI for the bare `nix` command. direnv's
+  # `use flake` and darwin-rebuild enable these on their own, so plain
+  # `nix develop` / `nix flake` would otherwise fail with
+  # "experimental Nix feature 'nix-command' is disabled".
+  nix.settings.experimental-features = ["nix-command" "flakes"];
+
   # nix-darwin requires its own state version for compatibility tracking.
   system.stateVersion = 6;
   # Record which dotfiles revision produced the current darwin configuration.
