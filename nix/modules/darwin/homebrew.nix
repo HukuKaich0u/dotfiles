@@ -43,7 +43,6 @@
       "gcloud-cli"
       "github"
       "ngrok"
-      "rectangle"
       "utm"
       "visual-studio-code"
       "wezterm@nightly"
