@@ -6,7 +6,6 @@ repo_root="$(CDPATH= cd -- "$(dirname "$0")/.." && pwd)"
 install_homebrew_script="$repo_root/scripts/mac/install-homebrew.sh"
 apply_nix_darwin_script="$repo_root/scripts/mac/apply-nix-darwin.sh"
 setup_mac_script="$repo_root/scripts/mac/setup.sh"
-legacy_setup_mac_script="$repo_root/scripts/setup-mac.sh"
 scripts_readme="$repo_root/scripts/README.md"
 nix_readme="$repo_root/nix/README.md"
 
@@ -83,7 +82,6 @@ test_mac_scripts_exist_and_document_guards() {
   assert_file_exists "$install_homebrew_script" "install-homebrew.sh must exist"
   assert_file_exists "$apply_nix_darwin_script" "apply-nix-darwin.sh must exist"
   assert_file_exists "$setup_mac_script" "scripts/mac/setup.sh must exist"
-  assert_file_exists "$legacy_setup_mac_script" "legacy setup-mac.sh wrapper must exist"
 
   assert_contains "$install_homebrew_script" 'command -v brew' \
     "install-homebrew.sh must skip when brew already exists"
@@ -127,6 +125,12 @@ echo "apply-nix-darwin:\$*" >>"$log_file"
 EOF
     make_executable "$mac_dir/apply-nix-darwin.sh"
 
+    cat >"$common_dir/install-apm.sh" <<EOF
+#!/bin/sh
+echo "install-apm:\$*" >>"$log_file"
+EOF
+    make_executable "$common_dir/install-apm.sh"
+
     cat >"$common_dir/link-dotfiles.sh" <<EOF
 #!/bin/sh
 echo "link-dotfiles:\$*" >>"$log_file"
@@ -138,8 +142,9 @@ EOF
     assert_file_equals "$log_file" \
 "install-homebrew:
 apply-nix-darwin:
+install-apm:
 link-dotfiles:" \
-      "setup-mac.sh should call Homebrew, nix-darwin, then link-dotfiles in order"
+      "setup-mac.sh should call Homebrew, nix-darwin, install-apm, then link-dotfiles in order"
   )
 }
 

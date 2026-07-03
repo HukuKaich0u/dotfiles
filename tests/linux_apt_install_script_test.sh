@@ -7,7 +7,6 @@ packages_script="$repo_root/scripts/linux/install-packages.sh"
 setup_script="$repo_root/scripts/linux/setup.sh"
 rustup_script="$repo_root/scripts/linux/install-rustup.sh"
 ghostty_script="$repo_root/scripts/linux/install-ghostty.sh"
-legacy_setup_script="$repo_root/scripts/setup-linux.sh"
 root_readme="$repo_root/README.md"
 scripts_readme="$repo_root/scripts/README.md"
 
@@ -1018,7 +1017,6 @@ assert_contains "$packages_script" 'docker-compose-plugin' \
 assert_contains "$packages_script" 'download.docker.com' \
   "install-linux-packages.sh should configure the Docker apt repository"
 
-assert_file_exists "$legacy_setup_script" "legacy setup-linux.sh wrapper must exist"
 assert_contains "$setup_script" 'install-packages.sh core' \
   "setup-linux.sh should install the core apt profile"
 assert_contains "$setup_script" 'install-rustup.sh' \
