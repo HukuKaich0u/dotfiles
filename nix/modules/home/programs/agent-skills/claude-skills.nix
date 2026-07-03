@@ -9,10 +9,9 @@
   # ~/.claude/skills/<name>/SKILL.md. So every leaf skill is flattened to a
   # single symlink keyed by its own directory name (category dropped).
 
-  # NOTE: agent-kit's own skills are NOT distributed from here anymore — they are
-  # managed and distributed via APM (~/.apm/apm.yml) instead, so this module only
-  # ships the external superpowers collection. agent-kit remains a flake input
-  # purely for instructions / CLAUDE.md (see claude/config.nix), not skills.
+  # NOTE: agent-kit's skills and instruction files are managed and distributed
+  # via APM (~/.apm/apm.yml). This module only ships the external superpowers
+  # collection into ~/.claude/skills/.
 
   # Superpowers ships as a collection of leaf skills; flatten each via the same
   # recursive helper against its store path.
