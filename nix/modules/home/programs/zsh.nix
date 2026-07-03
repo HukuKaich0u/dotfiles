@@ -77,7 +77,6 @@ in {
       fi
 
       # ここから下は PATH 以外の環境変数。
-      export ASDF_LUA_LUAROCKS_VERSION="3.12.2"
       export BAT_THEME="1337"
       export ZSH_STATE_DIR="''${XDG_STATE_HOME:-$HOME/.local/state}/zsh"
       mkdir -p "$ZSH_STATE_DIR"
