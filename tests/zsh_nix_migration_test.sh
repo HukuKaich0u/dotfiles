@@ -283,10 +283,10 @@ if [ "$state_dir_line" -gt "$init_content_line" ]; then
     exit 1
 fi
 
-assert_contains "$install_script" 'HOME_DOTFILES=""' \
-    "link-dotfiles.sh should stop linking zsh dotfiles"
-assert_contains "$install_script" 'SKIP_CONFIG_DIRS="tmux zsh starship.toml yazi bacon wezterm ghostty nvim"' \
-    "link-dotfiles.sh should stop linking .config/zsh and starship.toml"
+assert_not_contains "$install_script" 'REPO_CONFIG_DIR' \
+    "link-dotfiles.sh should not reference the removed repo .config tree"
+assert_not_contains "$install_script" 'SKIP_CONFIG_DIRS' \
+    "link-dotfiles.sh should not carry the .config skip list anymore"
 
 assert_missing "$repo_root/.zshenv" \
     "repo root should not keep a hand-managed top-level .zshenv entrypoint"
