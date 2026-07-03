@@ -1,4 +1,4 @@
-# Recursive skill discovery shared by local-skills.nix and claude-skills.nix.
+# Recursive skill discovery used by external/superpowers.nix.
 #
 # A "leaf skill" is any directory that directly contains a SKILL.md.
 # Categories (lang/, meta/, tooling/) and collections (superpowers/) are just
