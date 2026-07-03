@@ -1,31 +1,18 @@
 {
-  agentKitSrc,
-  config,
   lib,
   pkgs,
   ...
 }: let
-  dotfilesDir = "${config.home.homeDirectory}/Documents/repos/personal/dotfiles";
-  repoSkillsDir = agentKitSrc + "/skills";
-
   skillsLib = import ./lib.nix {inherit lib;};
 
   # Claude Code only scans ONE level under ~/.claude/skills/, expecting
   # ~/.claude/skills/<name>/SKILL.md. So every leaf skill is flattened to a
   # single symlink keyed by its own directory name (category dropped).
 
-  # Local agent-kit leaves from the pinned flake input. Exclude superpowers,
-  # which is sourced from the nix store below.
-  allLeaves = skillsLib.leaves repoSkillsDir;
-  localLeaves =
-    builtins.filter
-    (l: !(lib.hasPrefix "superpowers/" l.relPath) && l.relPath != "superpowers")
-    allLeaves;
-  localSkillLinks = builtins.listToAttrs (map (l: {
-      name = ".claude/skills/${l.name}";
-      value.source = repoSkillsDir + "/${l.relPath}";
-    })
-    localLeaves);
+  # NOTE: agent-kit's own skills are NOT distributed from here anymore — they are
+  # managed and distributed via APM (~/.apm/apm.yml) instead, so this module only
+  # ships the external superpowers collection. agent-kit remains a flake input
+  # purely for instructions / CLAUDE.md (see claude/config.nix), not skills.
 
   # Superpowers ships as a collection of leaf skills; flatten each via the same
   # recursive helper against its store path.
@@ -38,7 +25,7 @@
     })
     superpowersLeaves);
 
-  allFlatNames = (map (l: l.name) localLeaves) ++ (map (l: l.name) superpowersLeaves);
+  allFlatNames = map (l: l.name) superpowersLeaves;
 in {
   home.activation.migrateClaudeSkillsDir = lib.hm.dag.entryBefore ["checkLinkTargets"] ''
     mkdir -p "$HOME/.claude"
@@ -57,5 +44,5 @@ in {
     done
   '';
 
-  home.file = localSkillLinks // superpowersLinks;
+  home.file = superpowersLinks;
 }

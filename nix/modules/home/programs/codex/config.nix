@@ -1,5 +1,4 @@
 {
-  agentKitSrc,
   lib,
   pkgs,
   ...
@@ -22,14 +21,6 @@ in {
     chmod 644 "$HOME/.codex/config.toml"
   '';
 
-  home.file = {
-    "AGENTS.md" = {
-      force = true;
-      source = agentKitSrc + "/codex/AGENTS.md";
-    };
-    ".codex/AGENTS.md" = {
-      force = true;
-      source = agentKitSrc + "/codex/AGENTS.md";
-    };
-  };
+  # NOTE: AGENTS.md / 指示ファイルは APM の instructions/core (~/.apm/apm.yml)
+  # から配布する。Nix はここでは config.toml の生成だけ担当する。
 }

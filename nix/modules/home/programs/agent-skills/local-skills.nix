@@ -1,29 +1,11 @@
 {
-  agentKitSrc,
   lib,
   ...
-}: let
-  repoSkillsDir = agentKitSrc + "/skills";
-
-  skillsLib = import ./lib.nix {inherit lib;};
-  # All leaf skills under the pinned agent-kit source, with their path relative
-  # to skills/.
-  allLeaves = skillsLib.leaves repoSkillsDir;
-  # superpowers is an external collection linked by external/superpowers.nix;
-  # exclude its leaves here so we don't double-manage them.
-  localLeaves =
-    builtins.filter
-    (l: !(lib.hasPrefix "superpowers/" l.relPath) && l.relPath != "superpowers")
-    allLeaves;
-
-  # Codex discovers skills recursively, so keep the category structure:
-  #   .agents/skills/lang/rust -> ~/.agents/skills/lang/rust
-  localSkillFiles = builtins.listToAttrs (map (l: {
-      name = ".agents/skills/${l.relPath}";
-      value.source = repoSkillsDir + "/${l.relPath}";
-    })
-    localLeaves);
-in {
+}: {
+  # NOTE: agent-kit's own skills AND AGENTS.md are NOT distributed from here
+  # anymore — they are managed and distributed via APM (~/.apm/apm.yml), which
+  # deploys to both ~/.claude/skills/ and ~/.agents/skills/. This module only
+  # prepares the ~/.agents/skills/ directory so APM can populate it.
   home.activation.migrateAgentsSkillsDir = lib.hm.dag.entryBefore ["checkLinkTargets"] ''
     mkdir -p "$HOME/.agents"
     if [ -L "$HOME/.agents/skills" ]; then
@@ -31,10 +13,4 @@ in {
     fi
     mkdir -p "$HOME/.agents/skills"
   '';
-
-  home.file =
-    {
-      ".agents/AGENTS.md".source = agentKitSrc + "/agents/AGENTS.md";
-    }
-    // localSkillFiles;
 }

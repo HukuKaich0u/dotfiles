@@ -1,5 +1,4 @@
 {
-  agentKitSrc,
   lib,
   pkgs,
   ...
@@ -42,15 +41,6 @@ in {
     chmod 644 "$settings_target"
   '';
 
-  # CLAUDE.md は agent-kit の pinned source から配布する。
-  home.file = {
-    "CLAUDE.md" = {
-      force = true;
-      source = agentKitSrc + "/claude/CLAUDE.md";
-    };
-    ".claude/CLAUDE.md" = {
-      force = true;
-      source = agentKitSrc + "/claude/CLAUDE.md";
-    };
-  };
+  # NOTE: CLAUDE.md / 指示ファイルは APM の instructions/core (~/.apm/apm.yml)
+  # から配布する。Nix はここでは settings.json のマージだけ担当する。
 }
