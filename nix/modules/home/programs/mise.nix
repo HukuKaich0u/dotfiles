@@ -19,9 +19,6 @@ in {
     settings = {};
   };
 
-  home.sessionPath = [
-    "$HOME/.local/bin"
-  ];
   home.sessionVariables = {
     # Work around asdf-lua failing to bootstrap with the latest LuaRocks release.
     ASDF_LUA_LUAROCKS_VERSION = "3.12.2";

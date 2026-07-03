@@ -233,6 +233,8 @@ assert_contains "$linux_zsh_dir/.zshrc" 'autoload -Uz compinit' \
     "linux zshrc template should initialize completion"
 assert_contains "$linux_zsh_dir/.zshrc" 'compinit -C -d "$ZSH_COMPDUMP"' \
     "linux zshrc template should reuse the compinit cache when available"
+assert_contains "$linux_zsh_dir/.zprofile" 'path_prepend_if_dir "$HOME/.local/bin"' \
+    "linux zsh profile template should put native user-level tools such as Claude Code on PATH"
 assert_contains "$linux_zsh_dir/.zprofile" 'if [ -f "$HOME/.cargo/env" ]; then' \
     "linux zsh profile template should initialize cargo for login shells"
 assert_contains "$linux_zsh_dir/.zprofile" '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh' \
