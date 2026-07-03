@@ -55,8 +55,10 @@ assert_contains "$wezterm_nix" 'xdg.configFile."wezterm/keybinds.lua"' \
   "wezterm.nix should manage keybinds.lua through xdg.configFile"
 assert_contains "$wezterm_nix" 'source = ../assets/wezterm/keybinds.lua;' \
   "wezterm.nix should source keybinds.lua from the assets tree"
-assert_contains "$install_sh" 'SKIP_CONFIG_DIRS="tmux zsh starship.toml yazi bacon wezterm ghostty nvim"' \
-  "link-dotfiles.sh should skip wezterm after the home-manager migration"
+if grep -Fq "REPO_CONFIG_DIR" "$install_sh"; then
+  echo "link-dotfiles.sh should no longer distribute wezterm via the removed .config tree"
+  exit 1
+fi
 assert_contains "$wezterm_dir/wezterm.lua" 'config.keys = require("keybinds").keys' \
   "home-manager wezterm.lua should keep the keybind loader"
 assert_contains "$wezterm_dir/keybinds.lua" 'return {' \
