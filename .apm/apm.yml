@@ -8,3 +8,13 @@ targets:
 dependencies:
   apm:
     - HukuKaich0u/agent-kit/instructions/core
+    - HukuKaich0u/agent-kit/skills/tooling/apm-usage
+    - HukuKaich0u/agent-kit/skills/meta/skill-selector
+    - HukuKaich0u/agent-kit/skills/meta/skill-finder
+    - HukuKaich0u/agent-kit/skills/meta/retrospective-codify
+    - HukuKaich0u/agent-kit/skills/meta/extract-glossary
+    - HukuKaich0u/agent-kit/skills/meta/optimizing-descriptions
+    - HukuKaich0u/agent-kit/skills/meta/empirical-prompt-tuning
+    - HukuKaich0u/agent-kit/skills/meta/waxa-eval
+    - HukuKaich0u/agent-kit/skills/lang/rust
+    - HukuKaich0u/agent-kit/skills/tooling/drawio

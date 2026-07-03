@@ -52,8 +52,10 @@ assert_contains "$bacon_nix" 'path = ".bacon-locations";' \
   "bacon.nix should preserve exports.locations.path"
 assert_contains "$bacon_nix" 'line_format = "{item-idx}: {kind} {path}:{line}:{column} {message}";' \
   "bacon.nix should preserve exports.locations.line_format"
-assert_contains "$install_sh" 'SKIP_CONFIG_DIRS="tmux zsh starship.toml yazi bacon wezterm ghostty nvim"' \
-  "link-dotfiles.sh should skip bacon after the home-manager migration"
+if grep -Fq "REPO_CONFIG_DIR" "$install_sh"; then
+  echo "link-dotfiles.sh should no longer distribute bacon via the removed .config tree"
+  exit 1
+fi
 assert_not_exists "$repo_root/.config/bacon/prefs.toml" \
   "legacy bacon prefs should be removed from the symlink-managed config tree"
 

@@ -34,8 +34,10 @@ assert_contains "$yazi_nix" 'programs.yazi = {' \
   "yazi.nix should configure programs.yazi"
 assert_contains "$yazi_nix" 'shellWrapperName = "yy";' \
   "yazi.nix should pin the legacy shell wrapper name to avoid build warnings"
-assert_contains "$install_sh" 'SKIP_CONFIG_DIRS="tmux zsh starship.toml yazi bacon wezterm ghostty nvim"' \
-  "link-dotfiles.sh should skip yazi after the home-manager migration"
+if grep -Fq "REPO_CONFIG_DIR" "$install_sh"; then
+  echo "link-dotfiles.sh should no longer distribute yazi via the removed .config tree"
+  exit 1
+fi
 assert_not_exists "$repo_root/.config/yazi/yazi.toml" \
   "legacy yazi.toml should be removed from the symlink-managed config tree"
 

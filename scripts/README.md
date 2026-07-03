@@ -154,11 +154,15 @@ gcloud init
 
 ### `common/link-dotfiles.sh`
 
-- 役割: repo 管理の dotfiles / config を home directory 配下へ link
-- やること: `~/.config` 配下の symlink 配布、`~/.apm/apm.yml` を含む AI 関連ファイルの明示 link、legacy link cleanup、terminfo compile
-- やらないこと: `apt` package install、`rustup` install、Home Manager 管理領域の配布
-- link 対象外: `nvim`, `tmux`, `zsh`, `wezterm`, `ghostty`, `yazi`, `bacon`, `starship.toml`
+- 役割: 明示的に列挙した repo ファイルの link と terminfo compile
+- やること: `~/.apm/apm.yml` の明示 link、legacy link cleanup、terminfo compile
+- やらないこと: `~/.config` 配下の配布(Home Manager 管理領域)、package install
 - 例: `./scripts/common/link-dotfiles.sh`
+
+### `../tests/run.sh`
+
+- 役割: `tests/` 配下の shell / Neovim テストの一括実行
+- 例: `./tests/run.sh`
 
 ## 推奨手順
 

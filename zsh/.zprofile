@@ -6,6 +6,7 @@ path_prepend_if_dir() {
   fi
 }
 
+path_prepend_if_dir "$HOME/.local/bin"
 path_prepend_if_dir "$HOME/.npm-global/bin"
 
 if [ -f "/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh" ]; then

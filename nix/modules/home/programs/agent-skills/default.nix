@@ -1,9 +1,6 @@
-{
-  ...
-}: {
+{...}: {
   imports = [
-    ./local-skills.nix
-    ./claude-skills.nix
+    ./skill-dirs.nix
     ./external/superpowers.nix
   ];
 }

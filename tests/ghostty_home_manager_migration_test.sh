@@ -52,8 +52,10 @@ assert_contains "$ghostty_nix" 'ghostty/config.ghostty".source = ghosttyConfig;'
   "ghostty.nix should source the Linux XDG config from the same asset"
 assert_contains "$ghostty_nix" 'ghosttyConfig = ../assets/ghostty/config.ghostty;' \
   "ghostty.nix should source config from the assets tree"
-assert_contains "$install_sh" 'SKIP_CONFIG_DIRS="tmux zsh starship.toml yazi bacon wezterm ghostty nvim"' \
-  "link-dotfiles.sh should skip ghostty after the home-manager migration"
+if grep -Fq "REPO_CONFIG_DIR" "$install_sh"; then
+  echo "link-dotfiles.sh should no longer distribute ghostty via the removed .config tree"
+  exit 1
+fi
 assert_contains "$ghostty_dir/config.ghostty" 'font-family = "JetBrainsMono Nerd Font"' \
   "ghostty config should carry over the primary WezTerm font"
 assert_contains "$ghostty_dir/config.ghostty" 'background-opacity = 0.9' \

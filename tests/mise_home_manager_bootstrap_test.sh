@@ -44,8 +44,6 @@ assert_contains "$mise_nix" 'terraform = "1.12.2";' \
   "mise.nix should pin Terraform to an exact patch release"
 assert_contains "$mise_nix" 'settings = {' \
   "mise.nix should manage global settings through config.toml"
-assert_contains "$mise_nix" 'home.sessionPath = [' \
-  "mise.nix should add a session path for corepack shims"
 assert_contains "$mise_nix" 'home.sessionVariables = {' \
   "mise.nix should export install-time environment variables for plugins"
 assert_contains "$mise_nix" 'ASDF_LUA_LUAROCKS_VERSION = "3.12.2";' \

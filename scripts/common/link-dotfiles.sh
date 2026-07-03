@@ -1,176 +1,108 @@
-#!/bin/bash
+#!/bin/sh
 
-set -euo pipefail
+set -eu
 
 # Dotfiles installer
-# Mirrors repository-managed XDG config directories into ~/.config
-# and links selected home directory dotfiles.
+# Links explicitly listed repo files into $HOME, cleans up legacy links,
+# and compiles terminfo entries. Everything under ~/.config is owned by
+# Home Manager, not this script.
 
-DOTFILES_DIR="$(cd "$(dirname "$0")/../.." && pwd)"
-REPO_CONFIG_DIR="$DOTFILES_DIR/.config"
-HOME_CONFIG_DIR="$HOME/.config"
-HOME_DOTFILES=""
+DOTFILES_DIR="$(CDPATH= cd -- "$(dirname "$0")/../.." && pwd)"
 TERMINFO_SOURCE_DIR="$DOTFILES_DIR/terminfo"
-EXPLICIT_LINKS=(
-    ".apm/apm.yml:$HOME/.apm/apm.yml"
-)
-SKIP_CONFIG_DIRS="tmux zsh starship.toml yazi bacon wezterm ghostty nvim"
 
-ensure_parent_dir() {
-    local target="$1"
-
-    mkdir -p "$(dirname "$target")"
-}
+# One "relative-source:absolute-target" pair per line.
+EXPLICIT_LINKS="
+.apm/apm.yml:$HOME/.apm/apm.yml
+"
 
 link_path() {
-    local source="$1"
-    local target="$2"
-    local label="$3"
-    local current_target=""
+  source_path="$1"
+  target="$2"
+  label="$3"
 
-    if [ ! -e "$source" ]; then
-        echo "✗ $label not found in dotfiles"
-        return
+  if [ ! -e "$source_path" ]; then
+    echo "✗ $label not found in dotfiles"
+    return
+  fi
+
+  mkdir -p "$(dirname "$target")"
+
+  if [ -L "$target" ]; then
+    current_target="$(readlink "$target")"
+    if [ "$current_target" = "$source_path" ]; then
+      echo "✓ $label (already linked)"
+      return
     fi
 
-    ensure_parent_dir "$target"
+    echo "⚠ $label points to $current_target, relinking"
+    rm "$target"
+    ln -s "$source_path" "$target"
+    echo "✓ $label relinked"
+    return
+  fi
 
-    if [ -L "$target" ]; then
-        current_target="$(readlink "$target")"
-        if [ "$current_target" = "$source" ]; then
-            echo "✓ $label (already linked)"
-            return
-        fi
+  if [ -e "$target" ]; then
+    echo "⚠ $label exists, backing up to ${target}.backup"
+    mv "$target" "${target}.backup"
+  fi
 
-        echo "⚠ $label points to $current_target, relinking"
-        rm "$target"
-        ln -s "$source" "$target"
-        echo "✓ $label relinked"
-        return
-    fi
-
-    if [ -e "$target" ]; then
-        echo "⚠ $label exists, backing up to ${target}.backup"
-        mv "$target" "${target}.backup"
-    fi
-
-    ln -s "$source" "$target"
-    echo "✓ $label linked"
-}
-
-link_config_dir() {
-    local name="$1"
-
-    link_path "$REPO_CONFIG_DIR/$name" "$HOME_CONFIG_DIR/$name" "$name"
-}
-
-link_config_file() {
-    local name="$1"
-
-    link_path "$REPO_CONFIG_DIR/$name" "$HOME_CONFIG_DIR/$name" "$name"
-}
-
-link_home_dotfile() {
-    local name="$1"
-
-    link_path "$DOTFILES_DIR/$name" "$HOME/$name" "$name"
+  ln -s "$source_path" "$target"
+  echo "✓ $label linked"
 }
 
 install_explicit_links() {
-    local entry=""
-    local relative_source=""
-    local target=""
-
-    if [ "${#EXPLICIT_LINKS[@]}" -eq 0 ]; then
-        return
-    fi
-
-    for entry in "${EXPLICIT_LINKS[@]}"; do
-        relative_source="${entry%%:*}"
-        target="${entry#*:}"
-        link_path "$DOTFILES_DIR/$relative_source" "$target" "$relative_source"
-    done
+  printf '%s\n' "$EXPLICIT_LINKS" | while IFS= read -r entry; do
+    [ -n "$entry" ] || continue
+    relative_source="${entry%%:*}"
+    target="${entry#*:}"
+    link_path "$DOTFILES_DIR/$relative_source" "$target" "$relative_source"
+  done
 }
 
 cleanup_legacy_nix_link() {
-    local target="$HOME/.config/nix"
-    local current_target=""
+  target="$HOME/.config/nix"
 
-    if [ ! -L "$target" ]; then
-        return
-    fi
+  if [ ! -L "$target" ]; then
+    return
+  fi
 
-    current_target="$(readlink "$target")"
-    case "$current_target" in
-        "$DOTFILES_DIR/.config/nix")
-            rm "$target"
-            echo "✓ removed legacy nix link $target"
-            ;;
-    esac
-}
-
-install_config_tree() {
-    local source=""
-    local name=""
-
-    mkdir -p "$HOME_CONFIG_DIR"
-
-    for source in "$REPO_CONFIG_DIR"/*; do
-        name="$(basename "$source")"
-
-        case " $SKIP_CONFIG_DIRS " in
-            *" $name "*)
-                continue
-                ;;
-        esac
-
-        if [ -d "$source" ]; then
-            link_config_dir "$name"
-            continue
-        fi
-
-        if [ -f "$source" ]; then
-            link_config_file "$name"
-        fi
-    done
-}
-
-install_home_dotfiles() {
-    local dotfile=""
-
-    for dotfile in $HOME_DOTFILES; do
-        link_home_dotfile "$dotfile"
-    done
+  case "$(readlink "$target")" in
+    "$DOTFILES_DIR/.config/nix")
+      rm "$target"
+      echo "✓ removed legacy nix link $target"
+      ;;
+  esac
 }
 
 compile_terminfo() {
-    local source_dir="$1"
+  if [ ! -d "$TERMINFO_SOURCE_DIR" ]; then
+    return
+  fi
 
-    if [ ! -d "$source_dir" ]; then
-        return
-    fi
+  if ! command -v tic >/dev/null 2>&1; then
+    echo "✗ tic not found, skipping terminfo compile" >&2
+    return
+  fi
 
-    mkdir -p "$HOME/.terminfo"
+  mkdir -p "$HOME/.terminfo"
 
-    for source in "$source_dir"/*.src; do
-        if [ ! -f "$source" ]; then
-            continue
-        fi
-
-        tic -x -o "$HOME/.terminfo" "$source"
-        echo "✓ terminfo $(basename "$source" .src) compiled"
-    done
+  for terminfo_src in "$TERMINFO_SOURCE_DIR"/*.src; do
+    [ -f "$terminfo_src" ] || continue
+    tic -x -o "$HOME/.terminfo" "$terminfo_src"
+    echo "✓ terminfo $(basename "$terminfo_src" .src) compiled"
+  done
 }
 
-echo "Installing dotfiles from $DOTFILES_DIR"
-echo ""
+main() {
+  echo "Installing dotfiles from $DOTFILES_DIR"
+  echo ""
 
-install_config_tree
-cleanup_legacy_nix_link
-install_explicit_links
-install_home_dotfiles
+  cleanup_legacy_nix_link
+  install_explicit_links
+  compile_terminfo
 
-compile_terminfo "$TERMINFO_SOURCE_DIR"
+  echo ""
+  echo "Done!"
+}
 
-echo ""
-echo "Done!"
+main "$@"

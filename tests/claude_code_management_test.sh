@@ -8,14 +8,10 @@ claude_default="$repo_root/nix/modules/home/programs/claude/default.nix"
 claude_config="$repo_root/nix/modules/home/programs/claude/config.nix"
 darwin_homebrew="$repo_root/nix/modules/darwin/homebrew.nix"
 install_script="$repo_root/scripts/common/install-claude-code.sh"
-legacy_install_script="$repo_root/scripts/install-claude-code.sh"
 root_readme="$repo_root/README.md"
 scripts_readme="$repo_root/scripts/README.md"
 nix_readme="$repo_root/nix/README.md"
-drawio_skill="$repo_root/.agents/skills/drawio/SKILL.md"
-drawio_shapes="$repo_root/.agents/skills/drawio/data/shape-index.json.gz"
-drawio_repair_png="$repo_root/.agents/skills/drawio/scripts/repair_png.py"
-drawio_troubleshooting="$repo_root/.agents/skills/drawio/references/troubleshooting.md"
+apm_yml="$repo_root/.apm/apm.yml"
 
 assert_contains() {
   file="$1"
@@ -99,12 +95,10 @@ test_claude_module_wiring() {
     "Claude Home Manager config module must merge JSON via jq"
   assert_not_contains "$claude_config" 'settings = {' \
     "Claude Home Manager config module must not clobber settings.json via programs.claude-code.settings"
-  assert_contains "$claude_config" '"CLAUDE.md"' \
-    "Claude Home Manager config module must manage ~/CLAUDE.md"
-  assert_contains "$claude_config" '".claude/CLAUDE.md"' \
-    "Claude Home Manager config module must manage ~/.claude/CLAUDE.md"
-  assert_contains "$claude_config" 'source = config.lib.file.mkOutOfStoreSymlink "${claudeDotfilesDir}/CLAUDE.md";' \
-    "Claude Home Manager config module must point both Claude entrypoints at the repo CLAUDE adapter"
+  assert_not_contains "$claude_config" '"CLAUDE.md"' \
+    "Claude config module must not manage ~/CLAUDE.md (instruction files are owned by APM)"
+  assert_not_contains "$claude_config" 'agentKitSrc' \
+    "Claude config module must not depend on the agent-kit flake input"
 }
 
 test_darwin_homebrew_does_not_own_claude_code() {
@@ -284,7 +278,6 @@ EOF
 }
 
 test_claude_docs() {
-  assert_file_exists "$legacy_install_script" "legacy install-claude-code.sh wrapper must exist"
   assert_contains "$root_readme" 'scripts/common/install-claude-code.sh' \
     "README.md must document the Claude Code installer script"
   assert_contains "$root_readme" 'claude-code' \
@@ -297,17 +290,13 @@ test_claude_docs() {
     "nix/README.md must document Claude Code install ownership"
 }
 
-test_vendored_drawio_skill() {
-  assert_file_exists "$drawio_skill" \
-    "drawio skill should be vendored under .agents/skills"
-  assert_contains "$drawio_skill" 'name: drawio-skill' \
-    "vendored drawio skill should keep its upstream metadata"
-  assert_file_exists "$drawio_shapes" \
-    "drawio skill should include its packaged shape index"
-  assert_file_exists "$drawio_repair_png" \
-    "drawio skill should include its PNG repair helper"
-  assert_file_exists "$drawio_troubleshooting" \
-    "drawio skill should include its troubleshooting reference"
+test_apm_manages_skills() {
+  assert_file_exists "$apm_yml" \
+    "apm.yml must exist as the SoT for agent skills distribution"
+  assert_contains "$apm_yml" 'HukuKaich0u/agent-kit/instructions/core' \
+    "apm.yml must distribute the shared instruction files"
+  assert_contains "$apm_yml" 'HukuKaich0u/agent-kit/skills/tooling/drawio' \
+    "apm.yml must distribute the drawio skill previously vendored in-repo"
 }
 
 test_claude_module_wiring
@@ -318,6 +307,6 @@ test_install_claude_code_skips_when_claude_exists
 test_install_claude_code_does_not_skip_cmux_bundled_claude
 test_install_claude_code_runs_native_latest_install
 test_claude_docs
-test_vendored_drawio_skill
+test_apm_manages_skills
 
 echo "claude code management test passed"

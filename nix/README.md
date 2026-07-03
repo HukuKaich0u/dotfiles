@@ -75,7 +75,11 @@ nix/
     │   ├── default.nix
     │   ├── packages.nix
     │   ├── programs/
+    │   │   ├── agent-skills/
     │   │   ├── bacon.nix
+    │   │   ├── claude/
+    │   │   ├── codex/
+    │   │   ├── direnv.nix
     │   │   ├── gh.nix
     │   │   ├── git.nix
     │   │   ├── ghostty.nix
@@ -85,6 +89,7 @@ nix/
     │   │   ├── tmux.nix
     │   │   ├── wezterm.nix
     │   │   ├── yazi.nix
+    │   │   ├── zoxide.nix
     │   │   └── zsh.nix
     │   └── assets/
     │       ├── ghostty/
@@ -225,42 +230,44 @@ Codex 固有の Home Manager module 群です。
 
 - `config.nix`
   - `~/.codex/config.toml` を activation で実ファイル生成する
-  - `~/AGENTS.md` を repo root の `/.codex/AGENTS.md` へ向ける
-  - `~/.codex/AGENTS.md` を repo root の `/.codex/AGENTS.md` へ向ける
 - `default.nix`
   - Codex module の束ね役
 
-ここには Codex 固有 config だけを書き、skills の export は `modules/home/programs/agent-skills/` へ分離します。
+AGENTS.md などの指示ファイルと skills の配布は APM (`~/.apm/apm.yml`) が担当し、
+Nix はここでは config.toml の生成だけを持ちます。
 
 #### `modules/home/programs/claude/`
 
 Claude 固有の Home Manager module 群です。
 
 - `config.nix`
-  - `~/CLAUDE.md` を repo root の `/.claude/CLAUDE.md` へ向ける
-  - `~/.claude/CLAUDE.md` を repo root の `/.claude/CLAUDE.md` へ向ける
   - `~/.claude/settings.json` は activation で既存 JSON に Nix 側の設定キーを merge する
 - `default.nix`
   - Claude module の束ね役
 
+CLAUDE.md などの指示ファイルと skills の配布は APM (`~/.apm/apm.yml`) が担当します。
 Claude Code 本体の install ownership はここではなく platform ごとに分けます。
 
 #### `modules/home/programs/agent-skills/`
 
-agent skills の Home Manager 側の接着層です。
+agent skills の Home Manager 側の接着層です。skill 本体の配布 SoT は APM
+(`~/.apm/apm.yml`) で、Nix は「配布先ディレクトリの準備」と「external
+collection の pin 配布」だけを持ちます。
 
-- `local-skills.nix`
-  - repo root `/.agents/skills/` にある local skill を `~/.agents/skills/` へ export する
-  - 旧 `~/.agents/skills -> repo` symlink を migration する
-- `claude-skills.nix`
-  - local skill と superpowers を `~/.claude/skills/` へも link する
-  - Codex は `~/.agents/skills/` を再帰探索するが Claude Code は `~/.claude/skills/<name>/SKILL.md` を1階層しか見ないため、superpowers のような collection skill は leaf ごとに展開して link する
-  - 旧来の手動 symlink / `skills.dirlink.backup` を activation で掃除する
+- `skill-dirs.nix`
+  - `~/.claude/skills/` と `~/.agents/skills/` を実ディレクトリとして準備する
+  - 旧構成の dirlink symlink を activation で掃除する
 - `external/`
   - upstream pin のまま扱う skill collection を置く
-  - `superpowers-src.nix` が source derivation を返し、`superpowers.nix` と `claude-skills.nix` が共有する
+  - `superpowers-src.nix` が source derivation を返し、`superpowers.nix` が
+    `~/.agents/skills/superpowers`(dirlink)と `~/.claude/skills/<leaf>`
+    (flatten)の両方へ link する
+  - Claude Code は `~/.claude/skills/<name>/SKILL.md` を 1 階層しか見ないため、
+    collection は leaf ごとに展開して link する
+- `lib.nix`
+  - SKILL.md を持つ leaf directory を再帰探索する共有 helper
 - `default.nix`
-  - skills export module の束ね役
+  - skills module の束ね役
 
 ### `modules/darwin/`
 
@@ -336,14 +343,12 @@ Codex まわりは install / config / prompt assets を分けて考えます。
 ### install
 
 - macOS: `modules/darwin/homebrew.nix`
-- Linux: `scripts/linux/install-packages.sh` で apt install
+- Linux: `npm i -g @openai/codex`(repo root README.md の手順を正とする)
 
 ### config
 
 - `modules/home/programs/codex/config.nix`
 - `~/.codex/config.toml` を Home Manager activation で実ファイル生成
-- `~/AGENTS.md` は repo root `/.codex/AGENTS.md` への symlink
-- `~/.codex/AGENTS.md` は repo root `/.codex/AGENTS.md` への symlink
 
 現状 `config.toml` に入れている設定はこれです。
 
@@ -383,6 +388,9 @@ open_external_editor = []
 現状の `/.codex/AGENTS.md` は `/.agents/AGENTS.md` への tracked symlink です。
 つまり adapter 層の入口だけ `/.codex/` に残し、実体は `/.agents/` に寄せます。
 
+グローバル(`~/.codex/AGENTS.md` 等)への配布は APM (`~/.apm/apm.yml`) が担当し、
+repo 内の adapter はこのリポジトリ自体で作業するときのプロジェクトレベル指示として機能する。
+
 ## Claude Layout
 
 Claude まわりも install / config / prompt assets を分けて考えます。
@@ -397,8 +405,6 @@ macOS / Linux とも `./scripts/common/install-claude-code.sh` が公式 native 
 ### config
 
 - `modules/home/programs/claude/config.nix`
-- `~/CLAUDE.md` は repo root `/.claude/CLAUDE.md` への symlink
-- `~/.claude/CLAUDE.md` は repo root `/.claude/CLAUDE.md` への symlink
 - `~/.claude/settings.json` は丸ごと置換ではなく、既存 JSON に Nix 側の設定キーを merge
 
 ### prompt assets / adapters
@@ -408,24 +414,18 @@ macOS / Linux とも `./scripts/common/install-claude-code.sh` が公式 native 
 
 `/.claude/CLAUDE.md` は Claude 用 adapter 層の入口で、現状は `/.agents/AGENTS.md` への tracked symlink です。
 
-### skills export
+### skills 配布
 
-- `modules/home/programs/agent-skills/local-skills.nix`
-- `modules/home/programs/agent-skills/external/`
-
-`~/.agents/skills/` は SoT ではなく export 先です。
-中身は Home Manager が次の 2 系統を合成して作ります。
-
-- local skill:
-  - repo root `/.agents/skills/` のディレクトリを `~/.agents/skills/<name>` へ symlink
-- external skill collection:
-  - upstream pin source を `~/.agents/skills/<name>` へ export
+- agent-kit の skills / instructions: APM (`~/.apm/apm.yml`) が
+  `~/.claude/skills/` と `~/.agents/skills/` へ配布する
+- external collection (superpowers): `modules/home/programs/agent-skills/external/`
+  が upstream pin から link する
 
 運用ルール:
 
-- 単体 skill / 小さい skill は `/.agents/skills/` に vendor して管理する
+- skill の追加・削除は agent-kit repo と `.apm/apm.yml` で行う
 - 大きい skill collection は `external/` で upstream pin を検討する
-- 現状 upstream pin のままなのは `superpowers` だけ
+- 現状 upstream pin なのは `superpowers` だけ
 
 ## Linux zsh
 
@@ -478,8 +478,8 @@ Linux 固有差分を `modules/home/` の条件分岐で増やしすぎないこ
 | git 設定を変える | `modules/home/programs/git.nix` |
 | gh 設定を変える | `modules/home/programs/gh.nix` |
 | Codex の keymap / config を変える | `modules/home/programs/codex/config.nix` |
-| Codex の AGENTS.md を変える | `../.agents/AGENTS.md` |
-| Codex / local agent skills を変える | `../.agents/skills/` |
+| AGENTS.md / CLAUDE.md(グローバル指示)を変える | agent-kit repo + `.apm/apm.yml` |
+| agent skills を追加/削除する | agent-kit repo + `.apm/apm.yml` |
 | external skill collection を変える | `modules/home/programs/agent-skills/external/` |
 | Codex の macOS install を変える | `modules/darwin/homebrew.nix` |
 | mise の global runtime を変える | `modules/home/programs/mise.nix` |
@@ -541,39 +541,6 @@ asset と module を分けること。
 - `git` 設定は `git.nix`
 - `gh` 設定は `gh.nix`
 - Homebrew 一覧は `homebrew.nix`
-
-## Migration Policy
-
-現時点では、実ファイルはまだこの構成へ完全には移っていません。
-
-ただし、**今後のリファクタリングは必ずこの README を正とする** こと。
-
-移行方針:
-
-- `nix/home-manager/shared.nix`
-  -> `modules/home/default.nix`
-- `nix/home-manager/{bacon,gh,git,mise,nvim,starship,tmux,wezterm,yazi,zsh}.nix`
-  -> `modules/home/programs/*.nix`
-- `nix/home-manager/nvim/`
-  -> `modules/home/assets/nvim/`
-- `nix/home-manager/tmux/`
-  -> `modules/home/assets/tmux/`
-- `nix/home-manager/wezterm/`
-  -> `modules/home/assets/wezterm/`
-- `nix/home-manager/darwin.nix`
-  -> `modules/darwin/default.nix`
-- `nix/home-manager/linux.nix`
-  -> `modules/linux/default.nix`
-- `nix/nix-darwin/configuration.nix`
-  -> `modules/darwin/system.nix`
-- `nix/nix-darwin/home_manager.nix`
-  -> `modules/darwin/home-manager.nix`
-- `nix/nix-darwin/homebrew.nix`
-  -> `modules/darwin/homebrew.nix`
-- `nix/common/direnv-no-zsh-check-overlay.nix`
-  -> `overlays/direnv-no-zsh-check.nix`
-- `nix/common/nixpkgs.nix`
-  -> `lib/` または `overlays/default.nix` / shared helper へ分解
 
 ## Important
 

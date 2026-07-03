@@ -172,8 +172,8 @@ assert_contains "$zsh_nix" 'export ZSH_STATE_DIR="'"''"'${XDG_STATE_HOME:-$HOME/
     "zsh.nix should own the zsh state directory setup"
 assert_contains "$zsh_nix" 'export BAT_THEME="1337"' \
     "zsh.nix should export the shared bat theme"
-assert_contains "$zsh_nix" 'export ASDF_LUA_LUAROCKS_VERSION="3.12.2"' \
-    "zsh.nix should export the pinned LuaRocks version for the asdf-lua plugin"
+assert_not_contains "$zsh_nix" 'ASDF_LUA_LUAROCKS_VERSION' \
+    "zsh.nix should not duplicate the LuaRocks pin owned by mise.nix sessionVariables"
 assert_contains "$zsh_nix" 'export HISTFILE="$ZSH_STATE_DIR/.zsh_history"' \
     "zsh.nix should own the zsh history file setup"
 assert_not_contains "$zsh_nix" '/opt/homebrew/opt/openjdk' \
@@ -233,6 +233,8 @@ assert_contains "$linux_zsh_dir/.zshrc" 'autoload -Uz compinit' \
     "linux zshrc template should initialize completion"
 assert_contains "$linux_zsh_dir/.zshrc" 'compinit -C -d "$ZSH_COMPDUMP"' \
     "linux zshrc template should reuse the compinit cache when available"
+assert_contains "$linux_zsh_dir/.zprofile" 'path_prepend_if_dir "$HOME/.local/bin"' \
+    "linux zsh profile template should put native user-level tools such as Claude Code on PATH"
 assert_contains "$linux_zsh_dir/.zprofile" 'if [ -f "$HOME/.cargo/env" ]; then' \
     "linux zsh profile template should initialize cargo for login shells"
 assert_contains "$linux_zsh_dir/.zprofile" '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh' \
@@ -251,6 +253,10 @@ assert_contains "$linux_zsh_dir/.zshrc" 'eval "$(mise activate zsh)"' \
     "linux zshrc template should initialize mise without programs.zsh"
 assert_contains "$linux_zsh_dir/.zshrc" 'eval "$(zoxide init zsh)"' \
     "linux zshrc template should initialize zoxide"
+assert_contains "$linux_zsh_dir/.zshrc" 'eval "$(direnv hook zsh)"' \
+    "linux zshrc template should hook direnv without programs.zsh"
+assert_contains "$linux_zsh_dir/.zshrc" 'alias ghmp="gh markdown-preview"' \
+    "linux zshrc template should keep alias parity with zsh.nix"
 assert_not_contains "$linux_zsh_dir/.zshrc" '$HOME/.cargo/env' \
     "linux zshrc template should no longer initialize cargo in interactive-only config"
 assert_not_contains "$linux_zsh_dir/.zshrc" '$HOME/.local/share/pnpm' \
@@ -283,10 +289,10 @@ if [ "$state_dir_line" -gt "$init_content_line" ]; then
     exit 1
 fi
 
-assert_contains "$install_script" 'HOME_DOTFILES=""' \
-    "link-dotfiles.sh should stop linking zsh dotfiles"
-assert_contains "$install_script" 'SKIP_CONFIG_DIRS="tmux zsh starship.toml yazi bacon wezterm ghostty nvim"' \
-    "link-dotfiles.sh should stop linking .config/zsh and starship.toml"
+assert_not_contains "$install_script" 'REPO_CONFIG_DIR' \
+    "link-dotfiles.sh should not reference the removed repo .config tree"
+assert_not_contains "$install_script" 'SKIP_CONFIG_DIRS' \
+    "link-dotfiles.sh should not carry the .config skip list anymore"
 
 assert_missing "$repo_root/.zshenv" \
     "repo root should not keep a hand-managed top-level .zshenv entrypoint"

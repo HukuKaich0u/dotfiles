@@ -83,8 +83,10 @@ assert_contains "$darwin_packages_nix" 'pngpaste' \
   "modules/darwin/packages.nix should include pngpaste as a darwin-only CLI dependency"
 assert_contains "$darwin_packages_nix" 'pkgs."ascii-image-converter"' \
   "modules/darwin/packages.nix should include ascii-image-converter as a darwin-only CLI dependency"
-assert_contains "$install_sh" 'SKIP_CONFIG_DIRS="tmux zsh starship.toml yazi bacon wezterm ghostty nvim"' \
-  "link-dotfiles.sh should skip nvim after the home-manager migration"
+if grep -Fq "REPO_CONFIG_DIR" "$install_sh"; then
+  echo "link-dotfiles.sh should no longer distribute nvim via the removed .config tree"
+  exit 1
+fi
 assert_contains "$rustowl_lua" 'enabled = false' \
   "rustowl should be disabled during the Phase 1 Home Manager migration"
 assert_contains "$image_support_lua" '"3rd/image.nvim"' \
