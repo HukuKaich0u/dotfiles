@@ -251,6 +251,10 @@ assert_contains "$linux_zsh_dir/.zshrc" 'eval "$(mise activate zsh)"' \
     "linux zshrc template should initialize mise without programs.zsh"
 assert_contains "$linux_zsh_dir/.zshrc" 'eval "$(zoxide init zsh)"' \
     "linux zshrc template should initialize zoxide"
+assert_contains "$linux_zsh_dir/.zshrc" 'eval "$(direnv hook zsh)"' \
+    "linux zshrc template should hook direnv without programs.zsh"
+assert_contains "$linux_zsh_dir/.zshrc" 'alias ghmp="gh markdown-preview"' \
+    "linux zshrc template should keep alias parity with zsh.nix"
 assert_not_contains "$linux_zsh_dir/.zshrc" '$HOME/.cargo/env' \
     "linux zshrc template should no longer initialize cargo in interactive-only config"
 assert_not_contains "$linux_zsh_dir/.zshrc" '$HOME/.local/share/pnpm' \

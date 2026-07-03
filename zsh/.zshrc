@@ -26,6 +26,8 @@ alias nv="nvim"
 alias tm="tmux"
 alias codex="codex --no-alt-screen"
 alias codex-alt="command codex"
+alias codex-work='CODEX_HOME=$HOME/.codex-work codex'
+alias ghmp="gh markdown-preview"
 alias tmls="tmux list-sessions"
 alias tma="tmux a -t"
 alias tmnew="tmux new -s"
@@ -36,6 +38,10 @@ fi
 
 if command -v zoxide >/dev/null 2>&1; then
   eval "$(zoxide init zsh)"
+fi
+
+if command -v direnv >/dev/null 2>&1; then
+  eval "$(direnv hook zsh)"
 fi
 
 if command -v starship >/dev/null 2>&1; then
