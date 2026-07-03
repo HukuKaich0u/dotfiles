@@ -157,6 +157,15 @@ sudo nix --extra-experimental-features 'nix-command flakes' run nix-darwin -- sw
 gcloud init
 ```
 
+## Tests
+
+```sh
+./tests/run.sh
+```
+
+shell テストは `sh tests/<name>_test.sh`、Neovim 系は
+`nvim --headless -l tests/<name>.lua` で個別に実行できる。
+
 ## References
 
 - script ごとの責務: `scripts/README.md`

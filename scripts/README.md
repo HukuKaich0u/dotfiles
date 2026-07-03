@@ -159,6 +159,11 @@ gcloud init
 - やらないこと: `~/.config` 配下の配布(Home Manager 管理領域)、package install
 - 例: `./scripts/common/link-dotfiles.sh`
 
+### `../tests/run.sh`
+
+- 役割: `tests/` 配下の shell / Neovim テストの一括実行
+- 例: `./tests/run.sh`
+
 ## 推奨手順
 
 Linux は上の「Linux 最短手順」、macOS は「macOS 最短手順」がそのまま推奨手順。
