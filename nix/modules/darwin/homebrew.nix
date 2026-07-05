@@ -7,7 +7,6 @@
     onActivation.extraFlags = [ "--force-cleanup" ];
 
     taps = [
-      "k1low/tap"
       "steipete/tap"
       "thezoraiz/ascii-image-converter"
       "trasta298/tap"
@@ -23,7 +22,6 @@
       "glib"
       "gnu-time"
       "jpeg-xl"
-      "k1low/tap/mo"
       "libheif"
       "liblqr"
       "libraw"
