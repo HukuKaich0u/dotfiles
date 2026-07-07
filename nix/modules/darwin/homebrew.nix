@@ -6,9 +6,7 @@
     onActivation.cleanup = "uninstall";
     onActivation.extraFlags = [ "--force-cleanup" ];
 
-    taps = [
-      "steipete/tap"
-    ];
+    taps = [];
 
     brews = [
       "aom"

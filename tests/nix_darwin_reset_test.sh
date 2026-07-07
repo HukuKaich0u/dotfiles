@@ -73,9 +73,7 @@ assert_contains "$homebrew_nix" 'brews = [' \
 assert_contains "$homebrew_nix" 'casks = [' \
   "homebrew.nix must declare Homebrew casks"
 
-expected_taps='
-steipete/tap
-'
+expected_taps=''
 
 expected_brews='
 aom
