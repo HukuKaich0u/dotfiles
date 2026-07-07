@@ -74,10 +74,7 @@ assert_contains "$homebrew_nix" 'casks = [' \
   "homebrew.nix must declare Homebrew casks"
 
 expected_taps='
-k1low/tap
 steipete/tap
-thezoraiz/ascii-image-converter
-trasta298/tap
 '
 
 expected_brews='
@@ -89,8 +86,8 @@ gcc
 git-gui
 glib
 gnu-time
+herdr
 jpeg-xl
-k1low/tap/mo
 libheif
 liblqr
 libraw

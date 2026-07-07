@@ -8,8 +8,6 @@
 
     taps = [
       "steipete/tap"
-      "thezoraiz/ascii-image-converter"
-      "trasta298/tap"
     ];
 
     brews = [
