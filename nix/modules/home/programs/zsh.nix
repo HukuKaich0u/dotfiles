@@ -49,9 +49,23 @@ in {
       fi
 
       # まず Homebrew の PATH を入れる。
-      for brew_bin in /opt/homebrew/bin/brew /usr/local/bin/brew; do
-        if [ -x "$brew_bin" ]; then
-          eval "$("$brew_bin" shellenv)"
+      # `eval "$(brew shellenv)"` はコマンド置換を伴うため、pty なしの起動
+      # (Cursor/VSCode の環境解決プローブ等) で zsh の SIGCHLD 取り逃しバグ
+      # (zsh 5.9 で遭遇) を踏むと login shell 全体がハングする。
+      # shellenv の出力は静的なので、同等の内容を fork なしで直接設定する。
+      for brew_prefix in /opt/homebrew /usr/local; do
+        if [ -x "$brew_prefix/bin/brew" ]; then
+          export HOMEBREW_PREFIX="$brew_prefix"
+          export HOMEBREW_CELLAR="$brew_prefix/Cellar"
+          if [ "$brew_prefix" = "/usr/local" ]; then
+            export HOMEBREW_REPOSITORY="/usr/local/Homebrew"
+          else
+            export HOMEBREW_REPOSITORY="$brew_prefix"
+          fi
+          export PATH="$brew_prefix/bin:$brew_prefix/sbin:$PATH"
+          [ -z "''${MANPATH-}" ] || export MANPATH=":''${MANPATH#:}"
+          export INFOPATH="$brew_prefix/share/info:''${INFOPATH:-}"
+          fpath[1,0]="$brew_prefix/share/zsh/site-functions"
           break
         fi
       done

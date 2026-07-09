@@ -142,8 +142,10 @@ assert_contains "$zsh_nix" "bindkey -e" \
     "zsh.nix should explicitly enable emacs keybindings for interactive shells"
 assert_contains "$zsh_nix" '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh' \
     "zsh.nix should source nix-daemon.sh on macOS when available"
-assert_contains "$zsh_nix" 'for brew_bin in /opt/homebrew/bin/brew /usr/local/bin/brew; do' \
-    "zsh.nix should inline Homebrew shellenv lookup"
+assert_contains "$zsh_nix" 'for brew_prefix in /opt/homebrew /usr/local; do' \
+    "zsh.nix should set Homebrew environment statically per prefix"
+assert_not_contains "$zsh_nix" 'eval "$("$brew_bin" shellenv)"' \
+    "zsh.nix should not spawn brew shellenv at login (command substitution can hang headless zsh)"
 assert_contains "$zsh_nix" "profileExtra = ''" \
     "zsh.nix should keep environment initialization in profileExtra"
 assert_contains "$zsh_nix" 'if [ -f "$HOME/.cargo/env" ]; then' \
