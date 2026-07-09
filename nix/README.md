@@ -493,6 +493,23 @@ Linux 固有差分を `modules/home/` の条件分岐で増やしすぎないこ
 | overlay を追加する | `overlays/` |
 | flake entry を増やす / 配線を変える | `flake.nix` |
 
+## Updating Inputs
+
+flake inputs を更新するときは `nixpkgs` / `nix-darwin` / `home-manager` を必ずまとめて更新する。
+
+```sh
+nix flake update nixpkgs nix-darwin home-manager
+```
+
+`nixpkgs` だけを単独で進めると、古い `nix-darwin` / `home-manager` が新しい nixpkgs と非互換になりビルドが壊れることがある(2026-07 に darwin-manual の build 失敗として発生)。逆に他の input を意図せず巻き込みたくない場合も、この 3 つは 1 セットで扱う。
+
+更新後は switch の前に必ずビルドで検証する。
+
+```sh
+nix build ./nix#darwinConfigurations.KokiAoyagi.system --no-link
+./tests/run.sh
+```
+
 ## Rules
 
 ### Rule 1
