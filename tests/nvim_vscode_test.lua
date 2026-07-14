@@ -33,6 +33,8 @@ assert_no_match(regular_init, "vim%.g%.vscode", "regular Neovim must not branch 
 local actions = {}
 local mappings = {}
 
+local original_loaded_vscode = package.loaded.vscode
+local original_preload_vscode = package.preload.vscode
 package.loaded.vscode = nil
 package.preload.vscode = function()
   return {
@@ -52,7 +54,8 @@ end
 
 local ok, err = pcall(dofile, repo_root .. "/nix/modules/home/assets/nvim-vscode/init.lua")
 vim.keymap.set = original_keymap_set
-package.preload.vscode = nil
+package.loaded.vscode = original_loaded_vscode
+package.preload.vscode = original_preload_vscode
 
 if not ok then
   error(err)
@@ -95,20 +98,28 @@ local expected_actions = {
   ["<C-l>"] = "workbench.action.navigateRight",
 }
 
-local expected_normal_mapping_count = 1
-for _ in pairs(expected_actions) do
-  expected_normal_mapping_count = expected_normal_mapping_count + 1
+local expected_mappings = {
+  ["n\0<Space>"] = true,
+  ["v\0<Space>"] = true,
+}
+for lhs in pairs(expected_actions) do
+  expected_mappings["n\0" .. lhs] = true
 end
 
-local actual_normal_mapping_count = 0
+local expected_mapping_count = 0
+for key in pairs(expected_mappings) do
+  expected_mapping_count = expected_mapping_count + 1
+  assert(mappings[key], "missing Cursor mapping: " .. key:gsub("\0", " "))
+end
+
+local actual_mapping_count = 0
 for key in pairs(mappings) do
-  if key:sub(1, 2) == "n\0" then
-    actual_normal_mapping_count = actual_normal_mapping_count + 1
-  end
+  actual_mapping_count = actual_mapping_count + 1
+  assert(expected_mappings[key], "unexpected Cursor mapping: " .. key:gsub("\0", " "))
 end
 assert(
-  actual_normal_mapping_count == expected_normal_mapping_count,
-  "Cursor config should define exactly the expected normal-mode mappings"
+  actual_mapping_count == expected_mapping_count,
+  "Cursor config should define exactly the expected mode and key combinations"
 )
 
 for lhs, command in pairs(expected_actions) do
