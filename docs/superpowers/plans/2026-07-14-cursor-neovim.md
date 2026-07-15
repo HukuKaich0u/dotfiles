@@ -2,9 +2,9 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Run vscode-neovim inside Cursor with a minimal `nvim-vscode` configuration that is fully isolated from the existing terminal Neovim configuration.
+**Goal:** Run vscode-neovim inside Cursor with a minimal isolated configuration, native Source Control access, and a Neovim-like `q` path from persistent sidebars back to the editor.
 
-**Architecture:** Home Manager exposes a second Neovim config at `~/.config/nvim-vscode`, while Cursor launches the existing Neovim binary with `NVIM_APPNAME=nvim-vscode`. The Cursor-only `init.lua` contains no plugin manager or terminal-Neovim imports; it only maps normal-mode keys to Cursor commands through `require("vscode").action`. Cursor's local JSONC files remain machine-local and are edited only where they conflict with vscode-neovim.
+**Architecture:** Home Manager exposes a second Neovim config at `~/.config/nvim-vscode`, while Cursor launches the existing Neovim binary with `NVIM_APPNAME=nvim-vscode`. The Cursor-only `init.lua` contains no plugin manager or terminal-Neovim imports; it maps normal-mode keys, including Source Control, to Cursor commands through `require("vscode").action`. Cursor's machine-local JSONC owns focus behavior outside the editor, so `q` returns from non-input sidebar contexts without changing text input or Neovim macro behavior.
 
 **Tech Stack:** Neovim Lua, vscode-neovim Lua API, Nix/Home Manager, nix-darwin, Cursor JSONC settings, shell regression runner
 
@@ -16,7 +16,7 @@
 - Create `tests/nvim_vscode_test.lua`: headless test with a fake `vscode` module; verifies isolation, Home Manager wiring, key modes, command names, and search arguments.
 - Modify `nix/modules/home/programs/nvim.nix`: expose the Cursor-only config as `~/.config/nvim-vscode` without changing `~/.config/nvim`.
 - Modify `/Users/KokiAoyagi/Library/Application Support/Cursor/User/settings.json`: machine-local vscode-neovim executable and `NVIM_APPNAME` settings only.
-- Modify `/Users/KokiAoyagi/Library/Application Support/Cursor/User/keybindings.json`: remove stale vscode-neovim default-key removals and scope the existing `Ctrl+d` Cursor binding away from Neovim normal mode.
+- Modify `/Users/KokiAoyagi/Library/Application Support/Cursor/User/keybindings.json`: remove stale vscode-neovim default-key removals, scope the existing `Ctrl+d` Cursor binding away from Neovim normal mode, and add context-limited sidebar `q` focus return.
 
 The existing `nix/modules/home/assets/nvim/**` tree must not change.
 
@@ -539,3 +539,252 @@ node -e 'const fs=require("fs");const j=require("/Applications/Cursor.app/Conten
 ```
 
 Expected: dotfiles is clean, the implementation commit follows the design/plan commits, and both Cursor JSONC files parse successfully.
+
+### Task 6: Add Source Control to the Cursor-only Neovim mappings
+
+**Files:**
+- Modify: `tests/nvim_vscode_test.lua`
+- Modify: `nix/modules/home/assets/nvim-vscode/init.lua`
+
+- [ ] **Step 1: Add the failing mapping expectation**
+
+In `tests/nvim_vscode_test.lua`, add the Source Control mapping to `expected_actions` immediately after the search mappings:
+
+```lua
+  ["<leader>gg"] = "workbench.view.scm",
+```
+
+The complete relevant portion becomes:
+
+```lua
+local expected_actions = {
+  ["<leader>ee"] = "workbench.view.explorer",
+  ["<leader>pf"] = "workbench.action.quickOpen",
+  ["<leader>ps"] = "workbench.action.findInFiles",
+  ["<leader>pws"] = "workbench.action.findInFiles",
+  ["<leader>gg"] = "workbench.view.scm",
+```
+
+- [ ] **Step 2: Run the focused test and verify RED**
+
+Run:
+
+```bash
+nvim --headless -l tests/nvim_vscode_test.lua
+```
+
+Expected: FAIL with `missing Cursor mapping: n <leader>gg` because the test contract now includes Source Control but the Cursor-only init does not.
+
+- [ ] **Step 3: Add the minimal Source Control mapping**
+
+In `nix/modules/home/assets/nvim-vscode/init.lua`, add this line after the existing search mappings:
+
+```lua
+map_action("<leader>gg", "workbench.view.scm", "Open Source Control")
+```
+
+Do not add a Git plugin, terminal command, or `keybindings.json` dependency to this Lua file.
+
+- [ ] **Step 4: Run focused and full tests and verify GREEN**
+
+Run:
+
+```bash
+nvim --headless -l tests/nvim_vscode_test.lua
+./tests/run.sh
+```
+
+Expected: the focused test prints `Cursor Neovim tests passed`. The full suite passes except for the accepted pre-existing macOS `linux_apt_install_script_test.sh` `%Lp` failure; every Neovim test passes.
+
+- [ ] **Step 5: Confirm the change is isolated to the Cursor config and its test**
+
+Run:
+
+```bash
+git diff --check
+git diff --name-only HEAD
+```
+
+Expected: exactly:
+
+```text
+nix/modules/home/assets/nvim-vscode/init.lua
+tests/nvim_vscode_test.lua
+```
+
+- [ ] **Step 6: Commit the tested repository change**
+
+```bash
+git add nix/modules/home/assets/nvim-vscode/init.lua tests/nvim_vscode_test.lua
+git commit -m "feat(nvim): open Cursor source control"
+```
+
+### Task 7: Activate the updated Cursor-only Home Manager asset
+
+**Files:**
+- Apply: `nix/modules/home/assets/nvim-vscode/init.lua`
+
+- [ ] **Step 1: Evaluate the Home Manager activation package**
+
+Run:
+
+```bash
+nix eval './nix#darwinConfigurations.KokiAoyagi.config.home-manager.users.KokiAoyagi.home.activationPackage.drvPath' --raw
+```
+
+Expected: a `/nix/store/...-home-manager-generation.drv` path and exit status 0.
+
+- [ ] **Step 2: Build only the Home Manager activation package**
+
+Run:
+
+```bash
+nix build './nix#darwinConfigurations.KokiAoyagi.config.home-manager.users.KokiAoyagi.home.activationPackage' --no-link --print-out-paths
+```
+
+Expected: exactly one `/nix/store/...-home-manager-generation` output path and no `result` symlink.
+
+- [ ] **Step 3: Activate the exact output from Step 2**
+
+Run the printed output path's `activate` script. For example, if Step 2 prints `/nix/store/abc-home-manager-generation`, run:
+
+```bash
+/nix/store/abc-home-manager-generation/activate
+```
+
+Expected: standard Home Manager activation phases complete with exit status 0. Do not substitute an older generation or reactivate `/run/current-system`.
+
+- [ ] **Step 4: Verify the deployed Cursor init byte-matches the worktree**
+
+Run:
+
+```bash
+cmp ~/.config/nvim-vscode/init.lua nix/modules/home/assets/nvim-vscode/init.lua
+rg -n 'map_action\("<leader>gg", "workbench\.view\.scm"' ~/.config/nvim-vscode/init.lua
+```
+
+Expected: `cmp` exits 0 and `rg` prints the new mapping. The normal `~/.config/nvim/init.lua` remains unchanged.
+
+### Task 8: Add a context-limited q binding for returning from the sidebar
+
+**Files:**
+- Modify: `/Users/KokiAoyagi/Library/Application Support/Cursor/User/keybindings.json`
+- Create backup: `/Users/KokiAoyagi/Library/Application Support/Cursor/User/keybindings.before-sidebar-q-2026-07-15.json.bak`
+
+- [ ] **Step 1: Preserve an exact durable backup and a separate working copy**
+
+Run:
+
+```bash
+cp '/Users/KokiAoyagi/Library/Application Support/Cursor/User/keybindings.json' '/Users/KokiAoyagi/Library/Application Support/Cursor/User/keybindings.before-sidebar-q-2026-07-15.json.bak'
+cp '/Users/KokiAoyagi/Library/Application Support/Cursor/User/keybindings.json' /tmp/cursor-keybindings.sidebar-q.json
+```
+
+Expected: the durable backup and `/tmp` working copy are byte-identical to the 68-entry pre-change live file.
+
+- [ ] **Step 2: Add exactly one context-limited q binding to the working copy**
+
+Use `apply_patch` on `/tmp/cursor-keybindings.sidebar-q.json`. Change the final array element from:
+
+```jsonc
+  {
+    "key": "alt+cmd+s",
+    "command": "workbench.action.toggleUnifiedSidebarFromKeyboard",
+    "when": "!isAuxiliaryWindowFocusedContext"
+  }
+]
+```
+
+to:
+
+```jsonc
+  {
+    "key": "alt+cmd+s",
+    "command": "workbench.action.toggleUnifiedSidebarFromKeyboard",
+    "when": "!isAuxiliaryWindowFocusedContext"
+  },
+  {
+    "key": "q",
+    "command": "workbench.action.focusActiveEditorGroup",
+    "when": "sideBarFocus && !inputFocus"
+  }
+]
+```
+
+- [ ] **Step 3: Validate syntax and semantic scope before replacing live settings**
+
+Run:
+
+```bash
+node -e 'const fs=require("fs");const j=require("/Applications/Cursor.app/Contents/Resources/app/node_modules/jsonc-parser/lib/umd/main.js");const e=[];const a=j.parse(fs.readFileSync(process.argv[1],"utf8"),e);if(e.length)process.exit(1);const q=a.filter(x=>x.key==="q"&&x.command==="workbench.action.focusActiveEditorGroup");if(a.length!==69||q.length!==1||q[0].when!=="sideBarFocus && !inputFocus")process.exit(2)' /tmp/cursor-keybindings.sidebar-q.json
+```
+
+Expected: exit status 0. A semantic comparison against the durable backup must show exactly one added object and no removals or modifications.
+
+- [ ] **Step 4: Replace the live keybindings with the validated copy**
+
+Run:
+
+```bash
+cp /tmp/cursor-keybindings.sidebar-q.json '/Users/KokiAoyagi/Library/Application Support/Cursor/User/keybindings.json'
+```
+
+Expected: the live file is byte-identical to the validated working copy and still parses as 69 entries.
+
+### Task 9: Reload Cursor and smoke-test Source Control and focus return
+
+**Files:**
+- Verify: `nix/modules/home/assets/nvim-vscode/init.lua`
+- Verify: `/Users/KokiAoyagi/Library/Application Support/Cursor/User/keybindings.json`
+
+- [ ] **Step 1: Reload the Cursor extension host**
+
+In Cursor, run `Developer: Reload Window` from the Command Palette.
+
+Expected: vscode-neovim initializes with `NVIM_APPNAME=nvim-vscode` and no Noice/plugin-UI errors.
+
+- [ ] **Step 2: Verify Source Control opens from Neovim normal mode**
+
+Open a tracked source file, return to normal mode, and press:
+
+```text
+Space g g
+```
+
+Expected: Cursor's native Source Control view opens and receives focus; no lazygit terminal or Neovim floating window opens.
+
+- [ ] **Step 3: Verify q returns from persistent sidebar lists**
+
+Test Explorer, Search results, and Source Control lists:
+
+```text
+Space e e  -> q
+Space p s  -> q
+Space g g  -> q
+```
+
+Expected: `q` focuses the previously active editor group while leaving the sidebar visible.
+
+- [ ] **Step 4: Verify q remains a normal input character**
+
+Focus the Search query input and Source Control commit-message input and type `q`.
+
+Expected: the character `q` is entered; focus does not jump to the editor. Press `Esc`, move focus to the sidebar list if necessary, then `q` returns to the editor.
+
+- [ ] **Step 5: Verify transient Quick Open retains Cursor-native Escape behavior**
+
+Press `Space p f`, type a query containing `q`, then press `Esc`.
+
+Expected: `q` appears in the query, and `Esc` closes Quick Open and returns focus to the editor.
+
+- [ ] **Step 6: Run final automated checks**
+
+Run:
+
+```bash
+nvim --headless -l tests/nvim_vscode_test.lua
+git status --short --branch
+node -e 'const fs=require("fs");const j=require("/Applications/Cursor.app/Contents/Resources/app/node_modules/jsonc-parser/lib/umd/main.js");for(const f of process.argv.slice(1)){const e=[];j.parse(fs.readFileSync(f,"utf8"),e);if(e.length)process.exit(1)}' '/Users/KokiAoyagi/Library/Application Support/Cursor/User/settings.json' '/Users/KokiAoyagi/Library/Application Support/Cursor/User/keybindings.json'
+```
+
+Expected: Cursor Neovim test passes, both JSONC files parse, and the worktree is clean with the Source Control implementation commit after the design and plan commits.
