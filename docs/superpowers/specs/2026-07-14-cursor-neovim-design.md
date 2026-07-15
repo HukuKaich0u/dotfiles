@@ -13,7 +13,8 @@ Cursor のエディタ領域で実際の Neovim を編集バックエンドと�
 - Home Manager による Cursor 専用設定の配置
 - Cursor の端末固有設定への Neovim 実行ファイルと `NVIM_APPNAME` の指定
 - Neovim ノーマルモードを優先する範囲に限った Cursor キーバインド競合の整理
-- ファイル検索、コードナビゲーション、Editor Group 移動に必要な最小キーマップ
+- ファイル検索、Source Control、コードナビゲーション、Editor Group 移動に必要な最小キーマップ
+- Cursor のサイドバーからエディタへ戻るコンテキスト限定キーバインド
 
 次は対象外とする。
 
@@ -83,6 +84,7 @@ leader と local leader は Space にする。以下は特記がない限り Neo
 | `<Space>pf` | `workbench.action.quickOpen` | ファイル名検索 |
 | `<Space>ps` | `workbench.action.findInFiles` | プロジェクト全文検索 |
 | `<Space>pws` | `workbench.action.findInFiles` | カーソル下の単語で全文検索 |
+| `<Space>gg` | `workbench.view.scm` | Source Control を表示 |
 | `gd` | `editor.action.revealDefinition` | 定義へ移動 |
 | `gR` | `editor.action.goToReferences` | 参照一覧 |
 | `gi` | `editor.action.goToImplementation` | 実装へ移動 |
@@ -98,6 +100,25 @@ leader と local leader は Space にする。以下は特記がない限り Neo
 
 `<Space>pws` は `vim.fn.expand("<cword>")` の結果を `workbench.action.findInFiles` の `query` 引数として渡す。
 
+## サイドバーからエディタへ戻る操作
+
+Cursor の UI は、一時的なオーバーレイと常設サイドバーで戻り方を分ける。
+
+- Quick Open など一時的な UI は Cursor 標準の `Esc` で閉じ、エディタへ戻る。
+- Explorer、Search、Source Control のサイドバー一覧では `q` で active editor group へフォーカスを戻す。
+- 検索語、コミットメッセージ、ファイル名変更などの入力中は `q` を通常文字として維持する。
+- サイドバーの入力欄から戻る場合は `Esc` で入力状態を抜けた後に `q` を使う。
+
+`q` は Neovim ではなく Cursor の `keybindings.json` に次のコンテキスト限定設定として置く。サイドバーへフォーカスが移ると Neovim はキーを受け取らないためである。
+
+```jsonc
+{
+  "key": "q",
+  "command": "workbench.action.focusActiveEditorGroup",
+  "when": "sideBarFocus && !inputFocus"
+}
+```
+
 ## Cursor キーバインド競合方針
 
 現在の `keybindings.json` には、過去に追加された vscode-neovim の既定キー解除と、Neovim の Ctrl キー処理より優先される独自設定がある。
@@ -107,6 +128,7 @@ leader と local leader は Space にする。以下は特記がない限り Neo
 - `command` が `-vscode-neovim.` で始まる古い解除エントリを除去し、拡張機能の既定動作を復元する。
 - `Ctrl+d` など既存の独自コマンドは削除せず、`neovim.init` かつノーマルモードのときには発火しない `when` 条件へ限定する。
 - ターミナル、入力欄、Composer、Notebook、検索結果、Explorer など、Neovim エディタ外のコンテキストでは既存動作を維持する。
+- `q` の追加は `sideBarFocus && !inputFocus` に限定し、サイドバーの入力欄やエディタ内のマクロ記録を妨げない。
 - 変更対象は vscode-neovim と競合するエントリだけとし、無関係なキーバインド整理は行わない。
 
 ## 障害時の挙動
@@ -124,6 +146,7 @@ leader と local leader は Space にする。以下は特記がない限り Neo
 - テスト内で偽の `vscode` Lua モジュールを提供し、Cursor 専用 `init.lua` を headless Neovim で読み込む。
 - leader、モード、各キー、各 Cursor コマンドの対応を検証する。
 - `<Space>pws` がカーソル下の単語を `query` として渡すことを検証する。
+- `<Space>gg` が `workbench.view.scm` を呼ぶことを検証する。
 - Home Manager が `nvim-vscode` を `~/.config/nvim-vscode` へ配置する宣言を検証する。
 - 通常版 Neovim の既存テストスイートを実行し、既存設定に回帰がないことを確認する。
 - Nix 設定を評価し、Cursor の `settings.json` と `keybindings.json` を JSONC として検証する。
@@ -135,6 +158,8 @@ Cursor を Reload Window した後、次を確認する。
 
 - Normal、Insert、Visual のモード遷移
 - ファイル検索、全文検索、カーソル下の単語検索
+- Source Control を開き、一覧上の `q` でエディタへ戻れること
+- Quick Open は `Esc` で閉じ、Search や Source Control の入力欄では `q` を入力できること
 - 定義、参照、実装、型定義、Hover、Rename、Code Action、診断表示
 - 複数 Editor Group 間の `Ctrl+h/j/k/l` 移動
 - Cursor の入力欄、ターミナル、Notebook では既存ショートカットが維持されること
@@ -144,6 +169,8 @@ Cursor を Reload Window した後、次を確認する。
 
 - Cursor 内で vscode-neovim が `NVIM_APPNAME=nvim-vscode` として起動する。
 - 承認済みのキーマップがノーマルモードで動作する。
+- `<Space>gg` で Source Control を表示し、サイドバー一覧上の `q` で active editor group へ戻れる。
+- Cursor の入力中は `q` が通常文字として維持される。
 - ノーマルモードでは Neovim のキー処理が競合する Cursor 設定より優先される。
 - Cursor エディタ外の既存ショートカットは維持される。
 - 通常版 Neovim の設定ファイルと挙動が変更されていない。
