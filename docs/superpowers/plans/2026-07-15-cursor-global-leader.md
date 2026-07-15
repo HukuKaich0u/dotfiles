@@ -40,11 +40,31 @@ Expected: exit 0 and `baseline: 69 entries, q binding present, global fallbacks 
 Run:
 
 ```bash
-cp '/Users/KokiAoyagi/Library/Application Support/Cursor/User/keybindings.json' '/Users/KokiAoyagi/Library/Application Support/Cursor/User/keybindings.before-global-leader-2026-07-15.json.bak'
-cp '/Users/KokiAoyagi/Library/Application Support/Cursor/User/keybindings.json' /tmp/cursor-keybindings.global-leader.json
+set -eu
+live='/Users/KokiAoyagi/Library/Application Support/Cursor/User/keybindings.json'
+backup='/Users/KokiAoyagi/Library/Application Support/Cursor/User/keybindings.before-global-leader-2026-07-15.json.bak'
+working='/tmp/cursor-keybindings.global-leader.json'
+
+if test -e "$backup"; then
+  if cmp "$live" "$backup"; then
+    printf '%s\n' 'durable backup already exists and matches live; reusing it'
+  else
+    printf '%s\n' 'durable backup differs from live; refusing to overwrite it' >&2
+    exit 1
+  fi
+else
+  cp "$live" "$backup"
+  printf '%s\n' 'durable backup created'
+fi
+
+cp "$live" "$working"
 ```
 
-Expected: both commands exit 0.
+Expected when the durable backup is absent: exit 0, print `durable backup created`, then refresh the working copy from live.
+
+Expected when the durable backup already exists and is byte-identical to live: `cmp` exits 0, print `durable backup already exists and matches live; reusing it`, leave the durable backup untouched, then refresh the working copy from live.
+
+Expected when the durable backup already exists but differs from live: `cmp` exits nonzero, print `durable backup differs from live; refusing to overwrite it`, exit 1 without overwriting the durable backup, and do not refresh the working copy.
 
 - [ ] **Step 3: Verify the copies are exact**
 
@@ -150,15 +170,19 @@ shasum -a 256 '/Users/KokiAoyagi/Library/Application Support/Cursor/User/setting
 
 Expected: one SHA-256 value; retain it for Step 4.
 
-- [ ] **Step 2: Replace the live keybindings with the validated candidate**
+- [ ] **Step 2: Prove baseline freshness, then replace the live keybindings**
 
 Run:
 
 ```bash
+set -eu
+cmp '/Users/KokiAoyagi/Library/Application Support/Cursor/User/keybindings.json' '/Users/KokiAoyagi/Library/Application Support/Cursor/User/keybindings.before-global-leader-2026-07-15.json.bak'
 cp /tmp/cursor-keybindings.global-leader.json '/Users/KokiAoyagi/Library/Application Support/Cursor/User/keybindings.json'
 ```
 
-Expected: exit 0.
+Expected when live is still byte-identical to the durable baseline backup: `cmp` exits 0, the validated candidate replaces live, and the step exits 0.
+
+Expected when live has changed since Task 1: `cmp` exits nonzero and `set -e` stops deployment before `cp`, leaving both live and the durable backup untouched.
 
 - [ ] **Step 3: Verify live semantic state**
 
