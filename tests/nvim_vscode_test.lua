@@ -84,6 +84,7 @@ local expected_actions = {
   ["<leader>pf"] = "workbench.action.quickOpen",
   ["<leader>ps"] = "workbench.action.findInFiles",
   ["<leader>pws"] = "workbench.action.findInFiles",
+  ["<leader>gg"] = "workbench.view.scm",
   ["gd"] = "editor.action.revealDefinition",
   ["gR"] = "editor.action.goToReferences",
   ["gi"] = "editor.action.goToImplementation",

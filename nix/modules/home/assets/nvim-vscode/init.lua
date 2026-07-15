@@ -19,6 +19,7 @@ vim.keymap.set("n", "<leader>pws", function()
     args = { query = vim.fn.expand("<cword>") },
   })
 end, { silent = true, desc = "Find Word in Files" })
+map_action("<leader>gg", "workbench.view.scm", "Open Source Control")
 map_action("gd", "editor.action.revealDefinition", "Go to Definition")
 map_action("gR", "editor.action.goToReferences", "Go to References")
 map_action("gi", "editor.action.goToImplementation", "Go to Implementation")
