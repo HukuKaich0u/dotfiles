@@ -112,7 +112,7 @@
   "claudeCode.selectedModel": "default",
   "claudeCode.preferredLocation": "panel",
   "window.autoDetectColorScheme": false,
-  "workbench.activityBar.orientation": "vertical",
+  "workbench.activityBar.orientation": "horizontal",
   "vscode-neovim.NVIM_APPNAME": "nvim-vscode",
   "vscode-neovim.neovimExecutablePaths.darwin": "/etc/profiles/per-user/KokiAoyagi/bin/nvim"
 }
