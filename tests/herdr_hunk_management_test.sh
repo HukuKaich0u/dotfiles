@@ -9,6 +9,7 @@ home_default_nix="$repo_root/nix/modules/home/default.nix"
 hunk_nix="$repo_root/nix/modules/home/programs/hunk.nix"
 herdr_nix="$repo_root/nix/modules/home/programs/herdr.nix"
 herdr_config="$repo_root/nix/modules/home/assets/herdr/config.toml"
+herdr_key_bind_doc="$repo_root/nix/modules/home/assets/herdr/key-bind.md"
 herdr_config_test="$repo_root/tests/herdr_config_test.nix"
 darwin_homebrew_nix="$repo_root/nix/modules/darwin/homebrew.nix"
 
@@ -114,6 +115,65 @@ assert_contains "$herdr_nix" 'source = ../assets/herdr/config.toml;' \
   "herdr.nix should source the repository-owned Herdr configuration"
 assert_contains "$herdr_nix" 'force = true;' \
   "herdr.nix should replace an existing Herdr configuration"
+assert_not_contains "$herdr_nix" 'key-bind.md' \
+  "herdr.nix should not deploy the repository-only key-binding reference"
+assert_not_contains "$herdr_nix" 'source = ../assets/herdr;' \
+  "herdr.nix should source only config.toml, not the whole Herdr assets directory"
+
+if [ ! -f "$herdr_key_bind_doc" ]; then
+  echo "nix/modules/home/assets/herdr/key-bind.md should exist"
+  exit 1
+fi
+
+while IFS= read -r key_token; do
+  assert_contains "$herdr_key_bind_doc" "$key_token" \
+    "Herdr key-binding reference should document: $key_token"
+done <<'EOF'
+Ctrl-g
+prefix+c
+prefix+p/n
+prefix+1..9
+prefix+comma
+prefix+ampersand
+prefix+h/j/k/l
+prefix+Shift+j
+prefix+Shift+l
+prefix+[
+prefix+z
+prefix+x
+prefix+s
+prefix+r
+prefix+d
+prefix+;
+prefix+o
+prefix+Shift+9/0
+prefix+Shift+4
+prefix+Shift+n
+prefix+Shift+g
+prefix+Shift+d
+prefix+g
+prefix+b
+prefix+Shift+s
+prefix+Shift+o
+prefix+?
+prefix+Shift+h
+EOF
+
+while IFS= read -r required_text; do
+  assert_contains "$herdr_key_bind_doc" "$required_text" \
+    "Herdr key-binding reference should explain: $required_text"
+done <<'EOF'
+session | workspace
+repo/task/investigation switch
+window | tab
+view inside workspace
+pane | pane
+server/socket | session
+fully separate persistent runtime
+H/K pane splits
+< > tab reordering
+all Shift+h/j/k/l pane swaps
+EOF
 
 while IFS= read -r required_line; do
   assert_contains "$herdr_config" "$required_line" \
