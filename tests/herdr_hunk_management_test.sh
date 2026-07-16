@@ -238,7 +238,7 @@ show_agent_labels_on_pane_borders = true
 hide_tab_bar_when_single_tab = true
 agent_panel_sort = "priority"
 [ui.toast]
-delivery = "system"
+delivery = "herdr"
 delay_seconds = 1
 [ui.sound]
 enabled = true

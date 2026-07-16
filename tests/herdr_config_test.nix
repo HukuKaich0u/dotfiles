@@ -88,7 +88,7 @@ let
       hide_tab_bar_when_single_tab = true;
       agent_panel_sort = "priority";
       toast = {
-        delivery = "system";
+        delivery = "herdr";
         delay_seconds = 1;
       };
       sound.enabled = true;

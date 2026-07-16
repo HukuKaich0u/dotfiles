@@ -424,8 +424,8 @@ assert_contains "$herdr_config" 'hide_tab_bar_when_single_tab = true' \
   "single-tab workspaces should hide the tab bar"
 assert_contains "$herdr_config" 'agent_panel_sort = "priority"' \
   "agents should be ordered by attention priority"
-assert_contains "$herdr_config" 'delivery = "system"' \
-  "Herdr should send macOS system notifications"
+assert_contains "$herdr_config" 'delivery = "herdr"' \
+  "Herdr should show in-app notifications"
 assert_contains "$herdr_config" 'delay_seconds = 1' \
   "Herdr notifications should wait one second"
 assert_contains "$herdr_config" 'enabled = true' \
@@ -537,7 +537,7 @@ hide_tab_bar_when_single_tab = true
 agent_panel_sort = "priority"
 
 [ui.toast]
-delivery = "system"
+delivery = "herdr"
 delay_seconds = 1
 
 [ui.sound]
@@ -890,7 +890,7 @@ Expected: 各操作が表どおり動作する。`Ctrl-g K` はpane分割また�
 - agentがblocked/done/working/idle/unknownのpriority順で表示される
 - pane borderにagent labelが表示される
 - tabが1つのworkspaceではtab barが隠れる
-- background agentのdoneまたはblockedでmacOS system notificationが届く
+- background agentのdoneまたはblockedでHerdr内toastが表示され、macOS system notificationは届かない
 - 同じ状態変化で通知音が鳴る
 ```
 
