@@ -93,6 +93,8 @@ assert_contains "$hunk_nix" 'menu_bar = true;' \
 assert_contains "$hunk_nix" 'transparent_background = true;' \
   "hunk.nix should use a transparent background"
 
+assert_contains "$darwin_homebrew_nix" '"herdr"' \
+  "nix/modules/darwin/homebrew.nix should continue managing Herdr"
 assert_not_contains "$darwin_homebrew_nix" '"hunk"' \
   "nix/modules/darwin/homebrew.nix should not manage the Hunk formula"
 
