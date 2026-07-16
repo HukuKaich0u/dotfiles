@@ -1,7 +1,9 @@
 {
+  hunk,
   ...
 }: {
   imports = [
+    hunk.homeManagerModules.default
     ./packages.nix
     ./programs/agent-skills
     ./programs/bacon.nix
@@ -11,6 +13,7 @@
     ./programs/git.nix
     ./programs/gh.nix
     ./programs/ghostty.nix
+    ./programs/hunk.nix
     ./programs/mise.nix
     ./programs/nvim.nix
     ./programs/starship.nix

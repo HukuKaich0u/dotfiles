@@ -15,6 +15,10 @@
       url = "github:nix-darwin/nix-darwin";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    hunk = {
+      url = "github:modem-dev/hunk";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = {
@@ -22,6 +26,7 @@
     nixpkgs,
     home-manager,
     nix-darwin,
+    hunk,
     ...
   }: let
     sharedNixpkgs = import ./lib/nixpkgs.nix;
@@ -39,6 +44,7 @@
         ./modules/home/default.nix
         ./modules/linux/default.nix
       ];
+      extraSpecialArgs = {inherit hunk;};
     };
 
     # Main nix-darwin entry point. This is where macOS-wide settings such as
@@ -46,7 +52,7 @@
     darwinConfigurations."KokiAoyagi" = nix-darwin.lib.darwinSystem {
       system = "aarch64-darwin";
       # self is consumed by modules/darwin/system.nix (configurationRevision).
-      specialArgs = {inherit self;};
+      specialArgs = {inherit self hunk;};
       modules = [
         ./modules/darwin/system.nix
         # Without this bridge module, nix-darwin cannot understand the
