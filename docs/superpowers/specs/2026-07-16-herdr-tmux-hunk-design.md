@@ -180,14 +180,14 @@ agent_panel_sort = "priority"
 
 ```toml
 [ui.toast]
-delivery = "system"
+delivery = "herdr"
 delay_seconds = 1
 
 [ui.sound]
 enabled = true
 ```
 
-macOS では導入済みの `terminal-notifier` を利用できる。agent が background workspace で完了または入力待ちになった際に system notification と通知音を出す。
+agent が background workspace で完了または入力待ちになった際は、macOS system notification ではなく Herdr 内の toast を表示する。通知音は有効のままにし、custom MP3 は指定せず標準の `done` と `request` の音を使用する。
 
 ### 永続履歴
 
@@ -280,7 +280,7 @@ nix-darwin 適用と Herdr config reload 後に次を確認する。
 - sidebar に Idle を含む agent が priority 順で表示される。
 - sidebar collapse 後に compact rail が残る。
 - pane border に agent label が表示される。
-- background agent の完了または入力待ちで macOS notification と音が出る。
+- background agent の完了または入力待ちで Herdr 内 toast と標準の `done` / `request` 音が出る一方、macOS system notification は出ない。
 - `Shift+h` で focus 中 pane の cwd を対象に Hunk が起動し、変更が watch 更新される。
 - Hunk 終了時に一時 pane が閉じる。
 - `git diff` の既存 pager が変わっていない。
@@ -290,7 +290,7 @@ nix-darwin 適用と Herdr config reload 後に次を確認する。
 - Herdr 本体は Homebrew、Herdr config は Home Manager という所有境界が明確である。
 - Hunk package と config が公式 Nix/Home Manager integration で管理される。
 - 承認済みの tmux ライク keybinding が有効で、競合 diagnostic がない。
-- Terminal theme、Balanced sidebar、system notification、通知音が設計どおり動作する。
+- Terminal theme、Balanced sidebar、Herdr 内 toast、標準通知音が設計どおり動作し、macOS system notification は出ない。
 - Hunk を Herdr から一時 pane として起動できる。
 - `key-bind.md` がリポジトリ内にあり、ローカル config directory には配置されない。
 - 自動テストと手動スモークテストが完了する。
