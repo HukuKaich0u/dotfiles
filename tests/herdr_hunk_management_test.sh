@@ -11,6 +11,7 @@ herdr_nix="$repo_root/nix/modules/home/programs/herdr.nix"
 herdr_config="$repo_root/nix/modules/home/assets/herdr/config.toml"
 herdr_key_bind_doc="$repo_root/nix/modules/home/assets/herdr/key-bind.md"
 herdr_config_test="$repo_root/tests/herdr_config_test.nix"
+herdr_repo_only_test="$repo_root/tests/herdr_repo_only_test.nix"
 darwin_homebrew_nix="$repo_root/nix/modules/darwin/homebrew.nix"
 
 assert_contains() {
@@ -115,10 +116,6 @@ assert_contains "$herdr_nix" 'source = ../assets/herdr/config.toml;' \
   "herdr.nix should source the repository-owned Herdr configuration"
 assert_contains "$herdr_nix" 'force = true;' \
   "herdr.nix should replace an existing Herdr configuration"
-assert_not_contains "$herdr_nix" 'key-bind.md' \
-  "herdr.nix should not deploy the repository-only key-binding reference"
-assert_not_contains "$herdr_nix" 'source = ../assets/herdr;' \
-  "herdr.nix should source only config.toml, not the whole Herdr assets directory"
 
 if [ ! -f "$herdr_key_bind_doc" ]; then
   echo "nix/modules/home/assets/herdr/key-bind.md should exist"
@@ -256,6 +253,11 @@ assert_not_contains "$darwin_homebrew_nix" '"hunk"' \
 
 if ! nix eval --file "$herdr_config_test" >/dev/null; then
   echo "Herdr module and parsed configuration should match the approved structure"
+  exit 1
+fi
+
+if ! nix eval --impure --file "$herdr_repo_only_test" >/dev/null; then
+  echo "Evaluated Home Manager file sets should deploy only Herdr config.toml"
   exit 1
 fi
 
