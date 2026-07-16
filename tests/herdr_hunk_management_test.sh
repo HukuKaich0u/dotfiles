@@ -9,6 +9,7 @@ home_default_nix="$repo_root/nix/modules/home/default.nix"
 hunk_nix="$repo_root/nix/modules/home/programs/hunk.nix"
 herdr_nix="$repo_root/nix/modules/home/programs/herdr.nix"
 herdr_config="$repo_root/nix/modules/home/assets/herdr/config.toml"
+herdr_config_test="$repo_root/tests/herdr_config_test.nix"
 darwin_homebrew_nix="$repo_root/nix/modules/darwin/homebrew.nix"
 
 assert_contains() {
@@ -191,5 +192,10 @@ assert_contains "$darwin_homebrew_nix" '"herdr"' \
   "nix/modules/darwin/homebrew.nix should continue managing Herdr"
 assert_not_contains "$darwin_homebrew_nix" '"hunk"' \
   "nix/modules/darwin/homebrew.nix should not manage the Hunk formula"
+
+if ! nix eval --file "$herdr_config_test" >/dev/null; then
+  echo "Herdr module and parsed configuration should match the approved structure"
+  exit 1
+fi
 
 echo "Herdr and Hunk management tests passed"
