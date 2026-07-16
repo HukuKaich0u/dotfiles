@@ -1,6 +1,16 @@
 let
   configPath = ../nix/modules/home/assets/herdr/config.toml;
+  homeModulePath = ../nix/modules/home/default.nix;
   modulePath = ../nix/modules/home/programs/herdr.nix;
+
+  sharedHomeModule = import homeModulePath {
+    hunk.homeManagerModules.default = {};
+  };
+  sharedHomeModuleHasImports =
+    sharedHomeModule ? imports && builtins.isList sharedHomeModule.imports;
+  herdrImportCount = builtins.length (
+    builtins.filter (homeImport: homeImport == modulePath) sharedHomeModule.imports
+  );
 
   actualModule = import modulePath;
   expectedModule = {
@@ -91,4 +101,8 @@ in
   then throw "Herdr module must contain only the herdr/config.toml XDG entry with the approved source and force = true"
   else if actualConfig != expectedConfig
   then throw "Herdr config must exactly match the approved parsed TOML structure and values"
+  else if !sharedHomeModuleHasImports
+  then throw "Shared Home Manager module must expose an imports list"
+  else if herdrImportCount != 1
+  then throw "Shared Home Manager module must import programs/herdr.nix exactly once; found ${toString herdrImportCount} imports"
   else true
