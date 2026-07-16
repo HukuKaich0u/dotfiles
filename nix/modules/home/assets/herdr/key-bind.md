@@ -8,7 +8,7 @@ Herdr runs outside tmux and uses `Ctrl-g` as the same prefix.
 | --- | --- | --- |
 | session | workspace | repo/task/investigation switch |
 | window | tab | view inside workspace |
-| pane | pane | A pane |
+| pane | pane | independently focused terminal region within a tab |
 | server/socket | session | fully separate persistent runtime |
 
 ## tmux-equivalent operations
@@ -51,8 +51,8 @@ Herdr runs outside tmux and uses `Ctrl-g` as the same prefix.
 
 ## Intentionally unassigned
 
-- H/K pane splits are unused; only right and down splits are assigned.
-- There is no < > tab reordering because Herdr has no corresponding operation.
-- all Shift+h/j/k/l pane swaps are disabled: Shift+j/l are splits, Shift+h opens Hunk, and Shift+k should not remain as an unexpected swap.
+- H/K pane split bindings are unused because this setup only creates panes to the right or downward.
+- < > tab reordering is unassigned because Herdr has no corresponding tab-reordering operation.
+- All Shift+h/j/k/l pane swaps are disabled because Shift+j/l create splits, Shift+h opens Hunk, and Shift+k is intentionally left without an action.
 
 This reference remains repository-only and is not deployed by the Home Manager module.
