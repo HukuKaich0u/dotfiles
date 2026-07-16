@@ -13,6 +13,7 @@
     ./programs/git.nix
     ./programs/gh.nix
     ./programs/ghostty.nix
+    ./programs/herdr.nix
     ./programs/hunk.nix
     ./programs/mise.nix
     ./programs/nvim.nix
