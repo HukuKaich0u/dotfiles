@@ -339,5 +339,39 @@
     "key": "q",
     "command": "workbench.action.focusActiveEditorGroup",
     "when": "sideBarFocus && !inputFocus"
+  },
+  // Global leader fallbacks: テキストエディタ内は nvim-vscode/init.lua が担当し、
+  // それ以外の非入力サーフェス(空のエディタグループ、サイドバー等)はここで拾う
+  {
+    "key": "space p f",
+    "command": "workbench.action.quickOpen",
+    "when": "!editorTextFocus && !inputFocus && !terminalFocus && !accessibleViewIsShown && !accessibilityHelpIsShown"
+  },
+  {
+    "key": "space p s",
+    "command": "workbench.action.findInFiles",
+    "when": "!editorTextFocus && !inputFocus && !terminalFocus && !accessibleViewIsShown && !accessibilityHelpIsShown"
+  },
+  {
+    "key": "space e e",
+    "command": "workbench.view.explorer",
+    "when": "!filesExplorerFocus && !editorTextFocus && !inputFocus && !terminalFocus && !accessibleViewIsShown && !accessibilityHelpIsShown"
+  },
+  // Explorer にフォーカスがある状態で再度 space e e → サイドバーを閉じてエディタへ戻る
+  {
+    "key": "space e e",
+    "command": "workbench.action.toggleSidebarVisibility",
+    "when": "filesExplorerFocus && !inputFocus"
+  },
+  {
+    "key": "space g g",
+    "command": "workbench.view.scm",
+    "when": "focusedView != 'workbench.scm' && !editorTextFocus && !inputFocus && !terminalFocus && !accessibleViewIsShown && !accessibilityHelpIsShown"
+  },
+  // Source Control にフォーカスがある状態で再度 space g g → サイドバーを閉じてエディタへ戻る
+  {
+    "key": "space g g",
+    "command": "workbench.action.toggleSidebarVisibility",
+    "when": "focusedView == 'workbench.scm' && !inputFocus"
   }
 ]
