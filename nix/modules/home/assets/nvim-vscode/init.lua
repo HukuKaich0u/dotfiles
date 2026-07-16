@@ -19,7 +19,16 @@ vim.keymap.set("n", "<leader>pws", function()
     args = { query = vim.fn.expand("<cword>") },
   })
 end, { silent = true, desc = "Find Word in Files" })
-map_action("<leader>gg", "workbench.view.scm", "Open Source Control")
+-- Source Control はフォーカスがコミット入力欄に入るため、開いた直後に
+-- 変更リストへフォーカスを移す。これで再度 <leader>gg した時に
+-- keybindings.json 側のトグル (閉じる) が効く。
+vim.keymap.set("n", "<leader>gg", function()
+  vscode.action("workbench.view.scm", {
+    callback = function()
+      vscode.action("widgetNavigation.focusNext")
+    end,
+  })
+end, { silent = true, desc = "Open Source Control" })
 map_action("gd", "editor.action.revealDefinition", "Go to Definition")
 map_action("gR", "editor.action.goToReferences", "Go to References")
 map_action("gi", "editor.action.goToImplementation", "Go to Implementation")

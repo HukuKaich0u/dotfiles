@@ -363,15 +363,20 @@
     "command": "workbench.action.toggleSidebarVisibility",
     "when": "filesExplorerFocus && !inputFocus"
   },
+  // Source Control は開くとコミット入力欄にフォーカスが入るため、
+  // 開いた直後に変更リストへフォーカスを移してトグルを効かせる
   {
     "key": "space g g",
-    "command": "workbench.view.scm",
-    "when": "focusedView != 'workbench.scm' && !editorTextFocus && !inputFocus && !terminalFocus && !accessibleViewIsShown && !accessibilityHelpIsShown"
+    "command": "runCommands",
+    "args": {
+      "commands": ["workbench.view.scm", "widgetNavigation.focusNext"]
+    },
+    "when": "!(sideBarFocus && activeViewlet == 'workbench.view.scm') && !editorTextFocus && !inputFocus && !terminalFocus && !accessibleViewIsShown && !accessibilityHelpIsShown"
   },
   // Source Control にフォーカスがある状態で再度 space g g → サイドバーを閉じてエディタへ戻る
   {
     "key": "space g g",
     "command": "workbench.action.toggleSidebarVisibility",
-    "when": "focusedView == 'workbench.scm' && !inputFocus"
+    "when": "sideBarFocus && activeViewlet == 'workbench.view.scm' && !inputFocus"
   }
 ]

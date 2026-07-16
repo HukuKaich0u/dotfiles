@@ -130,6 +130,18 @@ for lhs, command in pairs(expected_actions) do
   end
 end
 
+local scm_open = run_mapping("<leader>gg")
+assert(
+  scm_open.opts and type(scm_open.opts.callback) == "function",
+  "<leader>gg should refocus after opening Source Control"
+)
+actions = {}
+scm_open.opts.callback()
+assert(
+  #actions == 1 and actions[1].name == "widgetNavigation.focusNext",
+  "<leader>gg callback should move focus from the commit input to the changes list"
+)
+
 vim.api.nvim_buf_set_lines(0, 0, -1, false, { "search_target" })
 vim.api.nvim_win_set_cursor(0, { 1, 1 })
 local word_search = run_mapping("<leader>pws")
