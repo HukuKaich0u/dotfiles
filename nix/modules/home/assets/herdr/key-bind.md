@@ -53,6 +53,6 @@ Herdr runs outside tmux and uses `Ctrl-g` as the same prefix.
 
 - H/K pane split bindings are unused because this setup only creates panes to the right or downward.
 - < > tab reordering is unassigned because Herdr has no corresponding tab-reordering operation.
-- All Shift+h/j/k/l pane swaps are disabled because Shift+j/l create splits, Shift+h opens Hunk, and Shift+k is intentionally left without an action.
+- All Shift+h/j/k/l pane swaps are disabled: Shift+j/l create splits, Shift+h opens Hunk, and Shift+k is also left unassigned to keep the entire pane-swap group consistently disabled.
 
 This reference remains repository-only and is not deployed by the Home Manager module.

@@ -173,7 +173,7 @@ server/socket | session
 fully separate persistent runtime
 H/K pane split bindings are unused because this setup only creates panes to the right or downward.
 < > tab reordering is unassigned because Herdr has no corresponding tab-reordering operation.
-All Shift+h/j/k/l pane swaps are disabled because Shift+j/l create splits, Shift+h opens Hunk, and Shift+k is intentionally left without an action.
+All Shift+h/j/k/l pane swaps are disabled: Shift+j/l create splits, Shift+h opens Hunk, and Shift+k is also left unassigned to keep the entire pane-swap group consistently disabled.
 EOF
 
 while IFS= read -r required_line; do
