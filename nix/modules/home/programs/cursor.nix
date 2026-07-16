@@ -11,6 +11,7 @@
   dotfilesDir = "${config.home.homeDirectory}/Documents/repos/personal/dotfiles";
   cursorAssets = "${dotfilesDir}/nix/modules/home/assets/cursor";
   cursorUserDir = "Library/Application Support/Cursor/User";
+  extensionsList = ../assets/cursor/extensions.txt;
 in {
   home.file = lib.mkIf pkgs.stdenv.isDarwin {
     "${cursorUserDir}/settings.json" = {
@@ -22,4 +23,30 @@ in {
       force = true;
     };
   };
+
+  # extensions.txt にある拡張のうち未インストールのものだけ入れる (一方向 sync)。
+  # リストに無い拡張は消さない。バージョンは Cursor の自動更新に任せる。
+  # リスト更新: cursor --list-extensions | sort > nix/modules/home/assets/cursor/extensions.txt
+  home.activation.installCursorExtensions = lib.mkIf pkgs.stdenv.isDarwin (
+    lib.hm.dag.entryAfter ["writeBoundary"] ''
+      cursor_bin="$(command -v cursor || true)"
+      if [ -z "$cursor_bin" ] && [ -x /usr/local/bin/cursor ]; then
+        cursor_bin=/usr/local/bin/cursor
+      fi
+      if [ -n "$cursor_bin" ]; then
+        installed="$(mktemp)"
+        "$cursor_bin" --list-extensions 2>/dev/null > "$installed" || true
+        while IFS= read -r ext; do
+          case "$ext" in ""|\#*) continue ;; esac
+          if ! grep -Fqix -- "$ext" "$installed"; then
+            run "$cursor_bin" --install-extension "$ext" < /dev/null || \
+              printf 'warning: failed to install cursor extension %s\n' "$ext" >&2
+          fi
+        done < ${extensionsList}
+        rm -f "$installed"
+      else
+        printf 'warning: cursor CLI not found; skipping extension install\n' >&2
+      fi
+    ''
+  );
 }
