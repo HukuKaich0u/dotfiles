@@ -7,6 +7,7 @@
     ./programs/bacon.nix
     ./programs/claude
     ./programs/codex
+    ./programs/cursor.nix
     ./programs/direnv.nix
     ./programs/git.nix
     ./programs/gh.nix
