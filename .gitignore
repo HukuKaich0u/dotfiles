@@ -38,4 +38,5 @@ result
 .claude/shell-snapshots/
 
 # Local planning / spec docs
+.superpowers/
 docs/superpowers/
