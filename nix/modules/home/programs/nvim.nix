@@ -7,4 +7,5 @@
   };
 
   xdg.configFile."nvim".source = ../assets/nvim;
+  xdg.configFile."nvim-vscode".source = ../assets/nvim-vscode;
 }
