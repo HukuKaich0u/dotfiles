@@ -14,6 +14,7 @@
 8. **コード折りたたみ** - nvim-ufo
 9. **ユーティリティ** - undotree, vim-maximizer, noice
 10. **LeetCode** - leetcode.nvim
+11. **その他のプラグイン** - telescope, auto-session, todo-comments, emmet ほか
 
 ---
 
@@ -211,7 +212,19 @@ func(a, b, c)
 
 **動作**: conform.nvim に設定されている言語はそのフォーマッターを使用、それ以外はLSPにフォールバック。Web系と `nix` / shell は保存時にも自動フォーマット。
 
-### Rust 補助: bacon
+### Rust 支援
+
+Rust では通常の LSP に加えて次のプラグインが有効。
+
+| プラグイン | 用途 |
+|-----------|------|
+| **rustaceanvim** (`mrcjkb/rustaceanvim`) | rust-analyzer を rustaceanvim 経由で駆動。`:RustLsp` 系コマンド(runnables / expand macro / hover actions 等)を追加 |
+| **rustowl** (`cordx56/rustowl`) | 所有権・ライフタイムを可視化 |
+| **bacon** (`nvim-bacon`) | `bacon` の継続チェックを Neovim から利用(下記) |
+
+`rustaceanvim` が `rust-analyzer` の設定を持つ(`rustaceanvim.lua`)。mason の install リストには rust-analyzer を入れていない。
+
+#### bacon
 
 Rust では `bacon` を使った継続チェックも利用可能。
 
@@ -387,6 +400,72 @@ LeetCode の問題一覧、問題文表示、実行、提出を Neovim 内で行
 3. `:Leet cookie update` を実行して貼り付ける
 
 注意: `set-cookie` ではなく request headers の `Cookie` を使う。
+
+---
+
+## 11. その他のプラグイン
+
+上の節に載っていないが有効なプラグイン。日常的にキーを叩くものは keymap 付き、裏方は一覧のみ。
+
+### telescope.nvim
+
+fzf-native と themes 拡張を組み込んだファジーピッカー。多くの検索は `snacks.nvim` 側(2 節)に寄せているが、telescope 固有の操作が残る。
+
+| キー | 動作 |
+|------|------|
+| `<leader>pr` | 現在プロジェクト内の最近使ったファイルを検索 |
+| `<leader>pWs` | カーソル下の `<cWORD>` を grep |
+| `<leader>th` | テーマ切り替え(`Telescope themes`) |
+
+- insert モードのリスト移動は `<C-j>` / `<C-k>`、normal モードは `q` で閉じる
+- 選んだテーマは `stdpath("state")/current-theme.lua` に永続化される
+
+### auto-session
+
+cwd 単位でセッション(開いていたバッファ・レイアウト)を保存・復元する。
+
+| キー | 動作 |
+|------|------|
+| `<leader>wr` | cwd のセッションを復元 |
+| `<leader>ws` | cwd のセッションを保存 |
+
+### todo-comments.nvim
+
+`TODO` / `FIX` / `HACK` / `WARN` / `PERF` / `NOTE` / `TEST` などのコメントをアイコン付きでハイライトし、ジャンプできる。検索は `rg` を使う。
+
+| キー | 動作 |
+|------|------|
+| `]t` | 次の TODO コメントへ |
+| `[t` | 前の TODO コメントへ |
+
+一覧は `Trouble todo`(5 節)からも開ける。
+
+### nvim-emmet
+
+HTML/CSS の emmet 展開のうち、既存の選択範囲を abbreviation で包む用途だけに絞って使う(補完自体は mason の `emmet_ls` が担当)。
+
+| キー | 動作 |
+|------|------|
+| `<leader>xe` (n/v) | 選択範囲を emmet abbreviation で wrap |
+
+### 裏方・自動有効プラグイン
+
+キーを直接叩くことは少ないが、常時効いているもの。
+
+| プラグイン | repo | 役割 |
+|-----------|------|------|
+| blink.cmp | `Saghen/blink.cmp` | 補完エンジン(LSP / snippet / path) |
+| nvim-treesitter | `nvim-treesitter/nvim-treesitter` | 構文解析ベースのハイライト・textobject |
+| nvim-autopairs | `windwp/nvim-autopairs` | 括弧・クォートの自動補完 |
+| mason.nvim | `williamboman/mason.nvim` | LSP / formatter / linter のインストーラ(`mason.lua` 参照) |
+| lualine.nvim | `nvim-lualine/lualine.nvim` | ステータスライン |
+| incline.nvim | `b0o/incline.nvim` | 各ウィンドウ右上のファイル名表示 |
+| wilder.nvim | `gelguy/wilder.nvim` | コマンドライン補完 UI |
+| nvcode-color-schemes | `ChristianChiarulli/nvcode-color-schemes.vim` | カラースキーム |
+| showkeys | `nvzone/showkeys` | 押下キーの画面表示(スクリーンキャスト用) |
+| nvim-colorizer | `NvChad/nvim-colorizer.lua` | 色コードのインラインプレビュー(`tailwind-tools.lua` で読み込み) |
+
+> repo 名と実装ファイル名が一致しないものがある: `tailwind-tools.lua` は実際には `nvim-colorizer` を読み込んでいる。
 
 ---
 

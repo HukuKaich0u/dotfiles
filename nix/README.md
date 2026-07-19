@@ -69,7 +69,8 @@ nix/
 │   └── *.nix
 ├── overlays/
 │   ├── default.nix
-│   └── direnv-no-zsh-check.nix
+│   ├── direnv-no-zsh-check.nix
+│   └── mo-markdown-viewer.nix
 └── modules/
     ├── home/
     │   ├── default.nix
@@ -79,10 +80,13 @@ nix/
     │   │   ├── bacon.nix
     │   │   ├── claude/
     │   │   ├── codex/
+    │   │   ├── cursor.nix
     │   │   ├── direnv.nix
     │   │   ├── gh.nix
     │   │   ├── git.nix
     │   │   ├── ghostty.nix
+    │   │   ├── herdr.nix
+    │   │   ├── hunk.nix
     │   │   ├── mise.nix
     │   │   ├── nvim.nix
     │   │   ├── starship.nix
@@ -92,8 +96,11 @@ nix/
     │   │   ├── zoxide.nix
     │   │   └── zsh.nix
     │   └── assets/
+    │       ├── cursor/
     │       ├── ghostty/
+    │       ├── herdr/
     │       ├── nvim/
+    │       ├── nvim-vscode/
     │       ├── tmux/
     │       └── wezterm/
     ├── darwin/
@@ -142,6 +149,9 @@ overlay の置き場です。
 例:
 
 - `direnv-no-zsh-check.nix`
+- `mo-markdown-viewer.nix`
+  - nixpkgs の `mo` は無関係な mustache テンプレートツールなので、`k1LoW/mo`(Markdown を browser で開くビューア)の darwin release binary を fetch して `mo` attr を上書きする
+  - aarch64-darwin 限定
 
 `common/` のような曖昧な名前ではなく、overlay は overlay として明示します。
 
@@ -205,7 +215,10 @@ package 一覧を `default.nix` に直接肥大化させないこと。
 - `gh.nix`
 - `ghostty.nix`
 - `claude/`
-- `codex.nix`
+- `codex/`
+- `cursor.nix`
+- `herdr.nix`
+- `hunk.nix`
 - `mise.nix`
 - `nvim.nix`
 - `tmux.nix`
@@ -217,10 +230,13 @@ program module から参照される実ファイル群を置きます。
 
 例:
 
-- Neovim の Lua / lockfile
+- Neovim の Lua / lockfile (`nvim/`)
+- VSCode/Cursor 内 Neovim 拡張用の init.lua (`nvim-vscode/`)
 - tmux の `tmux.conf`
 - Ghostty の `config`
 - WezTerm の Lua config
+- Cursor の `settings.json` / `keybindings.json` / `extensions.txt` (`cursor/`)
+- Herdr の `config.toml` / `key-bind.md` (`herdr/`)
 
 Lua や tmux conf のような asset を `programs/` と同じ階層に散らさないこと。
 
@@ -268,6 +284,30 @@ collection の pin 配布」だけを持ちます。
   - SKILL.md を持つ leaf directory を再帰探索する共有 helper
 - `default.nix`
   - skills module の束ね役
+
+#### `modules/home/programs/cursor.nix`
+
+Cursor(エディタ)の設定配布です。macOS のみ有効。
+
+- `settings.json` / `keybindings.json` は repo 内実ファイルへの out-of-store symlink で配置する
+  - Cursor 自身が JSONC(コメント付き)で書き込むため、store 固定 symlink や jq merge は使えない
+  - GUI からの変更は git diff で拾って commit する運用
+- `extensions.txt` にある拡張を activation で一方向 sync する(未導入のものだけ install、リスト外は消さない)
+  - リスト更新: `cursor --list-extensions | sort > nix/modules/home/assets/cursor/extensions.txt`
+- asset は `assets/cursor/`、VSCode 拡張用 Neovim config は `assets/nvim-vscode/`(配布は `nvim.nix`)
+
+#### `modules/home/programs/herdr.nix`
+
+Herdr(terminal multiplexer)の config 配布です。
+
+- `xdg.configFile."herdr/config.toml"` に `assets/herdr/config.toml` を配置する
+- `assets/herdr/key-bind.md` は repository-only の参照 doc で、Home Manager では配布しない
+
+#### `modules/home/programs/hunk.nix`
+
+Hunk(diff viewer)の設定です。
+
+- `programs.hunk` を有効化し、settings は module 内に直書き(asset ファイルは持たない)
 
 ### `modules/darwin/`
 
@@ -478,6 +518,11 @@ Linux 固有差分を `modules/home/` の条件分岐で増やしすぎないこ
 | git 設定を変える | `modules/home/programs/git.nix` |
 | gh 設定を変える | `modules/home/programs/gh.nix` |
 | Codex の keymap / config を変える | `modules/home/programs/codex/config.nix` |
+| Cursor の settings / keybindings を変える | `modules/home/assets/cursor/` |
+| Cursor の拡張リストを変える | `modules/home/assets/cursor/extensions.txt` |
+| VSCode/Cursor 内 Neovim の config を変える | `modules/home/assets/nvim-vscode/` |
+| Herdr の config を変える | `modules/home/assets/herdr/config.toml` |
+| Hunk の設定を変える | `modules/home/programs/hunk.nix` |
 | AGENTS.md / CLAUDE.md(グローバル指示)を変える | agent-kit repo + `.apm/apm.yml` |
 | agent skills を追加/削除する | agent-kit repo + `.apm/apm.yml` |
 | external skill collection を変える | `modules/home/programs/agent-skills/external/` |
