@@ -72,10 +72,34 @@ let
           description = "review changes with Hunk";
         }
         {
-          key = "prefix+shift+k";
+          key = "prefix+u";
           type = "popup";
           command = "lazygit";
           description = "open lazygit in a popup";
+          width = "80%";
+          height = "80%";
+        }
+        {
+          key = "prefix+y";
+          type = "popup";
+          command = "lazydocker";
+          description = "open lazydocker in a popup";
+          width = "80%";
+          height = "80%";
+        }
+        {
+          key = "prefix+e";
+          type = "popup";
+          command = "yazi";
+          description = "open yazi (file explorer) in a popup";
+          width = "80%";
+          height = "80%";
+        }
+        {
+          key = "prefix+t";
+          type = "popup";
+          command = "exec \"\${SHELL:-sh}\"";
+          description = "open a scratch terminal in a popup";
           width = "80%";
           height = "80%";
         }

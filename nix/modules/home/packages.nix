@@ -13,6 +13,7 @@
     ghostscript
     gnumake
     imagemagick
+    lazydocker
     lazygit
     lua-language-server
     luarocks

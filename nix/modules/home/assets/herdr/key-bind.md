@@ -48,12 +48,24 @@ Herdr runs outside tmux and uses `Ctrl-g` as the same prefix.
 | `prefix+Shift+o` | Notification target |
 | `prefix+?` | Help |
 | `prefix+Shift+h` | Open `hunk diff --watch` in the focused pane's current working directory |
-| `prefix+Shift+k` | Open `lazygit` in a session-modal popup (80% × 80%) |
+
+## Popups
+
+All popups are session-modal (80% × 80%) and inherit the focused pane's working directory.
+
+A popup closes only when its command exits; Herdr does not intercept any key (not even Escape) while a popup is open. So `lazygit`/`lazydocker`/`yazi` close on their own `q`, but the scratch terminal is a plain shell — leave it with `exit` or `Ctrl-D`, not `q`.
+
+| Key | Popup |
+| --- | --- |
+| `prefix+u` | `lazygit` (quit with `q`) |
+| `prefix+y` | `lazydocker` (quit with `q`) |
+| `prefix+e` | `yazi` (file explorer, quit with `q`) |
+| `prefix+t` | Scratch terminal (`$SHELL`, quit with `exit` / `Ctrl-D`) |
 
 ## Intentionally unassigned
 
 - H/K pane split bindings are unused because this setup only creates panes to the right or downward.
 - < > tab reordering is unassigned because Herdr has no corresponding tab-reordering operation.
-- All Shift+h/j/k/l pane swaps are disabled: Shift+j/l create splits, Shift+h opens Hunk, and Shift+k opens lazygit in a popup.
+- All Shift+h/j/k/l pane swaps are disabled: Shift+j/l create splits, Shift+h opens Hunk, and Shift+k is left unassigned to keep the entire pane-swap group consistently disabled.
 
 This reference remains repository-only and is not deployed by the Home Manager module.
