@@ -29,6 +29,10 @@ vim.keymap.set("n", "<leader>gg", function()
     end,
   })
 end, { silent = true, desc = "Open Source Control" })
+-- Markdown ソース編集中 → プレビューへ。markdown.showPreview は同じタブで
+-- source ⇄ preview をトグルする。プレビュー表示中はテキストフォーカスが
+-- 無いため keybindings.json 側の space m p が戻り側を担当する。
+map_action("<leader>mp", "markdown.showPreview", "Toggle Markdown Preview")
 map_action("gd", "editor.action.revealDefinition", "Go to Definition")
 map_action("gR", "editor.action.goToReferences", "Go to References")
 map_action("gi", "editor.action.goToImplementation", "Go to Implementation")

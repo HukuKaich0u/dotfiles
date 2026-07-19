@@ -378,5 +378,13 @@
     "key": "space g g",
     "command": "workbench.action.toggleSidebarVisibility",
     "when": "sideBarFocus && activeViewlet == 'workbench.view.scm' && !inputFocus"
+  },
+  // Markdown プレビュー表示中 (テキストフォーカス無し) → 再度 space m p で
+  // プレビュータブを閉じてソースへ戻す。markdown.showPreview はトグルしない
+  // ため、閉じる側を明示的に割り当てる。往路は nvim-vscode/init.lua が担当。
+  {
+    "key": "space m p",
+    "command": "workbench.action.closeActiveEditor",
+    "when": "!editorTextFocus && !inputFocus && !terminalFocus && !filesExplorerFocus && !sideBarFocus && !accessibleViewIsShown && !accessibilityHelpIsShown"
   }
 ]
