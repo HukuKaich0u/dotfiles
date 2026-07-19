@@ -5,7 +5,7 @@
 
     settings = {
       theme = "auto";
-      mode = "auto";
+      mode = "split";
       exclude_untracked = false;
       line_numbers = true;
       wrap_lines = false;
