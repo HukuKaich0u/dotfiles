@@ -17,7 +17,7 @@ Herdr runs outside tmux and uses `Ctrl-g` as the same prefix.
 | --- | --- |
 | `Ctrl-g` | Prefix |
 | `prefix+c` | New tab / new window |
-| `prefix+p/n` | Previous/next tab/window |
+| `prefix+Shift+p/n` | Previous/next tab/window |
 | `prefix+1..9` | Numbered tab/window |
 | `prefix+comma` | Rename tab/window |
 | `prefix+ampersand` | Close tab/window |
@@ -32,14 +32,14 @@ Herdr runs outside tmux and uses `Ctrl-g` as the same prefix.
 | `prefix+d` | Detach |
 | `prefix+;` | Last pane |
 | `prefix+o` | Workspace picker / tmux-sessionx |
-| `prefix+Shift+9/0` | Previous/next workspace/session |
-| `prefix+Shift+4` | Rename workspace/session |
+| `prefix+p/n` | Previous/next workspace/session |
+| `prefix+Shift+r` | Rename workspace/session |
 
 ## Herdr-only operations
 
 | Key | Herdr operation |
 | --- | --- |
-| `prefix+Shift+n` | New workspace |
+| `prefix+Shift+w` | New workspace |
 | `prefix+Shift+g` | New worktree |
 | `prefix+Shift+d` | Close workspace |
 | `prefix+g` | Herdr navigator |
@@ -48,11 +48,12 @@ Herdr runs outside tmux and uses `Ctrl-g` as the same prefix.
 | `prefix+Shift+o` | Notification target |
 | `prefix+?` | Help |
 | `prefix+Shift+h` | Open `hunk diff --watch` in the focused pane's current working directory |
+| `prefix+Shift+k` | Open `lazygit` in a session-modal popup (80% × 80%) |
 
 ## Intentionally unassigned
 
 - H/K pane split bindings are unused because this setup only creates panes to the right or downward.
 - < > tab reordering is unassigned because Herdr has no corresponding tab-reordering operation.
-- All Shift+h/j/k/l pane swaps are disabled: Shift+j/l create splits, Shift+h opens Hunk, and Shift+k is also left unassigned to keep the entire pane-swap group consistently disabled.
+- All Shift+h/j/k/l pane swaps are disabled: Shift+j/l create splits, Shift+h opens Hunk, and Shift+k opens lazygit in a popup.
 
 This reference remains repository-only and is not deployed by the Home Manager module.

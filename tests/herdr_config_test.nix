@@ -36,16 +36,16 @@ let
       open_notification_target = "prefix+shift+o";
       workspace_picker = "prefix+o";
       goto = "prefix+g";
-      new_workspace = "prefix+shift+n";
+      new_workspace = "prefix+shift+w";
       new_worktree = "prefix+shift+g";
-      rename_workspace = "prefix+shift+4";
+      rename_workspace = "prefix+shift+r";
       close_workspace = "prefix+shift+d";
-      previous_workspace = "prefix+shift+9";
-      next_workspace = "prefix+shift+0";
+      previous_workspace = "prefix+p";
+      next_workspace = "prefix+n";
       new_tab = "prefix+c";
       rename_tab = "prefix+comma";
-      previous_tab = "prefix+p";
-      next_tab = "prefix+n";
+      previous_tab = "prefix+shift+p";
+      next_tab = "prefix+shift+n";
       switch_tab = "prefix+1..9";
       close_tab = "prefix+ampersand";
       copy_mode = "prefix+[";
@@ -70,6 +70,14 @@ let
           type = "pane";
           command = "hunk diff --watch";
           description = "review changes with Hunk";
+        }
+        {
+          key = "prefix+shift+k";
+          type = "popup";
+          command = "lazygit";
+          description = "open lazygit in a popup";
+          width = "80%";
+          height = "80%";
         }
       ];
     };
