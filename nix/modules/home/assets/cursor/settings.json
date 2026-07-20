@@ -118,5 +118,6 @@
   "window.autoDetectColorScheme": false,
   "vscode-neovim.NVIM_APPNAME": "nvim-vscode",
   "vscode-neovim.neovimExecutablePaths.darwin": "/etc/profiles/per-user/KokiAoyagi/bin/nvim",
-  "workbench.activityBar.orientation": "vertical"
+  "workbench.activityBar.orientation": "vertical",
+  "redhat.telemetry.enabled": true
 }
