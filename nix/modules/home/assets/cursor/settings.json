@@ -23,10 +23,15 @@
     "editor.defaultFormatter": "golang.go",
     "editor.formatOnSave": true
   },
-  "[cpp]": {
-    "editor.defaultFormatter": "xaver.clang-format",
+  "[c]": {
+    "editor.defaultFormatter": "llvm-vs-code-extensions.vscode-clangd",
     "editor.formatOnSave": true
   },
+  "[cpp]": {
+    "editor.defaultFormatter": "llvm-vs-code-extensions.vscode-clangd",
+    "editor.formatOnSave": true
+  },
+  "C_Cpp.intelliSenseEngine": "disabled",
   "gopls": {
     "ui.diagnostic.staticcheck": true
   },
@@ -95,7 +100,6 @@
   "workbench.editorAssociations": {},
   "explorer.confirmPasteNative": false,
   "window.confirmSaveUntitledWorkspace": false,
-  "lldb.library": "/Applications/Xcode.app/Contents/SharedFrameworks/LLDB.framework/Versions/A/LLDB",
   "lldb.launch.expressions": "native",
   "cursor.agent_layout_browser_beta_setting": true,
   "editor.minimap.maxColumn": 300,
