@@ -22,6 +22,10 @@ in {
       source = config.lib.file.mkOutOfStoreSymlink "${cursorAssets}/keybindings.json";
       force = true;
     };
+    "${cursorUserDir}/tasks.json" = {
+      source = config.lib.file.mkOutOfStoreSymlink "${cursorAssets}/tasks.json";
+      force = true;
+    };
   };
 
   # extensions.txt にある拡張のうち未インストールのものだけ入れる (一方向 sync)。
