@@ -13,7 +13,6 @@
       "awscli"
       "dnsmasq"
       "gauche"
-      "gcc"
       "git-gui"
       "glib"
       "gnu-time"
