@@ -5,9 +5,10 @@
 }: let
   tomlFormat = pkgs.formats.toml {};
   settings = {
-    model = "gpt-5.4";
+    model = "gpt-5.6-sol";
     approval_policy = "on-request";
-    model_reasoning_effort = "medium";
+    model_reasoning_effort = "high";
+    model_verbosity = "medium";
     web_search = "live";
     personality = "pragmatic";
     features.terminal_resize_reflow = true;

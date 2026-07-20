@@ -393,9 +393,10 @@ Codex まわりは install / config / prompt assets を分けて考えます。
 現状 `config.toml` に入れている設定はこれです。
 
 ```toml
-model = "gpt-5.4"
+model = "gpt-5.6-sol"
 approval_policy = "on-request"
-model_reasoning_effort = "medium"
+model_reasoning_effort = "high"
+model_verbosity = "medium"
 web_search = "live"
 personality = "pragmatic"
 
