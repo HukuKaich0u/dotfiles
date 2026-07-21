@@ -3,6 +3,11 @@ local vscode = require("vscode")
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
 
+-- Route Neovim's + register through Cursor's clipboard API. Together with
+-- unnamedplus this makes plain y/yy and p share the macOS system clipboard.
+vim.g.clipboard = vim.g.vscode_clipboard
+vim.opt.clipboard = "unnamedplus"
+
 vim.keymap.set({ "n", "v" }, "<Space>", "<Nop>", { silent = true })
 
 local function map_action(lhs, command, description)
