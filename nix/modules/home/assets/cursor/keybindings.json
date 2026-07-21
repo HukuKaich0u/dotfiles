@@ -386,5 +386,24 @@
     "key": "space m p",
     "command": "workbench.action.closeActiveEditor",
     "when": "!editorTextFocus && !inputFocus && !terminalFocus && !filesExplorerFocus && !sideBarFocus && !accessibleViewIsShown && !accessibilityHelpIsShown"
+  },
+  // C build/run/debug. テキストエディタ内は nvim-vscode/init.lua が担当し、
+  // サイドバー等にフォーカスが移った時も同じ leader sequence を使えるようにする。
+  {
+    "key": "space c b",
+    "command": "workbench.action.tasks.runTask",
+    "args": "C: Build active file (choose compiler)",
+    "when": "editorLangId == c && !editorTextFocus && !inputFocus && !terminalFocus && !accessibleViewIsShown && !accessibilityHelpIsShown"
+  },
+  {
+    "key": "space c r",
+    "command": "workbench.action.tasks.runTask",
+    "args": "C: Run active file (choose compiler)",
+    "when": "editorLangId == c && !editorTextFocus && !inputFocus && !terminalFocus && !accessibleViewIsShown && !accessibilityHelpIsShown"
+  },
+  {
+    "key": "space c d",
+    "command": "workbench.action.debug.start",
+    "when": "editorLangId == c && !editorTextFocus && !inputFocus && !terminalFocus && !accessibleViewIsShown && !accessibilityHelpIsShown"
   }
 ]

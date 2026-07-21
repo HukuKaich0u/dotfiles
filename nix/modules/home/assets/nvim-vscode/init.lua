@@ -11,6 +11,12 @@ local function map_action(lhs, command, description)
   end, { silent = true, desc = description })
 end
 
+local function map_task(lhs, task, description)
+  vim.keymap.set("n", lhs, function()
+    vscode.action("workbench.action.tasks.runTask", { args = { task } })
+  end, { silent = true, desc = description })
+end
+
 map_action("<leader>ee", "workbench.view.explorer", "Open Explorer")
 map_action("<leader>pf", "workbench.action.quickOpen", "Quick Open")
 map_action("<leader>ps", "workbench.action.findInFiles", "Find in Files")
@@ -33,6 +39,9 @@ end, { silent = true, desc = "Open Source Control" })
 -- source ⇄ preview をトグルする。プレビュー表示中はテキストフォーカスが
 -- 無いため keybindings.json 側の space m p が戻り側を担当する。
 map_action("<leader>mp", "markdown.showPreview", "Toggle Markdown Preview")
+map_task("<leader>cb", "C: Build active file (choose compiler)", "Build C File")
+map_task("<leader>cr", "C: Run active file (choose compiler)", "Run C File")
+map_action("<leader>cd", "workbench.action.debug.start", "Debug C File")
 map_action("gd", "editor.action.revealDefinition", "Go to Definition")
 map_action("gR", "editor.action.goToReferences", "Go to References")
 map_action("gi", "editor.action.goToImplementation", "Go to Implementation")

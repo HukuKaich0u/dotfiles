@@ -19,7 +19,10 @@
         "cwd": "${fileDirname}"
       },
       "problemMatcher": "$gcc",
-      "group": "build",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
       "presentation": {
         "reveal": "always",
         "panel": "dedicated",

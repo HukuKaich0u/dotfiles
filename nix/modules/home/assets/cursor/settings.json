@@ -119,5 +119,21 @@
   "vscode-neovim.NVIM_APPNAME": "nvim-vscode",
   "vscode-neovim.neovimExecutablePaths.darwin": "/etc/profiles/per-user/KokiAoyagi/bin/nvim",
   "workbench.activityBar.orientation": "vertical",
-  "redhat.telemetry.enabled": true
+  "redhat.telemetry.enabled": true,
+  "launch": {
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "C: Debug active file",
+        "type": "lldb",
+        "request": "launch",
+        "program": "${fileDirname}/${fileBasenameNoExtension}",
+        "cwd": "${fileDirname}",
+        "args": [],
+        "terminal": "integrated",
+        "stopOnEntry": false,
+        "preLaunchTask": "C: Build active file (choose compiler)"
+      }
+    ]
+  }
 }
