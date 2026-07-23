@@ -90,7 +90,7 @@ gcloud init
 ### `linux/setup.sh`
 
 - 役割: Linux bootstrap の入口
-- 実行順: `linux/install-packages.sh core` → 必要なら `linux/install-packages.sh linux-extra` → 必要なら `linux/install-ghostty.sh` → `linux/install-rustup.sh` → `common/link-dotfiles.sh`
+- 実行順: `linux/install-packages.sh core` → 必要なら `linux/install-packages.sh linux-extra` → 必要なら `linux/install-ghostty.sh` → `linux/install-rustup.sh` → `common/install-apm.sh` → `common/link-dotfiles.sh`
 - やらないこと: `home-manager switch`、Docker daemon の post-install 調整、`gcloud init`
 - 例: `./scripts/linux/setup.sh`, `./scripts/linux/setup.sh --with-docker`, `./scripts/linux/setup.sh --with-ghostty`
 

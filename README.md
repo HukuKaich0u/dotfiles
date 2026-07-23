@@ -13,7 +13,7 @@ end-to-end の環境構築手順はこの `README.md` を基準にする。
 - Nix 自体の install は手動で行う
 - Linux は `./scripts/linux/setup.sh` の後に `home-manager switch`、`mise install`、`./scripts/common/install-claude-code.sh`、`npm i -g @openai/codex` まで進める
 - Ubuntu Desktop で `ghostty` も必要なら `./scripts/linux/setup.sh --with-ghostty` を使う
-- macOS は `./scripts/mac/setup.sh` を入口にし、必要なら `nix-darwin` の初回 fallback を挟む。`apm` の未導入時はこの setup が公式 installer で入れる
+- macOS は `./scripts/mac/setup.sh` を入口にし、必要なら `nix-darwin` の初回 fallback を挟む。`apm` の未導入時は macOS / Linux とも setup が公式 installer で入れる
 - `ghostty` の install は Linux では `scripts/linux/install-ghostty.sh` が担当する
 - macOS では `cmux` を `nix/modules/darwin/homebrew.nix` の Homebrew cask で管理する
 - `mo` は当面 macOS の Homebrew brew だけで管理し、Linux にはまだ導入しない
@@ -78,7 +78,7 @@ Docker と Ghostty の両方が必要:
 ./scripts/linux/setup.sh --with-docker --with-ghostty
 ```
 
-この段階では OS package install、必要なら `ghostty` install、`rustup` install、dotfiles link までを行う。`ghostty` の config 自体は次の `home-manager switch` で反映する。
+この段階では OS package install、必要なら `ghostty` install、`rustup` install、`apm` install、dotfiles link までを行う。`ghostty` の config 自体は次の `home-manager switch` で反映する。
 
 ### 4. Apply Home Manager
 
