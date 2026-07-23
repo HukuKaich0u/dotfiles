@@ -29,7 +29,7 @@ Herdr runs outside tmux and uses `Ctrl-g` as the same prefix.
 | `prefix+x` | Close pane |
 | `prefix+s` | Resize |
 | `prefix+r` | Reload |
-| `prefix+d` | Detach |
+| `prefix+q` | Detach (tmux の `prefix+d` から移動。`d` は lazydocker popup に割り当て) |
 | `prefix+;` | Last pane |
 | `prefix+o` | Workspace picker / tmux-sessionx |
 | `prefix+p/n` | Previous/next workspace/session |
@@ -42,7 +42,7 @@ Herdr runs outside tmux and uses `Ctrl-g` as the same prefix.
 | `prefix+Shift+w` | New workspace |
 | `prefix+Shift+g` | New worktree |
 | `prefix+Shift+d` | Close workspace |
-| `prefix+g` | Herdr navigator |
+| `prefix+w` | Herdr navigator (`g` は lazygit popup に割り当て) |
 | `prefix+b` | Sidebar |
 | `prefix+Shift+s` | Settings |
 | `prefix+Shift+o` | Notification target |
@@ -57,13 +57,14 @@ A popup closes only when its command exits; Herdr does not intercept any key (no
 
 | Key | Popup |
 | --- | --- |
-| `prefix+u` | `lazygit` (quit with `q`) |
-| `prefix+y` | `lazydocker` (quit with `q`) |
-| `prefix+e` | `yazi` (file explorer, quit with `q`) |
+| `prefix+g` | `lazygit` (quit with `q`) |
+| `prefix+d` | `lazydocker` (quit with `q`) |
+| `prefix+y` | `yazi` (file explorer, quit with `q`) |
 | `prefix+t` | Scratch terminal (`$SHELL`, quit with `exit` / `Ctrl-D`) |
 
 ## Intentionally unassigned
 
+- `prefix+u` / `prefix+e` are free (previously lazygit / yazi before the mnemonic reshuffle).
 - H/K pane split bindings are unused because this setup only creates panes to the right or downward.
 - < > tab reordering is unassigned because Herdr has no corresponding tab-reordering operation.
 - All Shift+h/j/k/l pane swaps are disabled: Shift+j/l create splits, Shift+h opens Hunk, and Shift+k is left unassigned to keep the entire pane-swap group consistently disabled.
