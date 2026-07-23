@@ -507,6 +507,7 @@ Linux 用 Home Manager wrapper です。
 Linux だけに必要な package や import を置きます。
 
 Linux 固有差分を `modules/home/` の条件分岐で増やしすぎないこと。
+`herdr` の install ownership は macOS では `modules/darwin/homebrew.nix` の brew、Linux ではここ (nixpkgs の `herdr`) が持つ。config は両OS共通で `modules/home/programs/herdr.nix` が配布する。
 `mo` はまだ Linux には入れない。必要になったら `k1LoW/mo` 用 package を overlay に追加し、nixpkgs の別物 `mo` と衝突しない attr 名でここへ入れる。
 
 ## Common Tasks
