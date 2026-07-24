@@ -22,6 +22,6 @@ in {
     chmod 644 "$HOME/.codex/config.toml"
   '';
 
-  # NOTE: AGENTS.md / 指示ファイルは APM の instructions/core (~/.apm/apm.yml)
+  # NOTE: AGENTS.md / 指示ファイルは APM の instructions (~/.apm/apm.yml)
   # から配布する。Nix はここでは config.toml の生成だけ担当する。
 }

@@ -293,8 +293,10 @@ test_claude_docs() {
 test_apm_manages_skills() {
   assert_file_exists "$apm_yml" \
     "apm.yml must exist as the SoT for agent skills distribution"
-  assert_contains "$apm_yml" 'HukuKaich0u/agent-kit/instructions/core' \
+  assert_contains "$apm_yml" 'HukuKaich0u/agent-kit/instructions' \
     "apm.yml must distribute the shared instruction files"
+  assert_not_contains "$apm_yml" 'HukuKaich0u/agent-kit/instructions/core' \
+    "apm.yml must not reference the removed core package path"
   assert_contains "$apm_yml" 'HukuKaich0u/agent-kit/skills/tooling/drawio' \
     "apm.yml must distribute the drawio skill previously vendored in-repo"
 }

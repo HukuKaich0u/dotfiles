@@ -41,6 +41,6 @@ in {
     chmod 644 "$settings_target"
   '';
 
-  # NOTE: CLAUDE.md / 指示ファイルは APM の instructions/core (~/.apm/apm.yml)
+  # NOTE: CLAUDE.md / 指示ファイルは APM の instructions (~/.apm/apm.yml)
   # から配布する。Nix はここでは settings.json のマージだけ担当する。
 }

@@ -7,7 +7,7 @@ targets:
 - codex
 dependencies:
   apm:
-  - HukuKaich0u/agent-kit/instructions/core
+  - HukuKaich0u/agent-kit/instructions
   - HukuKaich0u/agent-kit/skills/tooling/apm-usage
   - HukuKaich0u/agent-kit/skills/meta/skill-selector
   - HukuKaich0u/agent-kit/skills/meta/retrospective-codify
