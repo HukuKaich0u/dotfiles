@@ -15,6 +15,14 @@ dependencies:
   - HukuKaich0u/agent-kit/skills/meta/optimizing-descriptions
   - HukuKaich0u/agent-kit/skills/meta/empirical-prompt-tuning
   - HukuKaich0u/agent-kit/skills/meta/waxa-eval
+  - HukuKaich0u/agent-kit/skills/meta/writing-great-skills
   - HukuKaich0u/agent-kit/skills/lang/rust
+  - HukuKaich0u/agent-kit/skills/lang/typescript
+  - HukuKaich0u/agent-kit/skills/lang/go
+  - HukuKaich0u/agent-kit/skills/lang/python
   - HukuKaich0u/agent-kit/skills/tooling/drawio
+  - HukuKaich0u/agent-kit/skills/tooling/diagnosing-bugs
+  - HukuKaich0u/agent-kit/skills/tooling/resolving-merge-conflicts
+  - HukuKaich0u/agent-kit/skills/tooling/justfile
+  - HukuKaich0u/agent-kit/skills/testing/tdd
   - HukuKaich0u/agent-kit/skills/meta/skill-finder
