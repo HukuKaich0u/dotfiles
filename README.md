@@ -157,6 +157,25 @@ sudo nix --extra-experimental-features 'nix-command flakes' run nix-darwin -- sw
 gcloud init
 ```
 
+## Global APM
+
+`~/.apm/apm.yml`の依存定義を反映する:
+
+```sh
+just apm-install
+```
+
+登録済みの依存を最新refへ更新する:
+
+```sh
+just apm-update
+```
+
+どちらも処理後に`apm compile -g`を実行する。
+APM 0.26.0が非activeなCopilot CoworkのOneDrive配置先を解決して失敗するため、
+recipe内だけ`APM_COPILOT_COWORK_SKILLS_DIR`を
+`~/.local/share/copilot-cowork/skills`へ固定している。
+
 ## Tests
 
 ```sh
