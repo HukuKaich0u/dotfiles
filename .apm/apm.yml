@@ -9,7 +9,6 @@ dependencies:
   apm:
     - HukuKaich0u/agent-kit/instructions
     - HukuKaich0u/agent-kit/skills/tooling/apm-usage
-    - HukuKaich0u/agent-kit/skills/meta/skill-selector
     - HukuKaich0u/agent-kit/skills/meta/writing-great-skills
     - HukuKaich0u/agent-kit/skills/lang/rust
     - HukuKaich0u/agent-kit/skills/lang/typescript
@@ -19,3 +18,5 @@ dependencies:
     - HukuKaich0u/agent-kit/skills/tooling/diagnosing-bugs
     - HukuKaich0u/agent-kit/skills/tooling/resolving-merge-conflicts
     - HukuKaich0u/agent-kit/skills/meta/skill-finder
+    - hukukaich0u/agent-kit/skills/meta/ask-koki
+    - hukukaich0u/agent-kit/skills/meta/ask-matt
