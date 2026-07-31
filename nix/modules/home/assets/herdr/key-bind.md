@@ -1,3 +1,10 @@
+---
+created: 2026-07-16
+updated: 2026-07-31
+author: Koki Aoyagi
+type: reference
+---
+
 # Herdr key bindings
 
 Herdr runs outside tmux and uses `Ctrl-g` as the same prefix.
@@ -48,6 +55,9 @@ Herdr runs outside tmux and uses `Ctrl-g` as the same prefix.
 | `prefix+Shift+o` | Notification target |
 | `prefix+?` | Help |
 | `prefix+Shift+h` | Open `hunk diff --watch` in the focused pane's current working directory |
+| `prefix+a` | Next agent (agent panel order, `a` = agent) |
+| `prefix+Shift+a` | Previous agent |
+| `prefix+Alt+1..9` | Focus agent by index (tab の `prefix+1..9` に対応) |
 
 ## Popups
 

@@ -43,6 +43,9 @@ close_pane = "prefix+x"
 zoom = "prefix+z"
 resize_mode = "prefix+s"
 toggle_sidebar = "prefix+b"
+next_agent = "prefix+a"
+previous_agent = "prefix+shift+a"
+focus_agent = "prefix+alt+1..9"
 
 [[keys.command]]
 key = "prefix+shift+h"
