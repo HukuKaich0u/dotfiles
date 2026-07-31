@@ -331,11 +331,6 @@
     "when": "editorTextFocus && vim.active && !inDebugRepl"
   },
   {
-    "key": "alt+cmd+s",
-    "command": "workbench.action.toggleUnifiedSidebarFromKeyboard",
-    "when": "!isAuxiliaryWindowFocusedContext"
-  },
-  {
     "key": "q",
     "command": "workbench.action.focusActiveEditorGroup",
     "when": "sideBarFocus && !inputFocus"
