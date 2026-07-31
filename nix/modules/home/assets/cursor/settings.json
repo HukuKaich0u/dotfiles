@@ -143,5 +143,6 @@
   "easy-codesnap.highlightLineNumber": true,
   "easy-codesnap.uiCustomColors": {
     "watermarkPositionInputSelectedBackgroud": "var(--vscode-focusBorder)"
-  }
+  },
+  "git.openRepositoryInParentFolders": "always"
 }
