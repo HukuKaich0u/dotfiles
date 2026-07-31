@@ -135,5 +135,13 @@
         "preLaunchTask": "C: Build active file (choose compiler)"
       }
     ]
+  },
+  "easy-codesnap.backgroundColor": "#d8d7d7",
+  "easy-codesnap.showWindowControls": false,
+  "easy-codesnap.showWindowTitle": true,
+  "easy-codesnap.enableSymbolBreadcrumb": false,
+  "easy-codesnap.highlightLineNumber": true,
+  "easy-codesnap.uiCustomColors": {
+    "watermarkPositionInputSelectedBackgroud": "var(--vscode-focusBorder)"
   }
 }
