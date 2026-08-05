@@ -6,6 +6,7 @@
     ast-grep
     bat
     clang-tools
+    dotenvx
     ffmpeg
     fzf
     git
