@@ -1,6 +1,6 @@
 ---
 created: 2026-07-16
-updated: 2026-07-31
+updated: 2026-08-06
 author: Koki Aoyagi
 type: reference
 ---
@@ -24,7 +24,6 @@ Herdr runs outside tmux and uses `Ctrl-g` as the same prefix.
 | --- | --- |
 | `Ctrl-g` | Prefix |
 | `prefix+c` | New tab / new window |
-| `prefix+Shift+p/n` | Previous/next tab/window |
 | `prefix+1..9` | Numbered tab/window |
 | `prefix+comma` | Rename tab/window |
 | `prefix+ampersand` | Close tab/window |
@@ -39,7 +38,8 @@ Herdr runs outside tmux and uses `Ctrl-g` as the same prefix.
 | `prefix+q` | Detach (tmux の `prefix+d` から移動。`d` は lazydocker popup に割り当て) |
 | `prefix+;` | Last pane |
 | `prefix+o` | Workspace picker / tmux-sessionx |
-| `prefix+p/n` | Previous/next workspace/session |
+| `prefix+Shift+p/n` | Previous/next workspace/session |
+| `prefix+Shift+1..9` | Numbered workspace/session |
 | `prefix+Shift+r` | Rename workspace/session |
 
 ## Herdr-only operations
@@ -55,8 +55,7 @@ Herdr runs outside tmux and uses `Ctrl-g` as the same prefix.
 | `prefix+Shift+o` | Notification target |
 | `prefix+?` | Help |
 | `prefix+Shift+h` | Open `hunk diff --watch` in the focused pane's current working directory |
-| `prefix+a` | Next agent (agent panel order, `a` = agent) |
-| `prefix+Shift+a` | Previous agent |
+| `prefix+p/n` | Previous/next agent (agent panel order) |
 | `prefix+Alt+1..9` | Focus agent by index (tab の `prefix+1..9` に対応) |
 
 ## Popups
@@ -74,7 +73,9 @@ A popup closes only when its command exits; Herdr does not intercept any key (no
 
 ## Intentionally unassigned
 
-- `prefix+u` / `prefix+e` are free (previously lazygit / yazi before the mnemonic reshuffle).
+- `prefix+a` / `prefix+Shift+a` are free (previously agent navigation).
+- `prefix+u` / `prefix+i` / `prefix+e` are free.
+- Previous/next tab cycling is unassigned because this setup does not use multiple tabs; numbered tab switching remains available as an escape hatch.
 - H/K pane split bindings are unused because this setup only creates panes to the right or downward.
 - < > tab reordering is unassigned because Herdr has no corresponding tab-reordering operation.
 - All Shift+h/j/k/l pane swaps are disabled: Shift+j/l create splits, Shift+h opens Hunk, and Shift+k is left unassigned to keep the entire pane-swap group consistently disabled.
