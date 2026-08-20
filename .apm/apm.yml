@@ -9,10 +9,6 @@ dependencies:
   apm:
     - HukuKaich0u/agent-kit/instructions
     - HukuKaich0u/agent-kit/skills/tooling/apm-usage
-    - HukuKaich0u/agent-kit/skills/lang/rust
-    - HukuKaich0u/agent-kit/skills/lang/typescript
-    - HukuKaich0u/agent-kit/skills/lang/go
-    - HukuKaich0u/agent-kit/skills/lang/python
     - HukuKaich0u/agent-kit/skills/tooling/diagnosing-bugs
     - HukuKaich0u/agent-kit/skills/tooling/resolving-merge-conflicts
     - HukuKaich0u/agent-kit/skills/meta/skill-finder
