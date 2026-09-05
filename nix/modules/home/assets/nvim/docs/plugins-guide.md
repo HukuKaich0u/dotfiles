@@ -1,3 +1,10 @@
+---
+created: 2026-09-05
+updated: 2026-09-05
+author: Koki Aoyagi
+type: reference
+---
+
 # Neovim プラグイン解説
 
 ## 概要
@@ -76,7 +83,7 @@ Telescope風のファジーファインダー。
 |------|------|
 | `<leader>lg` | lazygit を開く |
 | `<leader>gl` | lazygit ログ |
-| `<leader>rn` | ファイル名をリネーム |
+| `<leader>cR` | ファイル名をリネーム |
 | `<leader>db` | バッファを削除 |
 
 ---
@@ -198,19 +205,21 @@ func(a, b, c)
 | 言語 | フォーマッター |
 |------|---------------|
 | Lua | stylua |
-| JS/TS/JSX/TSX | biome-check (format + lint fix) |
-| JSON | biome |
+| JS/TS/JSX/TSX | プロジェクト設定に応じて biome / prettier（整形のみ） |
+| JSON | プロジェクト設定に応じて biome / prettier |
 | HTML/CSS/SCSS | prettier |
 | YAML/Markdown | prettier |
 | Nix | alejandra |
-| Shell (sh/bash/zsh) | shfmt |
+| Shell (sh/bash) | shfmt |
 | Rust | LSP (rust_analyzer → rustfmt) |
-| Python | LSP (ruff) |
+| Python | ruff format |
 | Java | jdtls (LSP) |
-| Go | LSP (gopls → gofumpt) |
+| Go | goimports → gofumpt |
 | C/C++ | clang-format |
 
-**動作**: conform.nvim に設定されている言語はそのフォーマッターを使用、それ以外はLSPにフォールバック。Web系と `nix` / shell は保存時にも自動フォーマット。
+**動作**: Rust / TS / Go / Java / Python / C / C++ は保存時に整形する。LSP 整形は Rust / Java のみ。`:FormatToggle` でバッファ単位、`:FormatToggle!` で全体を切り替えられる。
+
+LSP・補完・環境構築・言語ごとの操作は [コーディング環境ガイド](coding-guide.md) を参照。
 
 ### Rust 支援
 
@@ -219,7 +228,6 @@ Rust では通常の LSP に加えて次のプラグインが有効。
 | プラグイン | 用途 |
 |-----------|------|
 | **rustaceanvim** (`mrcjkb/rustaceanvim`) | rust-analyzer を rustaceanvim 経由で駆動。`:RustLsp` 系コマンド(runnables / expand macro / hover actions 等)を追加 |
-| **rustowl** (`cordx56/rustowl`) | 所有権・ライフタイムを可視化 |
 | **bacon** (`nvim-bacon`) | `bacon` の継続チェックを Neovim から利用(下記) |
 
 `rustaceanvim` が `rust-analyzer` の設定を持つ(`rustaceanvim.lua`)。mason の install リストには rust-analyzer を入れていない。

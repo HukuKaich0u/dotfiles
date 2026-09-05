@@ -3,292 +3,82 @@ return {
     event = { "BufReadPre", "BufNewFile" },
     dependencies = {
         { "antosha417/nvim-lsp-file-operations", config = true },
-        "mfussenegger/nvim-dap",
-        "MunifTanjim/nui.nvim",
-        "Saghen/blink.cmp",
+        "saghen/blink.cmp",
     },
     config = function()
-        local capabilities = require("blink.cmp").get_lsp_capabilities()
+        vim.lsp.config("*", { capabilities = require("blink.cmp").get_lsp_capabilities() })
 
-        -- NOTE: LSP Keybinds
         vim.api.nvim_create_autocmd("LspAttach", {
-            group = vim.api.nvim_create_augroup("UserLspConfig", {}),
+            group = vim.api.nvim_create_augroup("UserLspConfig", { clear = true }),
             callback = function(ev)
                 local client = vim.lsp.get_client_by_id(ev.data.client_id)
                 if not client then
                     return
                 end
-
-                -- Buffer local mappings
-                local opts = { buffer = ev.buf, silent = true }
-
-                -- Keymaps
-                opts.desc = "Show LSP references"
-                vim.keymap.set("n", "gR", "<cmd>Telescope lsp_references<CR>", opts)
-
-                opts.desc = "Go to declaration"
-                vim.keymap.set("n", "gD", vim.lsp.buf.declaration, opts)
-
-                opts.desc = "Show LSP definitions"
-                vim.keymap.set("n", "gd", "<cmd>Telescope lsp_definitions<CR>", opts)
-
-                opts.desc = "Show LSP implementations"
-                vim.keymap.set("n", "gi", "<cmd>Telescope lsp_implementations<CR>", opts)
-
-                opts.desc = "Show LSP type definitions"
-                vim.keymap.set("n", "gt", "<cmd>Telescope lsp_type_definitions<CR>", opts)
-
-                opts.desc = "See available code actions"
-                vim.keymap.set({ "n", "v" }, "<leader>vca", function()
-                    vim.lsp.buf.code_action()
-                end, opts)
-
-                opts.desc = "Smart rename"
-                vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, opts)
-
-                opts.desc = "Show buffer diagnostics"
-                vim.keymap.set("n", "<leader>D", "<cmd>Telescope diagnostics bufnr=0<CR>", opts)
-
-                opts.desc = "Show line diagnostics"
-                vim.keymap.set("n", "<leader>d", vim.diagnostic.open_float, opts)
-
-                opts.desc = "Show documentation for what is under cursor"
-                vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
-
-                opts.desc = "Restart LSP"
-                vim.keymap.set("n", "<leader>rs", ":LspRestart<CR>", opts)
-
-                vim.keymap.set("i", "<C-h>", function()
-                    vim.lsp.buf.signature_help()
-                end, opts)
-
+                local function map(mode, lhs, rhs, desc)
+                    vim.keymap.set(mode, lhs, rhs, { buffer = ev.buf, silent = true, desc = desc })
+                end
+                map("n", "gR", "<cmd>Telescope lsp_references<CR>", "Show LSP references")
+                map("n", "gD", vim.lsp.buf.declaration, "Go to declaration")
+                map("n", "gd", "<cmd>Telescope lsp_definitions<CR>", "Show LSP definitions")
+                map("n", "gi", "<cmd>Telescope lsp_implementations<CR>", "Show LSP implementations")
+                map("n", "gt", "<cmd>Telescope lsp_type_definitions<CR>", "Show LSP type definitions")
+                map({ "n", "x" }, "<leader>vca", vim.lsp.buf.code_action, "Code actions")
+                map({ "n", "x" }, "<leader>ca", vim.lsp.buf.code_action, "Code actions")
+                map("n", "<leader>rn", vim.lsp.buf.rename, "Rename symbol")
+                map("n", "<leader>D", "<cmd>Telescope diagnostics bufnr=0<CR>", "Buffer diagnostics")
+                map("n", "<leader>cd", vim.diagnostic.open_float, "Line diagnostics")
+                map("n", "K", vim.lsp.buf.hover, "Hover documentation")
+                map("n", "<leader>cs", "<cmd>Telescope lsp_document_symbols<CR>", "Document symbols")
+                map("n", "<leader>cS", "<cmd>Telescope lsp_dynamic_workspace_symbols<CR>", "Workspace symbols")
+                map("n", "<leader>co", function()
+                    if vim.bo[ev.buf].filetype == "java" then
+                        require("jdtls").organize_imports()
+                    else
+                        vim.lsp.buf.code_action({
+                            context = { only = { "source.organizeImports" }, diagnostics = {} },
+                            apply = true,
+                        })
+                    end
+                end, "Organize imports")
+                map("n", "<leader>rs", function()
+                    if vim.bo[ev.buf].filetype == "rust" then
+                        vim.cmd.RustAnalyzer("restart")
+                    elseif vim.bo[ev.buf].filetype == "java" then
+                        vim.cmd.JdtRestart()
+                    else
+                        vim.cmd.LspRestart()
+                    end
+                end, "Restart language server")
+                -- Keep insert-mode <C-h> (backspace) and Neovim's <C-s> signature help.
+                if client:supports_method("textDocument/inlayHint") then
+                    map("n", "<leader>ch", function()
+                        local filter = { bufnr = ev.buf }
+                        vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled(filter), filter)
+                    end, "Toggle inlay hints")
+                end
             end,
         })
 
-        -- Define sign icons for each severity
-        local signs = {
-            [vim.diagnostic.severity.ERROR] = " ",
-            [vim.diagnostic.severity.WARN] = " ",
-            [vim.diagnostic.severity.HINT] = "󰠠 ",
-            [vim.diagnostic.severity.INFO] = " ",
-        }
-
-        -- Set diagnostic config
         vim.diagnostic.config({
             signs = {
-                text = signs,
+                text = {
+                    [vim.diagnostic.severity.ERROR] = " ",
+                    [vim.diagnostic.severity.WARN] = " ",
+                    [vim.diagnostic.severity.HINT] = "󰠠 ",
+                    [vim.diagnostic.severity.INFO] = " ",
+                },
             },
-            virtual_text = true,
+            severity_sort = true,
+            float = { border = "rounded", source = "if_many" },
+            virtual_text = { spacing = 2, source = "if_many" },
             underline = true,
             update_in_insert = false,
         })
 
-        -- Configure and enable LSP servers
-        -- lua_ls
-        vim.lsp.config("lua_ls", {
-            capabilities = capabilities,
-            settings = {
-                Lua = {
-                    diagnostics = {
-                        globals = { "vim" },
-                    },
-                    completion = {
-                        callSnippet = "Replace",
-                    },
-                    workspace = {
-                        library = {
-                            [vim.fn.expand("$VIMRUNTIME/lua")] = true,
-                            [vim.fn.stdpath("config") .. "/lua"] = true,
-                        },
-                    },
-                },
-            },
-        })
-
-        -- emmet_language_server
-        vim.lsp.config("emmet_language_server", {
-            capabilities = capabilities,
-            filetypes = {
-                "css",
-                "html",
-                "less",
-                "sass",
-                "scss",
-                "javascriptreact",
-                "astro",
-                "svelte",
-                "typescriptreact",
-            },
-            init_options = {
-                includeLanguages = {},
-                excludeLanguages = {},
-                extensionsPath = {},
-                preferences = {},
-                showAbbreviationSuggestions = true,
-                showExpandedAbbreviation = "always",
-                showSuggestionsAsSnippets = false,
-                syntaxProfiles = {},
-                variables = {},
-            },
-        })
-
-        -- ts_ls (TypeScript/JavaScript)
-        vim.lsp.config("ts_ls", {
-            capabilities = capabilities,
-            filetypes = {
-                "javascript",
-                "javascriptreact",
-                "typescript",
-                "typescriptreact",
-            },
-            single_file_support = true,
-            init_options = {
-                preferences = {
-                    includeCompletionsForModuleExports = true,
-                    includeCompletionsForImportStatements = true,
-                },
-            },
-        })
-
-        -- gopls
-        vim.lsp.config("gopls", {
-            capabilities = capabilities,
-            settings = {
-                gopls = {
-                    analyses = {
-                        unusedparams = true,
-                    },
-                    staticcheck = true,
-                    gofumpt = true,
-                },
-            },
-        })
-
-        -- tailwind
-        vim.lsp.config("tailwindcss", {
-            capabilities = capabilities,
-            filetypes = {
-                "html",
-                "css",
-                "javascript",
-                "typescript",
-                "javascriptreact",
-                "typescriptreact",
-                "svelte",
-                "vue",
-                "astro",
-            },
-            init_options = {
-                userLanguages = {
-                    astro = "html",
-                },
-            },
-        })
-
-        -- pyright (Python - type checking)
-        vim.lsp.config("pyright", {
-            capabilities = capabilities,
-            settings = {
-                python = {
-                    analysis = {
-                        diagnosticMode = "openFilesOnly",
-                        typeCheckingMode = "basic",
-                        autoSearchPaths = true,
-                        useLibraryCodeForTypes = true,
-                    },
-                },
-            },
-        })
-
-        -- ruff (Python - linter/formatter)
-        vim.lsp.config("ruff", {
-            capabilities = capabilities,
-        })
-
-        -- clangd (C/C++)
-        vim.lsp.config("clangd", {
-            capabilities = capabilities,
-            cmd = {
-                "clangd",
-                "--background-index",
-                "--clang-tidy",
-                "--header-insertion=iwyu",
-                "--completion-style=detailed",
-            },
-        })
-
-        vim.lsp.config("html", {
-            capabilities = capabilities,
-            filetypes = {
-                "html",
-                "templ",
-            },
-            init_options = {
-                provideFormatter = false,
-            },
-        })
-
-        vim.lsp.config("cssls", {
-            capabilities = capabilities,
-            filetypes = {
-                "css",
-                "scss",
-                "less",
-                "sass",
-            },
-        })
-
-        vim.lsp.config("astro", {
-            capabilities = capabilities,
-        })
-
-        vim.lsp.config("svelte", {
-            capabilities = capabilities,
-        })
-
-        vim.lsp.config("typos_lsp", {
-            capabilities = capabilities,
-            cmd = { "typos-lsp" },
-            init_options = {
-                config = vim.fn.stdpath("config") .. "/typos.toml",
-            },
-        })
-
-        -- zls (Zig)
-        vim.lsp.config("zls", {
-            capabilities = capabilities,
-        })
-
-        -- nil_ls (Nix)
-        vim.lsp.config("nil_ls", {
-            capabilities = capabilities,
-        })
-
-        -- bashls (shell)
-        vim.lsp.config("bashls", {
-            capabilities = capabilities,
-        })
-
-        -- Enable LSP servers
-        -- lua
-        vim.lsp.enable("lua_ls")
-        -- web
-        vim.lsp.enable("ts_ls")
-        vim.lsp.enable("html")
-        vim.lsp.enable("cssls")
-        vim.lsp.enable("tailwindcss")
-        vim.lsp.enable("astro")
-        vim.lsp.enable("svelte")
-        vim.lsp.enable("emmet_language_server")
-        vim.lsp.enable("eslint")
-        vim.lsp.enable("typos_lsp")
-        -- backend / systems
-        vim.lsp.enable("gopls")      -- Go
-        vim.lsp.enable("pyright")    -- Python (types)
-        vim.lsp.enable("ruff")       -- Python (lint/format)
-        vim.lsp.enable("clangd")     -- C/C++
-        vim.lsp.enable("zls")        -- Zig
-        vim.lsp.enable("nil_ls")     -- Nix
-        vim.lsp.enable("bashls")     -- shell
+        for name, config in pairs(require("Sethy.core.servers")) do
+            vim.lsp.config(name, config)
+            vim.lsp.enable(name)
+        end
     end,
 }

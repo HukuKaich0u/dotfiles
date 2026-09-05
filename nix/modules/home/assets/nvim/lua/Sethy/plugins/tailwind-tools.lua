@@ -3,12 +3,10 @@ return {
         "NvChad/nvim-colorizer.lua",
         dependencies = {
             "nvim-treesitter/nvim-treesitter",
-            "roobert/tailwindcss-colorizer-cmp.nvim"
         },
         opts = {},
         config = function()
             local nvchadcolorizer = require("colorizer")
-            local tailwindcolorizer = require("tailwindcss-colorizer-cmp")
 
             nvchadcolorizer.setup({
                 user_default_options = {
@@ -25,14 +23,6 @@ return {
                     "svelte",
                     "astro",
                 },
-            })
-            tailwindcolorizer.setup({
-                color_square_width = 2,
-            })
-            vim.api.nvim_create_autocmd({ "BufReadPost", "BufNewFile" }, {
-                callback = function()
-                    vim.cmd("ColorizerAttachToBuffer")
-                end,
             })
         end
     }

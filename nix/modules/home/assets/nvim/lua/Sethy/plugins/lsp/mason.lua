@@ -1,75 +1,49 @@
 return {
-    "williamboman/mason.nvim",
+    "mason-org/mason.nvim",
     lazy = false,
     dependencies = {
-        "williamboman/mason-lspconfig.nvim",
+        "mason-org/mason-lspconfig.nvim",
         "WhoIsSethDaniel/mason-tool-installer.nvim",
         "neovim/nvim-lspconfig",
     },
     config = function()
-        -- import mason and mason_lspconfig
-        local mason = require("mason")
-        local mason_lspconfig = require("mason-lspconfig")
-        local mason_tool_installer = require("mason-tool-installer")
+        -- Nix provides these on both platforms; don't shadow them with Mason copies.
+        local native_servers = { lua_ls = "lua-language-server", clangd = "clangd" }
+        local servers = { "jdtls" }
+        for name in pairs(require("Sethy.core.servers")) do
+            if not native_servers[name] or vim.fn.executable(native_servers[name]) == 0 then
+                table.insert(servers, name)
+            end
+        end
+        table.sort(servers)
 
-        -- NOTE: Moved these local imports below back to lspconfig.lua due to mason depracated handlers
-
-        -- enable mason and configure icons
-        mason.setup({
-            ui = {
-                icons = {
-                    package_installed = "✓",
-                    package_pending = "➜",
-                    package_uninstalled = "✗",
-                },
-            },
+        require("mason").setup({
+            -- Preserve project toolchains (mise, rustup, Nix); Mason supplies fallbacks.
+            PATH = "append",
+            ui = { icons = { package_installed = "✓", package_pending = "➜", package_uninstalled = "✗" } },
         })
-
-        mason_lspconfig.setup({
+        require("mason-lspconfig").setup({
             automatic_enable = false,
-            -- servers for mason to install
-            ensure_installed = {
-                -- lua
-                "lua_ls",
-                -- web
-                "ts_ls",
-                "html",
-                "cssls",
-                "tailwindcss",
-                "astro",
-                "svelte",
-                "emmet_language_server",
-                "eslint",
-                "typos_lsp",
-                -- backend / systems
-                "gopls",        -- Go
-                "pyright",      -- Python (type checking)
-                "ruff",         -- Python (linter/formatter)
-                "jdtls",        -- Java
-                "clangd",       -- C/C++
-                "zls",          -- Zig
-                "nil_ls",       -- Nix
-                "bashls",       -- shell
-            },
+            ensure_installed = servers,
         })
-
-        mason_tool_installer.setup({
+        require("mason-tool-installer").setup({
             ensure_installed = {
-                -- formatters
-                "biome",      -- js/ts/json (fast, rust-based)
-                "prettier",   -- html/css/yaml/markdown
-                "stylua",     -- lua
-                "gofumpt",    -- go
-                "clang-format", -- C/C++
-                "alejandra",  -- Nix
-                "shfmt",      -- shell
-                "shellcheck",  -- shell diagnostics
-                -- note: ruff replaces black/isort/pylint for python
-                -- note: rustfmt usually comes with rust toolchain
+                "prettier",
+                "stylua",
+                "goimports",
+                "gofumpt",
+                {
+                    "clang-format",
+                    condition = function()
+                        return vim.fn.executable("clang-format") == 0
+                    end,
+                },
+                "alejandra",
+                "shfmt",
+                "shellcheck",
+                -- Biome and Ruff are installed with their LSPs above.
+                -- rust-analyzer, rustfmt and clippy belong to the rustup toolchain.
             },
-
-            -- NOTE: mason BREAKING Change! Removed setup_handlers
-            -- moved lsp configuration settings back into lspconfig.lua file
         })
     end,
 }

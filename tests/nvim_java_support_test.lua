@@ -1,72 +1,70 @@
 local repo_root = vim.fn.fnamemodify(debug.getinfo(1, "S").source:sub(2), ":p:h:h")
+local config_root = repo_root .. "/nix/modules/home/assets/nvim"
+vim.opt.runtimepath:prepend(config_root)
+local java = require("Sethy.core.java")
+local tmp = vim.fn.tempname()
+vim.fn.mkdir(tmp, "p")
+tmp = vim.uv.fs_realpath(tmp)
 
-local function read(path)
-  local file = assert(io.open(repo_root .. "/" .. path, "r"))
-  local content = file:read("*a")
-  file:close()
-  return content
+local function file(path, content)
+  vim.fn.mkdir(vim.fs.dirname(tmp .. "/" .. path), "p")
+  vim.fn.writefile({ content or "" }, tmp .. "/" .. path)
+  return tmp .. "/" .. path
 end
-
-local function assert_match(content, pattern, message)
-  if not content:match(pattern) then
-    error(message .. "\nmissing pattern: " .. pattern)
-  end
+local function buffer(path)
+  local bufnr = vim.api.nvim_create_buf(true, false)
+  vim.api.nvim_buf_set_name(bufnr, path)
+  return bufnr
 end
+local ok, err = pcall(function()
+  file("gradle/settings.gradle.kts")
+  file("gradle/module/build.gradle.kts")
+  local child = buffer(file("gradle/module/src/Example.java"))
+  assert(java.root(child) == tmp .. "/gradle", "Gradle modules must share the workspace root")
 
-local mason = read("nix/modules/home/assets/nvim/lua/Sethy/plugins/lsp/mason.lua")
-assert_match(mason, '"jdtls"', "mason should install jdtls for Java")
+  file("maven/mvnw")
+  file("maven/pom.xml")
+  file("maven/module/pom.xml")
+  local module = buffer(file("maven/module/src/Main.java"))
+  assert(java.root(module) == tmp .. "/maven", "Maven modules must share the wrapper root")
 
-local java_ftplugin = read("nix/modules/home/assets/nvim/after/ftplugin/java.lua")
-assert_match(java_ftplugin, "vim%.lsp%.start", "java ftplugin should start jdtls with the built-in LSP client")
-assert_match(java_ftplugin, "capabilities = require%(\"blink%.cmp\"%)%.get_lsp_capabilities%(%)",
-  "jdtls should use shared completion capabilities")
-assert_match(java_ftplugin, "%-%-jvm%-arg=%-Xmx2g", "jdtls should cap heap usage")
-assert_match(java_ftplugin, "jdtls%-workspaces", "jdtls should isolate workspace data under Neovim state")
-assert_match(java_ftplugin, "gsub", "jdtls workspace names should avoid same-project-name collisions")
-assert_match(java_ftplugin, "root_dir", "jdtls should detect project roots")
-assert_match(java_ftplugin, "reuse_client", "jdtls should reuse the project client across Java buffers")
+  local single = buffer(file("standalone/Hello.java"))
+  assert(java.root(single) == tmp .. "/standalone", "Standalone Java files need a directory root")
+  assert(
+    java.workspace(tmp .. "/one/app") ~= java.workspace(tmp .. "/two/app"),
+    "Same project names must not share indexes"
+  )
+  assert(
+    java.workspace(tmp .. "/a_b/c") ~= java.workspace(tmp .. "/a/b_c"),
+    "Path separators must not cause index collisions"
+  )
+  assert(java.workspace(tmp .. "/gradle") == java.workspace(tmp .. "/gradle/."), "Equivalent paths must share indexes")
 
-local conform = read("nix/modules/home/assets/nvim/lua/Sethy/plugins/conform.lua")
-assert_match(conform, "java = true", "Java should format on save through jdtls")
-
-local docs = read("nix/modules/home/assets/nvim/docs/plugins-guide.md")
-assert_match(docs, "| Java | jdtls %(LSP%) |", "plugin guide should document Java formatting")
-
-do
-  local original_lsp_start = vim.lsp.start
-  local original_blink = package.preload["blink.cmp"]
-  local started_config
-
-  package.preload["blink.cmp"] = function()
-    return {
-      get_lsp_capabilities = function()
-        return { textDocument = { completion = {} } }
-      end,
-    }
+  local started
+  package.loaded["blink.cmp"] = {
+    get_lsp_capabilities = function()
+      return { completion = true }
+    end,
+  }
+  package.loaded["jdtls"] = {
+    start_or_attach = function(config)
+      started = config
+    end,
+  }
+  local executable = vim.fn.executable
+  vim.fn.executable = function(cmd)
+    return cmd == "jdtls" and 1 or executable(cmd)
   end
+  vim.api.nvim_set_current_buf(child)
+  dofile(config_root .. "/after/ftplugin/java.lua")
+  vim.fn.executable = executable
+  assert(started and started.root_dir == tmp .. "/gradle", "ftplugin must pass the workspace root to jdtls")
+  assert(started.cmd[#started.cmd] == java.workspace(started.root_dir), "jdtls must persist its per-project index")
+  assert(started.capabilities.completion, "Java completion capabilities must reach the client")
+end)
 
-  vim.lsp.start = function(config)
-    started_config = config
-    return 1
-  end
-
-  vim.opt.updatecount = 0
-  vim.cmd("enew")
-  vim.api.nvim_buf_set_name(0, repo_root .. "/Example.java")
-  local ok, err = pcall(assert(loadfile(repo_root .. "/nix/modules/home/assets/nvim/after/ftplugin/java.lua")))
-
-  vim.lsp.start = original_lsp_start
-  package.preload["blink.cmp"] = original_blink
-
-  if not ok then
-    error(err)
-  end
-  if not started_config then
-    error("java ftplugin should start jdtls when a project root is available")
-  end
-  if started_config.name ~= "jdtls" then
-    error("java ftplugin should start the jdtls client")
-  end
+vim.fn.delete(tmp, "rf")
+if not ok then
+  error(err)
 end
-
 print("nvim java support tests passed")

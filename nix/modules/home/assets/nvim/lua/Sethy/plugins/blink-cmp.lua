@@ -1,5 +1,5 @@
 return {
-    "Saghen/blink.cmp",
+    "saghen/blink.cmp",
     version = "1.*",
     dependencies = {
         {
@@ -51,6 +51,7 @@ return {
         snippets = {
             preset = "luasnip",
         },
+        signature = { enabled = true, window = { border = "rounded" } },
         completion = {
             list = {
                 selection = {
@@ -132,4 +133,8 @@ return {
             implementation = "prefer_rust_with_warning",
         },
     },
+    config = function(_, opts)
+        require("luasnip.loaders.from_vscode").lazy_load()
+        require("blink.cmp").setup(opts)
+    end,
 }

@@ -197,7 +197,7 @@ return {
 				desc = "lazygit logs",
 			},
 			{
-				"<leader>rn",
+				"<leader>cR",
 				function()
 					require("snacks").rename.rename_file()
 				end,

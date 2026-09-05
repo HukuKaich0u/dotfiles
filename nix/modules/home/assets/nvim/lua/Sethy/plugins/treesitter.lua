@@ -1,6 +1,7 @@
 return {
 	{
 		"nvim-treesitter/nvim-treesitter",
+		branch = "main",
 		lazy = false,
 		build = ":TSUpdate",
 		config = function()
@@ -18,15 +19,16 @@ return {
 				"tsx",
 				"html",
 				"css",
-				"astro",
-				"svelte",
 
 				-- backend / systems
 				"python",
 				"go",
+				"gomod",
+				"gowork",
+				"gosum",
 				"java",
+				"javadoc",
 				"rust",
-				"zig",
 				"c",
 				"cpp",
 				-- infra
@@ -55,15 +57,33 @@ return {
 				"tmux",
 			}
 
-			-- Enable treesitter features for all filetypes
+			local function highlight(bufnr)
+				if vim.api.nvim_buf_is_loaded(bufnr) and vim.bo[bufnr].buftype == ""
+					and vim.api.nvim_buf_line_count(bufnr) <= 20000 then
+					pcall(vim.treesitter.start, bufnr)
+				end
+			end
+
 			vim.api.nvim_create_autocmd("FileType", {
 				group = vim.api.nvim_create_augroup("treesitter_enable", { clear = true }),
 				pattern = "*",
 				callback = function(event)
-					-- Enable highlighting
-					pcall(vim.treesitter.start, event.buf)
+					highlight(event.buf)
 				end,
 			})
+			-- install() is asynchronous and skips installed parsers. Re-attach open
+			-- buffers when the first installation completes, without blocking startup.
+			require("nvim-treesitter").install(parsers):await(function(err)
+				vim.schedule(function()
+					if err then
+						vim.notify("Treesitter installation failed: " .. tostring(err), vim.log.levels.WARN)
+						return
+					end
+					for _, bufnr in ipairs(vim.api.nvim_list_bufs()) do
+						highlight(bufnr)
+					end
+				end)
+			end)
 		end,
 	},
 	-- NOTE: js, ts, jsx, tsx Auto Close Tags
