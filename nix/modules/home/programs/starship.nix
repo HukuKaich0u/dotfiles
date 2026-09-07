@@ -5,150 +5,70 @@
     enableZshIntegration = false;
     settings = {
       add_newline = false;
-
-      format = builtins.concatStringsSep "" [
-        "$hostname"
-        "$directory  "
-        "$git_branch"
-        "$git_status"
-        # "\${custom.docker_context}"
-        "$kubernetes"
-        "$terraform"
-        "$direnv"
-        "$fill"
-        "$cmd_duration"
-        "$time"
-        "\n$character"
-      ];
-
-      python = {
-        format = "[](fg:#f2f7ff)[ $virtualenv ]($style)[](fg:#f2f7ff)";
-        style = "bold fg:#1a1b26 bg:#f2f7ff";
-      };
-
-      fill.symbol = "─";
+      # 全幅の fill と複数行を避け、リサイズ時の折り返し・再描画を安定させる。
+      format = "$hostname$directory$git_branch$git_status$git_state$cmd_duration$jobs$character";
+      right_format = "";
 
       hostname = {
         ssh_only = true;
-        format = "[](fg:#d7e6ff)[ $hostname ]($style)[](fg:#d7e6ff)";
-        style = "bold fg:#1a1b26 bg:#d7e6ff";
+        format = "[$hostname]($style) ";
+        style = "bold #bb9af7";
       };
 
       directory = {
-        truncation_length = 6;
-        truncation_symbol = " ";
-        truncate_to_repo = false;
-        home_symbol = "~";
-        read_only = " 󰌾 ";
-        format = "[](fg:#9fc5ff)[ $path ]($style)[$read_only]($read_only_style)[](fg:#9fc5ff)";
-        style = "bold fg:#1a1b26 bg:#9fc5ff";
-        read_only_style = "bold fg:#1a1b26 bg:#9fc5ff";
-      };
-
-      direnv = {
-        disabled = false;
-        format = "[](fg:#d2ddff)[ $symbol$allowed ]($style)[](fg:#d2ddff)";
-        style = "bold fg:#1a1b26 bg:#d2ddff";
+        truncation_length = 2;
+        truncate_to_repo = true;
+        truncation_symbol = "…/";
+        read_only = " ro";
+        format = "[$path]($style)[$read_only]($read_only_style) ";
+        style = "bold #7aa2f7";
+        read_only_style = "#e0af68";
       };
 
       git_branch = {
-        symbol = "";
-        style = "bold fg:#eef4ff bg:#4f7ae8";
-        format = "[](fg:#4f7ae8)[ $symbol $branch ]($style)[](fg:#4f7ae8)";
-      };
-
-      # custom.docker_context = {
-      #   shell = [ "sh" ];
-      #   when = ''
-      #     command -v docker >/dev/null 2>&1 || exit 1
-      #
-      #     if [ -f /.dockerenv ] || [ -f /run/.containerenv ]; then
-      #       exit 0
-      #     fi
-      #
-      #     repo_root="$(git rev-parse --show-toplevel 2>/dev/null)" || exit 1
-      #
-      #     find "$repo_root" \
-      #       \( -name .git -o -name node_modules -o -name .direnv -o -name .devenv \) -prune -o \
-      #       \( -type f \( -name Dockerfile -o -name Containerfile -o -name docker-compose.yml -o -name docker-compose.yaml -o -name compose.yml -o -name compose.yaml -o -name devcontainer.json \) -o -type d \( -name .devcontainer -o -name docker \) \) \
-      #       -print -quit | grep -q .
-      #   '';
-      #   command = ''
-      #     if [ -n "$DOCKER_CONTEXT" ]; then
-      #       printf '%s' "$DOCKER_CONTEXT"
-      #       exit 0
-      #     fi
-      #
-      #     ctx="$(awk -F'"' '/currentContext/ {print $4; exit}' "$HOME/.docker/config.json" 2>/dev/null)"
-      #     [ -n "$ctx" ] || ctx=default
-      #     printf '%s' "$ctx"
-      #   '';
-      #   style = "bold fg:#f5f6ff bg:#1f52e4";
-      #   format = "[](fg:#1f52e4)[  $output ]($style)[](fg:#1f52e4)";
-      # };
-
-      kubernetes = {
-        disabled = false;
-        symbol = "☸";
-        detect_files = [
-          "k8s.yaml"
-          "k8s.yml"
-          "kustomization.yaml"
-          "kustomization.yml"
-          "Chart.yaml"
-          "helmfile.yaml"
-          "helmfile.yml"
-        ];
-        detect_folders = [
-          "k8s"
-          "kubernetes"
-          "helm"
-          "charts"
-        ];
-        style = "bold fg:#f8f1ff bg:#3029dc";
-        format = "[](fg:#3029dc)[ $symbol $context( \\($namespace\\)) ]($style)[](fg:#3029dc)";
-      };
-
-      terraform = {
-        symbol = "󱁢";
-        detect_extensions = ["tf" "tfplan" "tfstate"];
-        detect_files = [".terraform.lock.hcl"];
-        detect_folders = [".terraform"];
-        style = "bold fg:#fdeeff bg:#4f18d8";
-        format = "[](fg:#4f18d8)[ $symbol $workspace ]($style)[](fg:#4f18d8)";
+        truncation_length = 20;
+        truncation_symbol = "…";
+        format = "[$branch]($style) ";
+        style = "#9aa5ce";
       };
 
       git_status = {
+        format = "([$all_status$ahead_behind]($style) )";
+        style = "#e0af68";
         conflicted = "=";
-        ahead = "⇡";
-        behind = "⇣";
-        diverged = "⇕";
-        up_to_date = "";
+        ahead = "↑";
+        behind = "↓";
+        diverged = "↕";
         untracked = "?";
         stashed = "\\$";
         modified = "!";
         staged = "+";
         renamed = "»";
-        deleted = "✘";
-        typechanged = "";
-        style = "bold fg:#eef4ff bg:#3b63d1";
-        format = "[](fg:#3b63d1)[ $all_status$ahead_behind ]($style)[](fg:#3b63d1)";
+        deleted = "×";
+      };
+
+      git_state = {
+        format = "[$state( $progress_current/$progress_total)]($style) ";
+        style = "bold #f7768e";
       };
 
       cmd_duration = {
-        min_time = 1;
-        style = "bold fg:#eef5ff bg:#2f6feb";
-        format = "[](fg:#2f6feb)[ $duration ]($style)[](fg:#2f6feb)";
+        min_time = 2000;
+        format = "[$duration]($style) ";
+        style = "#737aa2";
       };
 
-      time = {
-        disabled = false;
-        time_format = "%R";
-        style = "bold fg:#edf4ff bg:#2a4177";
-        format = "[](fg:#2a4177)[  $time ]($style)[](fg:#2a4177)";
+      jobs = {
+        format = "[$symbol$number]($style) ";
+        symbol = "&";
+        style = "#737aa2";
       };
 
-      character.vimcmd_symbol = "[V](bold green) ";
+      character = {
+        success_symbol = "[❯](bold #9ece6a)";
+        error_symbol = "[❯](bold #f7768e)";
+        vimcmd_symbol = "[❮](bold #bb9af7)";
+      };
     };
   };
 }
