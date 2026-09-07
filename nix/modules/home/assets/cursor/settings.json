@@ -143,5 +143,6 @@
   "easy-codesnap.uiCustomColors": {
     "watermarkPositionInputSelectedBackgroud": "var(--vscode-focusBorder)"
   },
-  "git.openRepositoryInParentFolders": "always"
+  "git.openRepositoryInParentFolders": "always",
+  "aws.cloudformation.telemetry.enabled": true
 }
