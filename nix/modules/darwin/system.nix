@@ -26,6 +26,11 @@
   users.users.KokiAoyagi.home = "/Users/KokiAoyagi";
   users.users.KokiAoyagi.shell = pkgs.zsh;
 
+  # 補完とプロンプトは Home Manager が初期化する。
+  # /etc/zshrc でも compinit を走らせると、毎回補完を二重に読み込む。
+  programs.zsh.enableGlobalCompInit = false;
+  programs.zsh.promptInit = "";
+
   imports = [
     # Keep nixpkgs-level tweaks shared between standalone Home Manager and
     # darwin-driven evaluation.

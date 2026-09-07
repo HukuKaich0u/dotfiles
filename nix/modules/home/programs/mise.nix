@@ -6,7 +6,8 @@
   nodeVersion = config.programs.mise.globalConfig.tools.node;
 in {
   programs.mise.enable = true;
-  programs.mise.enableZshIntegration = true;
+  # zsh-integrations.nix で事前生成した hook を読み込む。
+  programs.mise.enableZshIntegration = false;
   programs.mise.globalConfig = {
     tools = {
       bun = "1";

@@ -115,6 +115,8 @@ in {
         fi
       '')
       (lib.mkOrder 1000 ''
+        source ${config.xdg.configFile."zsh/integrations.zsh".source}
+
         # Ctrl+F などの標準的な行編集を安定させるため、interactive shell は Emacs keymap を明示する。
         bindkey -e
 

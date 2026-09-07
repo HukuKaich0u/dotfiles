@@ -1,7 +1,4 @@
-{
-  hunk,
-  ...
-}: {
+{hunk, ...}: {
   imports = [
     hunk.homeManagerModules.default
     ./packages.nix
@@ -22,6 +19,7 @@
     ./programs/tmux.nix
     ./programs/yazi.nix
     ./programs/zoxide.nix
+    ./programs/zsh-integrations.nix
   ];
 
   # This value determines the Home Manager release that your configuration is

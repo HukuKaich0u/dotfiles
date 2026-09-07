@@ -32,21 +32,8 @@ alias tmls="tmux list-sessions"
 alias tma="tmux a -t"
 alias tmnew="tmux new -s"
 
-if command -v mise >/dev/null 2>&1; then
-  eval "$(mise activate zsh)"
-fi
-
-if command -v zoxide >/dev/null 2>&1; then
-  eval "$(zoxide init zsh)"
-fi
-
-if command -v direnv >/dev/null 2>&1; then
-  eval "$(direnv hook zsh)"
-fi
-
-if command -v starship >/dev/null 2>&1; then
-  eval "$(starship init zsh)"
-fi
+# Home Manager がツールと同じバージョンで事前生成した初期化コード。
+source "@zshIntegrations@"
 
 bindkey -e
 bindkey '^[^M' self-insert-unmeta
