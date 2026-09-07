@@ -16,8 +16,8 @@
       };
 
       directory = {
-        truncation_length = 2;
-        truncate_to_repo = true;
+        truncation_length = 5;
+        truncate_to_repo = false;
         truncation_symbol = "…/";
         read_only = " ro";
         format = "[$path]($style)[$read_only]($read_only_style) ";

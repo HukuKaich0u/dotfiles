@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# 実際の Starship を使い、狭い Terminal での折り返しと長いブランチ名を検証する。
+# 実際の Starship を使い、親パスの表示・表示幅・長いブランチ名を検証する。
 set -eu
 
 for tool in starship nix-instantiate python3 git; do
@@ -39,7 +39,7 @@ with tempfile.TemporaryDirectory(prefix="starship-prompt-") as tmp:
         f"[{name}]\n{toml_table(value)}"
         for name, value in settings.items() if isinstance(value, dict)
     ))
-    project = root / "nested" / "workspace" / "project"
+    project = root / "Documents" / "repos" / "personal" / "workspace" / "project"
     project.mkdir(parents=True)
     subprocess.run(["git", "init", "-q", "-b", "feature/a-very-long-branch-name-for-terminal-resizing", str(project)], check=True)
     (project / "example.txt").write_text("untracked\n")
@@ -49,7 +49,7 @@ with tempfile.TemporaryDirectory(prefix="starship-prompt-") as tmp:
         env.pop(key, None)
 
     def prompt(*args):
-        result = subprocess.run(["starship", "prompt", "--terminal-width", "40", *args],
+        result = subprocess.run(["starship", "prompt", "--terminal-width", "80", *args],
                                 cwd=project, env=env, text=True, capture_output=True, check=True)
         assert not result.stderr, result.stderr
         plain = re.sub(r"\x1b\[[0-9;]*m", "", result.stdout)
@@ -58,9 +58,9 @@ with tempfile.TemporaryDirectory(prefix="starship-prompt-") as tmp:
     success, plain = prompt("--status", "0", "--cmd-duration", "10")
     assert "\n" not in plain, f"Prompt must stay on the input line: {plain!r}"
     width = sum(2 if unicodedata.east_asian_width(c) in ("W", "F") else 1 for c in plain)
-    assert width < 40, f"Prompt wraps at 40 columns ({width}): {plain!r}"
-    assert "project" in plain and "feature/" in plain, plain
-    assert "workspace" not in plain and "terminal-resizing" not in plain, plain
+    assert width < 80, f"Prompt wraps at 80 columns ({width}): {plain!r}"
+    assert "Documents/repos/personal/workspace/project" in plain and "feature/" in plain, plain
+    assert root.name not in plain and "terminal-resizing" not in plain, plain
     assert "?" in plain, f"Untracked changes must remain visible: {plain!r}"
     assert plain.endswith("❯ "), plain
     failed, _ = prompt("--status", "1")

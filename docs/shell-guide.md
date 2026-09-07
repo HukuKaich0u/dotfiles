@@ -1,5 +1,6 @@
 ---
 created: 2026-09-05
+updated: 2026-09-07
 author: Koki Aoyagi
 type: runbook
 ---
@@ -12,10 +13,11 @@ type: runbook
 Git の変更を黄、入力記号を緑で表示する。コマンドが失敗すると入力記号が赤になる。
 
 ```text
-…/dotfiles main !↑ ❯
+~/Documents/repos/personal/dotfiles main !↑ ❯
 ```
 
-- パスは末尾2階層まで。Git repository では repository のルートまでに省略する。
+- パスは末尾5階層まで表示する。Git repository でも親ディレクトリを残す。
+  ホームディレクトリは `~`、さらに深いパスの前方を省略する場合は `…/` で表示する。
 - 長いブランチ名は先頭20文字までを残し、省略記号を付ける。
 - Git の変更・未追跡ファイル・ahead/behind・rebase などの操作状態を表示する。
 - 実行時間は2秒以上かかったコマンドだけに表示する。
@@ -50,8 +52,9 @@ sh tests/zsh_headless_smoke_test.sh
 nix build --no-link --no-write-lock-file ./nix#darwinConfigurations.KokiAoyagi.system
 ```
 
-Starship のテストは、実際の設定と一時的な Git repository で、40桁の表示幅、
-長いブランチ名、Git の状態、失敗時の色、実行時間、ジョブ表示を確認する。
+Starship のテストは、実際の設定と一時的な Git repository で、80桁の表示幅、
+親ディレクトリの表示、長いブランチ名、Git の状態、失敗時の色、実行時間、
+ジョブ表示を確認する。狭い Terminal では自然に折り返す。
 headless のテストはインストール済み設定に対する `zsh -lic` の完走確認。
 
 2026-09-05 の macOS / zsh 5.9.1 / Starship 1.26.0 での検証結果:
