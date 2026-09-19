@@ -11,7 +11,6 @@ install_script="$repo_root/scripts/common/install-claude-code.sh"
 root_readme="$repo_root/README.md"
 scripts_readme="$repo_root/scripts/README.md"
 nix_readme="$repo_root/nix/README.md"
-apm_yml="$repo_root/.apm/apm.yml"
 
 assert_contains() {
   file="$1"
@@ -96,7 +95,7 @@ test_claude_module_wiring() {
   assert_not_contains "$claude_config" 'settings = {' \
     "Claude Home Manager config module must not clobber settings.json via programs.claude-code.settings"
   assert_not_contains "$claude_config" '"CLAUDE.md"' \
-    "Claude config module must not manage ~/CLAUDE.md (instruction files are owned by APM)"
+    "Claude config module must not manage ~/CLAUDE.md (shared instructions have their own module)"
   assert_not_contains "$claude_config" 'agentKitSrc' \
     "Claude config module must not depend on the agent-kit flake input"
 }
@@ -290,16 +289,6 @@ test_claude_docs() {
     "nix/README.md must document Claude Code install ownership"
 }
 
-test_apm_manages_skills() {
-  assert_file_exists "$apm_yml" \
-    "apm.yml must exist as the SoT for agent skills distribution"
-  assert_contains "$apm_yml" 'HukuKaich0u/agent-kit/instructions' \
-    "apm.yml must distribute the shared instruction files"
-  assert_not_contains "$apm_yml" 'HukuKaich0u/agent-kit/instructions/core' \
-    "apm.yml must not reference the removed core package path"
-  assert_contains "$apm_yml" 'HukuKaich0u/agent-kit/skills/tooling/drawio' \
-    "apm.yml must distribute the drawio skill previously vendored in-repo"
-}
 
 test_claude_module_wiring
 test_darwin_homebrew_does_not_own_claude_code
@@ -309,6 +298,5 @@ test_install_claude_code_skips_when_claude_exists
 test_install_claude_code_does_not_skip_cmux_bundled_claude
 test_install_claude_code_runs_native_latest_install
 test_claude_docs
-test_apm_manages_skills
 
 echo "claude code management test passed"

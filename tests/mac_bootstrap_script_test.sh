@@ -125,12 +125,6 @@ echo "apply-nix-darwin:\$*" >>"$log_file"
 EOF
     make_executable "$mac_dir/apply-nix-darwin.sh"
 
-    cat >"$common_dir/install-apm.sh" <<EOF
-#!/bin/sh
-echo "install-apm:\$*" >>"$log_file"
-EOF
-    make_executable "$common_dir/install-apm.sh"
-
     cat >"$common_dir/link-dotfiles.sh" <<EOF
 #!/bin/sh
 echo "link-dotfiles:\$*" >>"$log_file"
@@ -142,9 +136,8 @@ EOF
     assert_file_equals "$log_file" \
 "install-homebrew:
 apply-nix-darwin:
-install-apm:
 link-dotfiles:" \
-      "setup-mac.sh should call Homebrew, nix-darwin, install-apm, then link-dotfiles in order"
+      "setup-mac.sh should call Homebrew, nix-darwin, then link-dotfiles in order"
   )
 }
 

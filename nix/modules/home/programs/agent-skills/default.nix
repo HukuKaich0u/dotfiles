@@ -1,5 +1,0 @@
-{...}: {
-  imports = [
-    ./skill-dirs.nix
-  ];
-}

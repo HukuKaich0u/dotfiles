@@ -2,7 +2,7 @@
   imports = [
     hunk.homeManagerModules.default
     ./packages.nix
-    ./programs/agent-skills
+    ./programs/agent-instructions.nix
     ./programs/bacon.nix
     ./programs/claude
     ./programs/codex

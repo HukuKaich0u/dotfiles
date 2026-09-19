@@ -13,7 +13,7 @@ end-to-end の環境構築手順はこの `README.md` を基準にする。
 - Nix 自体の install は手動で行う
 - Linux は `./scripts/linux/setup.sh` の後に `home-manager switch`、`mise install`、`./scripts/common/install-claude-code.sh`、`npm i -g @openai/codex` まで進める
 - Ubuntu Desktop で `ghostty` も必要なら `./scripts/linux/setup.sh --with-ghostty` を使う
-- macOS は `./scripts/mac/setup.sh` を入口にし、必要なら `nix-darwin` の初回 fallback を挟む。`apm` の未導入時は macOS / Linux とも setup が公式 installer で入れる
+- macOS は `./scripts/mac/setup.sh` を入口にし、必要なら `nix-darwin` の初回 fallback を挟む
 - `ghostty` の install は Linux では `scripts/linux/install-ghostty.sh` が担当する
 - macOS では `cmux` を `nix/modules/darwin/homebrew.nix` の Homebrew cask で管理する
 - `mo` は当面 macOS の Homebrew brew だけで管理し、Linux にはまだ導入しない
@@ -78,7 +78,7 @@ Docker と Ghostty の両方が必要:
 ./scripts/linux/setup.sh --with-docker --with-ghostty
 ```
 
-この段階では OS package install、必要なら `ghostty` install、`rustup` install、`apm` install、dotfiles link までを行う。`ghostty` の config 自体は次の `home-manager switch` で反映する。
+この段階では OS package install、必要なら `ghostty` install、`rustup` install、dotfiles link までを行う。`ghostty` の config 自体は次の `home-manager switch` で反映する。
 
 ### 4. Apply Home Manager
 
@@ -138,7 +138,7 @@ chsh -s "$(command -v zsh)"
 ./scripts/mac/setup.sh
 ```
 
-この中で `sudo darwin-rebuild switch --flake ./nix#KokiAoyagi` を通して `nix/modules/darwin/homebrew.nix` の Homebrew cask / brew 群も適用される。`cmux` と `mo` の install はここで入る。`mo` は当面 macOS のみで管理し、Linux にはまだ導入しない。`ghostty` config は Home Manager 側の設定資産として repo に残すが、macOS では Homebrew install しない。`apm` が未導入なら同じ setup 内で公式 unix installer を実行する。
+この中で `sudo darwin-rebuild switch --flake ./nix#KokiAoyagi` を通して `nix/modules/darwin/homebrew.nix` の Homebrew cask / brew 群も適用される。`cmux` と `mo` の install はここで入る。`mo` は当面 macOS のみで管理し、Linux にはまだ導入しない。`ghostty` config は Home Manager 側の設定資産として repo に残すが、macOS では Homebrew install しない。
 
 ### 4. If `darwin-rebuild` Is Missing On First Run
 
@@ -157,24 +157,31 @@ sudo nix --extra-experimental-features 'nix-command flakes' run nix-darwin -- sw
 gcloud init
 ```
 
-## Global APM
+## Global agent instructions
 
-`~/.apm/apm.yml`の依存定義を反映する:
+共有 instructions の正本は `agents/instructions/*.md`。
+`nix/modules/home/programs/agent-instructions.nix` が Nix store 内で生成し、
+Home Manager が次の場所へ配布する。
+
+- Claude: `~/.claude/rules/<name>.md`（ファイルごとの本文）
+- Codex: `~/.codex/AGENTS.md`（ファイル名順に結合した本文）
+
+編集後は通常の設定反映を行う。
 
 ```sh
-just apm-install
+# macOS
+sudo darwin-rebuild switch --flake ./nix#KokiAoyagi
+# Linux
+home-manager switch --flake ./nix#kokiaoyagi
 ```
 
-登録済みの依存を最新refへ更新する:
+新しいファイルを追加した場合は、Nix flake が参照できるよう先に Git へ追加する。
+本文の frontmatter は配布時に除き、Codex 用の見出しだけ 1 段下げる。
+生成処理は `scripts/common/render-agent-instructions.py` にある。
 
-```sh
-just apm-update
-```
-
-どちらも処理後に`apm compile -g`を実行する。
-APM 0.26.0が非activeなCopilot CoworkのOneDrive配置先を解決して失敗するため、
-recipe内だけ`APM_COPILOT_COWORK_SKILLS_DIR`を
-`~/.local/share/copilot-cowork/skills`へ固定している。
+独自の global skill は配置しない。Codex 標準の `.system` と runtime の plugin は
+各ツールが管理する。プロジェクト用の skill は、そのプロジェクト内で管理する。
+APM と agent-kit への依存はない。
 
 ## Tests
 

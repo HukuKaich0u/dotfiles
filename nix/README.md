@@ -76,7 +76,7 @@ nix/
     │   ├── default.nix
     │   ├── packages.nix
     │   ├── programs/
-    │   │   ├── agent-skills/
+    │   │   ├── agent-instructions.nix
     │   │   ├── bacon.nix
     │   │   ├── claude/
     │   │   ├── codex/
@@ -249,8 +249,8 @@ Codex 固有の Home Manager module 群です。
 - `default.nix`
   - Codex module の束ね役
 
-AGENTS.md などの指示ファイルと skills の配布は APM (`~/.apm/apm.yml`) が担当し、
-Nix はここでは config.toml の生成だけを持ちます。
+共有 instructions は `agent-instructions.nix` が配布します。
+この module は config.toml の生成を担当します。
 
 #### `modules/home/programs/claude/`
 
@@ -261,29 +261,20 @@ Claude 固有の Home Manager module 群です。
 - `default.nix`
   - Claude module の束ね役
 
-CLAUDE.md などの指示ファイルと skills の配布は APM (`~/.apm/apm.yml`) が担当します。
+共有 instructions は `agent-instructions.nix` が `~/.claude/rules/` に配布します。
 Claude Code 本体の install ownership はここではなく platform ごとに分けます。
 
-#### `modules/home/programs/agent-skills/`
+#### `modules/home/programs/agent-instructions.nix`
 
-agent skills の Home Manager 側の接着層です。skill 本体の配布 SoT は APM
-(`~/.apm/apm.yml`) で、Nix は「配布先ディレクトリの準備」と「external
-collection の pin 配布」だけを持ちます。
+共有 instructions の正本は repo root の `agents/instructions/*.md` です。
+`../scripts/common/render-agent-instructions.py` を Nix のビルドから実行し、
+生成物を `home.file` で配布します。
 
-- `skill-dirs.nix`
-  - `~/.claude/skills/` と `~/.agents/skills/` を実ディレクトリとして準備する
-  - 旧構成の dirlink symlink を activation で掃除する
-- `external/`
-  - upstream pin のまま扱う skill collection を置く
-  - `superpowers-src.nix` が source derivation を返し、`superpowers.nix` が
-    `~/.agents/skills/superpowers`(dirlink)と `~/.claude/skills/<leaf>`
-    (flatten)の両方へ link する
-  - Claude Code は `~/.claude/skills/<name>/SKILL.md` を 1 階層しか見ないため、
-    collection は leaf ごとに展開して link する
-- `lib.nix`
-  - SKILL.md を持つ leaf directory を再帰探索する共有 helper
-- `default.nix`
-  - skills module の束ね役
+- Claude: `~/.claude/rules/<name>.md`
+- Codex: `~/.codex/AGENTS.md`
+
+ファイルの追加・削除は自動で反映されるため、module 側の列挙更新は不要です。
+APM や外部の instructions リポジトリには依存しません。
 
 #### `modules/home/programs/cursor.nix`
 
@@ -429,7 +420,7 @@ open_external_editor = []
 現状の `/.codex/AGENTS.md` は `/.agents/AGENTS.md` への tracked symlink です。
 つまり adapter 層の入口だけ `/.codex/` に残し、実体は `/.agents/` に寄せます。
 
-グローバル(`~/.codex/AGENTS.md` 等)への配布は APM (`~/.apm/apm.yml`) が担当し、
+グローバル(`~/.codex/AGENTS.md` 等)への配布は `agent-instructions.nix` が担当し、
 repo 内の adapter はこのリポジトリ自体で作業するときのプロジェクトレベル指示として機能する。
 
 ## Claude Layout
@@ -455,18 +446,11 @@ macOS / Linux とも `./scripts/common/install-claude-code.sh` が公式 native 
 
 `/.claude/CLAUDE.md` は Claude 用 adapter 層の入口で、現状は `/.agents/AGENTS.md` への tracked symlink です。
 
-### skills 配布
+### instructions と skills
 
-- agent-kit の skills / instructions: APM (`~/.apm/apm.yml`) が
-  `~/.claude/skills/` と `~/.agents/skills/` へ配布する
-- external collection (superpowers): `modules/home/programs/agent-skills/external/`
-  が upstream pin から link する
-
-運用ルール:
-
-- skill の追加・削除は agent-kit repo と `.apm/apm.yml` で行う
-- 大きい skill collection は `external/` で upstream pin を検討する
-- 現状 upstream pin なのは `superpowers` だけ
+共有 instructions は repo root の `agents/instructions/` で編集し、Home Manager で反映します。
+独自の global skill は配置しません。プロジェクト固有の skill は各プロジェクト内で管理します。
+Codex 標準の `.system` と runtime の plugin は各ツールの管理に任せます。
 
 ## Linux zsh
 
@@ -525,9 +509,9 @@ Linux 固有差分を `modules/home/` の条件分岐で増やしすぎないこ
 | VSCode/Cursor 内 Neovim の config を変える | `modules/home/assets/nvim-vscode/` |
 | Herdr の config を変える | `modules/home/assets/herdr/config.toml` |
 | Hunk の設定を変える | `modules/home/programs/hunk.nix` |
-| AGENTS.md / CLAUDE.md(グローバル指示)を変える | agent-kit repo + `.apm/apm.yml` |
-| agent skills を追加/削除する | agent-kit repo + `.apm/apm.yml` |
-| external skill collection を変える | `modules/home/programs/agent-skills/external/` |
+| グローバル instructions を変える | repo root `agents/instructions/` |
+| instructions の配布先を変える | `modules/home/programs/agent-instructions.nix` |
+| プロジェクト固有の skill を追加/削除する | 各プロジェクト |
 | Codex の macOS install を変える | `modules/darwin/homebrew.nix` |
 | mise の global runtime を変える | `modules/home/programs/mise.nix` |
 | macOS の zsh 設定を変える | `modules/home/programs/zsh.nix` |

@@ -14,8 +14,7 @@ Usage: ./scripts/linux/setup.sh [--with-docker] [--with-ghostty]
 Bootstraps a Linux machine for this dotfiles repo by:
   1. Installing core apt packages
   2. Installing rustup
-  3. Installing APM
-  4. Linking dotfiles
+  3. Preparing terminfo and cleaning legacy links
 
 Options:
   --with-docker  Also install the linux-extra Docker profile
@@ -55,7 +54,6 @@ main() {
     "$SCRIPT_DIR"/install-ghostty.sh
   fi
   "$SCRIPT_DIR"/install-rustup.sh
-  "$COMMON_DIR"/install-apm.sh
   "$COMMON_DIR"/link-dotfiles.sh
 }
 

@@ -264,12 +264,6 @@ echo "install-rustup:\$*" >>"$log_file"
 EOF
     make_executable "$linux_dir/install-rustup.sh"
 
-    cat >"$common_dir/install-apm.sh" <<EOF
-#!/bin/sh
-echo "install-apm:\$*" >>"$log_file"
-EOF
-    make_executable "$common_dir/install-apm.sh"
-
     cat >"$common_dir/link-dotfiles.sh" <<EOF
 #!/bin/sh
 echo "link-dotfiles:\$*" >>"$log_file"
@@ -281,9 +275,8 @@ EOF
     assert_file_equals "$log_file" \
 "install-linux-packages:core
 install-rustup:
-install-apm:
 link-dotfiles:" \
-      "setup-linux.sh should call package install, rustup install, apm install, then link-dotfiles in order"
+      "setup-linux.sh should call package install, rustup install, then link-dotfiles in order"
   )
 }
 
@@ -319,12 +312,6 @@ echo "install-rustup:\$*" >>"$log_file"
 EOF
     make_executable "$linux_dir/install-rustup.sh"
 
-    cat >"$common_dir/install-apm.sh" <<EOF
-#!/bin/sh
-echo "install-apm:\$*" >>"$log_file"
-EOF
-    make_executable "$common_dir/install-apm.sh"
-
     cat >"$common_dir/link-dotfiles.sh" <<EOF
 #!/bin/sh
 echo "link-dotfiles:\$*" >>"$log_file"
@@ -337,7 +324,6 @@ EOF
 "install-linux-packages:core
 install-ghostty-linux:
 install-rustup:
-install-apm:
 link-dotfiles:" \
       "setup-linux.sh should call Ghostty install between core packages and rustup when --with-ghostty is set"
   )
@@ -375,12 +361,6 @@ echo "install-rustup:\$*" >>"$log_file"
 EOF
     make_executable "$linux_dir/install-rustup.sh"
 
-    cat >"$common_dir/install-apm.sh" <<EOF
-#!/bin/sh
-echo "install-apm:\$*" >>"$log_file"
-EOF
-    make_executable "$common_dir/install-apm.sh"
-
     cat >"$common_dir/link-dotfiles.sh" <<EOF
 #!/bin/sh
 echo "link-dotfiles:\$*" >>"$log_file"
@@ -394,9 +374,8 @@ EOF
 install-linux-packages:linux-extra
 install-ghostty-linux:
 install-rustup:
-install-apm:
 link-dotfiles:" \
-      "setup-linux.sh should install docker before Ghostty and finish with rustup, apm, and dotfiles when both flags are set"
+      "setup-linux.sh should install docker before Ghostty and finish with rustup and dotfiles when both flags are set"
   )
 }
 
@@ -1042,8 +1021,6 @@ assert_contains "$setup_script" 'install-packages.sh core' \
   "setup-linux.sh should install the core apt profile"
 assert_contains "$setup_script" 'install-rustup.sh' \
   "setup-linux.sh should delegate rustup installation to the shared script"
-assert_contains "$setup_script" 'install-apm.sh' \
-  "setup-linux.sh should delegate APM installation to the shared script"
 assert_contains "$setup_script" 'install-ghostty.sh' \
   "setup-linux.sh should delegate Ghostty installation to a dedicated script"
 assert_contains "$setup_script" 'link-dotfiles.sh' \
