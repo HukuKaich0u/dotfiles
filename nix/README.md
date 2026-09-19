@@ -261,20 +261,21 @@ Claude 固有の Home Manager module 群です。
 - `default.nix`
   - Claude module の束ね役
 
-共有 instructions は `agent-instructions.nix` が `~/.claude/rules/` に配布します。
+共有 instructions は `agent-instructions.nix` が `~/.claude/AGENTS.md` に配布します。
 Claude Code 本体の install ownership はここではなく platform ごとに分けます。
 
 #### `modules/home/programs/agent-instructions.nix`
 
-共有 instructions の正本は repo root の `agents/instructions/*.md` です。
-`../scripts/common/render-agent-instructions.py` を Nix のビルドから実行し、
-生成物を `home.file` で配布します。
+共有 instructions の正本は repo root の `agents/AGENTS.md` です。
+同じファイルを `home.file` で配布します。本文の変換や生成スクリプトはありません。
 
-- Claude: `~/.claude/rules/<name>.md`
+- Claude: `~/.claude/AGENTS.md`
 - Codex: `~/.codex/AGENTS.md`
 
-ファイルの追加・削除は自動で反映されるため、module 側の列挙更新は不要です。
-APM や外部の instructions リポジトリには依存しません。
+Claude は v2.1.277 以降の `agents-md` 機能で祖先ディレクトリを探索します。
+`claude/config.nix` の `instructionFiles = "claude-md-and-agents-md"` により、
+プロジェクトの `CLAUDE.md` があってもホーム配下で共有本文を読み込めます。
+ホーム外や機能が利用できないセッションは対象外です。
 
 #### `modules/home/programs/cursor.nix`
 
@@ -448,7 +449,7 @@ macOS / Linux とも `./scripts/common/install-claude-code.sh` が公式 native 
 
 ### instructions と skills
 
-共有 instructions は repo root の `agents/instructions/` で編集し、Home Manager で反映します。
+共有 instructions は repo root の `agents/AGENTS.md` で編集し、Home Manager で反映します。
 独自の global skill は配置しません。プロジェクト固有の skill は各プロジェクト内で管理します。
 Codex 標準の `.system` と runtime の plugin は各ツールの管理に任せます。
 
@@ -509,7 +510,7 @@ Linux 固有差分を `modules/home/` の条件分岐で増やしすぎないこ
 | VSCode/Cursor 内 Neovim の config を変える | `modules/home/assets/nvim-vscode/` |
 | Herdr の config を変える | `modules/home/assets/herdr/config.toml` |
 | Hunk の設定を変える | `modules/home/programs/hunk.nix` |
-| グローバル instructions を変える | repo root `agents/instructions/` |
+| グローバル instructions を変える | repo root `agents/AGENTS.md` |
 | instructions の配布先を変える | `modules/home/programs/agent-instructions.nix` |
 | プロジェクト固有の skill を追加/削除する | 各プロジェクト |
 | Codex の macOS install を変える | `modules/darwin/homebrew.nix` |

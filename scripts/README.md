@@ -138,14 +138,6 @@ gcloud init
 - やらないこと: Homebrew / npm install、dotfiles 配布
 - 例: `./scripts/common/install-claude-code.sh`
 
-### `common/render-agent-instructions.py`
-
-- 役割: `agents/instructions/*.md` から Claude / Codex 向けの instructions を生成
-- 入力: instructions のディレクトリ、空の出力ディレクトリ
-- 出力: `.claude/rules/*.md` と `.codex/AGENTS.md`
-- Nix のビルドから実行する。ホームディレクトリへの配置は Home Manager が担当する
-- 単体確認: `sh tests/agent_instructions_test.sh`（Python 3 標準ライブラリを使用）
-
 ### `linux/install-ghostty.sh`
 
 - 役割: Ubuntu 向け `ghostty` installer

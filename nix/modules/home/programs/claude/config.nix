@@ -11,6 +11,8 @@
     editorMode = "vim";
     language = "japanese";
     permissions.defaultMode = "auto";
+    # プロジェクトに CLAUDE.md があっても祖先の ~/.claude/AGENTS.md を読む。
+    pluginConfigs."agents-md@builtin".options.instructionFiles = "claude-md-and-agents-md";
   };
   claudeSettingsOverlay = pkgs.writeText "claude-settings-overlay.json" (builtins.toJSON claudeSettings);
 in {

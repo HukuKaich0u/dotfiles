@@ -157,16 +157,16 @@ sudo nix --extra-experimental-features 'nix-command flakes' run nix-darwin -- sw
 gcloud init
 ```
 
-## Global agent instructions
+## Shared agent instructions
 
-共有 instructions の正本は `agents/instructions/*.md`。
-`nix/modules/home/programs/agent-instructions.nix` が Nix store 内で生成し、
-Home Manager が次の場所へ配布する。
+共有 instructions の正本は `agents/AGENTS.md`。
+`nix/modules/home/programs/agent-instructions.nix` が Home Manager の `home.file` で
+同じファイルを次の 2 箇所へ配布する。
 
-- Claude: `~/.claude/rules/<name>.md`（ファイルごとの本文）
-- Codex: `~/.codex/AGENTS.md`（ファイル名順に結合した本文）
+- Claude: `~/.claude/AGENTS.md`
+- Codex: `~/.codex/AGENTS.md`
 
-編集後は通常の設定反映を行う。
+本文の変換・結合処理はない。編集後は通常の設定反映を行う。
 
 ```sh
 # macOS
@@ -175,9 +175,13 @@ sudo darwin-rebuild switch --flake ./nix#KokiAoyagi
 home-manager switch --flake ./nix#kokiaoyagi
 ```
 
-新しいファイルを追加した場合は、Nix flake が参照できるよう先に Git へ追加する。
-本文の frontmatter は配布時に除き、Codex 用の見出しだけ 1 段下げる。
-生成処理は `scripts/common/render-agent-instructions.py` にある。
+Claude Code は v2.1.277 以降の `agents-md` 機能を使う。
+`programs/claude/config.nix` で Project instructions を `claude-md-and-agents-md` にし、
+プロジェクトの `CLAUDE.md` がある場合も祖先の `~/.claude/AGENTS.md` を読み込む。
+Claude 側はホーム配下のプロジェクトからの祖先探索で適用される。
+ホーム外のプロジェクトや機能が利用できないセッションには自動適用されない。
+更新直後の初回セッションでは機能が有効にならない場合があるため、次のセッションで確認する。
+詳しい条件は [Claude Code の AGENTS.md 仕様](https://code.claude.com/docs/en/memory#agentsmd) を参照。
 
 独自の global skill は配置しない。Codex 標準の `.system` と runtime の plugin は
 各ツールが管理する。プロジェクト用の skill は、そのプロジェクト内で管理する。
