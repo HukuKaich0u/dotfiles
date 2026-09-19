@@ -5,7 +5,7 @@
 }: let
   tomlFormat = pkgs.formats.toml {};
   settings = {
-    model = "gpt-5.6-sol";
+    model = "gpt-6-astra";
     approval_policy = "on-request";
     model_reasoning_effort = "high";
     model_verbosity = "medium";
