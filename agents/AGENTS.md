@@ -35,26 +35,38 @@ An approval covers the change it was given for, not every later change in the
 session. When in doubt whether an earlier approval still applies, it does not —
 ask or propose instead.
 
-When work is done and verified but no approval exists, stop at the commit
-boundary and report: say the change is ready to commit, propose the split and
-the subject line(s), and leave the tree uncommitted. Do the same for
-checkpoints before a risky rewrite and at session end — suggest the commit,
-do not make it.
+Commit approval is separate from approval to edit and verify. Continue the
+editing and verification already authorized by the user without waiting for
+commit approval.
+
+When work is done but no commit approval exists, leave the tree uncommitted
+and report the result and verification status. Propose a commit split and
+subject line(s) when requested or needed for a handoff; this is not required
+at every checkpoint or at session end.
 
 ### Even with approval, do not commit when
 
-- the relevant tests / build / lint have not been run, or are failing. Fix or
-  revert first.
+- the tests / build / lint required for the change have not been run or have
+  failed
 - the change is a half-finished step of work still in progress
 - the tree would be left inconsistent — a caller updated without its callee, a
   catalog listing entries that do not exist yet, a doc describing behavior the
   code does not have
 - debug prints, commented-out code, scratch files, or temp scripts remain in the diff
 
-"Verified" means the tests / build / lint relevant to the change pass, or the
-change has no runtime surface (docs, comments, config text). If verification is
-impossible in this environment, say so in the response — never describe an
-unverified state as verified, in the message or anywhere else.
+Fix failures introduced by the current change. For pre-existing or
+environment-related failures, report the evidence; if the cause is unknown,
+say so. Do not make unrelated fixes or revert changes just to clear those
+failures. Required checks that fail or cannot run still block committing,
+but do not block independent editing and verification already authorized.
+
+Choose verification according to the change's effects, including behavior
+controlled by configuration. "Verified" means the applicable checks ran and
+passed. When runtime tests are unnecessary, explain why and state what was
+checked instead. If verification is impossible in this environment, report
+the limitation without describing the unverified behavior as verified.
+Once the required checks pass, broaden or repeat them only when new changes,
+failures, or unresolved concerns justify it.
 
 ### How much goes in one commit
 
@@ -119,20 +131,25 @@ Write a body unless the change is self-evident from the subject alone — a typo
 fix, a file move, a version bump. Everything else gets one. The test: if reading
 the diff would leave someone asking 「なぜ?」, the answer belongs here.
 
-Cover, in prose first and then a `-` list when there are several points:
+In the body, explain the reason for the change and its verification status.
+Use prose or lists as appropriate:
 
 - **Why** — the constraint, bug, request, or observation that forced the change.
   Include the evidence when there is any: measurements, error messages, the
   reproduction. This is the part that cannot be recovered from the code.
+- **How it was verified** — which checks ran, their results, and any remaining
+  limitations. If runtime tests were unnecessary, explain why and what was
+  checked instead.
+
+Include the following only when they apply and help explain the change. Omit
+inapplicable items rather than filling them in for completeness:
+
 - **What changed, only where the reason is not obvious from the diff.** A bullet
   that says 「Xを追加」 restates the diff and is noise. A bullet that says why that
   X and not another is worth its lines. If a change looks cosmetic but is not,
   say so explicitly.
 - **What was rejected**, and why — alternatives considered, tradeoffs accepted,
   scope deliberately cut.
-- **How it was verified** — which tests, build, or lint ran; or that the change
-  has no runtime surface. A reader deciding whether to trust this commit needs
-  this.
 - **What remains** — known gaps, follow-ups, anything left deliberately undone.
 - **Corrections** — if the commit fixes a wrong assumption from earlier work, say
   plainly that it was wrong.
@@ -196,28 +213,6 @@ follow-up commit instead.
 - Respond to the user in Japanese unless they explicitly ask for another language.
 - Keep commands, code, file paths, and technical identifiers in their original form.
 - Keep standard ecosystem terms in English when translation would reduce precision.
-
-
-## markdown-metadata
-
-
-- When creating a new markdown document, always start it with YAML frontmatter containing at least:
-
-```markdown
----
-created: <YYYY-MM-DD>
-author: <a human's full name — the value of `git config user.name`>
-type: <document type, e.g. note / design / runbook / adr / report>
----
-```
-
-- `author` must always be a human's full name, even when the document was
-  generated by an agent. Use the value of `git config user.name` (fall back to
-  asking the user if it is unset or is not a real name). Never put an AI model
-  or agent name in `author`.
-
-- When editing an existing markdown document, add the frontmatter if missing; if present, add or update `updated: <YYYY-MM-DD>`.
-- Exception: do not apply this to files whose format is dictated by tooling (e.g. SKILL.md, CLAUDE.md, README.md, apm.yml-managed files). Follow the tool's required format instead.
 
 
 ## response-style
