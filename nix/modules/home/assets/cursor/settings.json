@@ -144,5 +144,6 @@
     "watermarkPositionInputSelectedBackgroud": "var(--vscode-focusBorder)"
   },
   "git.openRepositoryInParentFolders": "always",
-  "aws.cloudformation.telemetry.enabled": true
+  "aws.cloudformation.telemetry.enabled": true,
+  "claudeCode.hideOnboarding": true
 }
