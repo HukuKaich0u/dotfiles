@@ -22,6 +22,47 @@ return {
 		"folke/snacks.nvim",
 		priority = 1000,
 		lazy = false,
+		init = function()
+			local group = vim.api.nvim_create_augroup("SethyExplorerSidebar", { clear = true })
+			-- VSCode のように、最初にファイルかディレクトリを開いた時点で explorer を左に出しておく。
+			-- 一度だけなので、手動で閉じた後に勝手に再表示はしない。
+			vim.api.nvim_create_autocmd("BufWinEnter", {
+				group = group,
+				callback = function(ev)
+					if vim.bo[ev.buf].buftype ~= "" or vim.api.nvim_buf_get_name(ev.buf) == "" then
+						return
+					end
+					vim.schedule(function()
+						if #Snacks.picker.get({ source = "explorer" }) == 0 then
+							-- focus は開いたファイル側に残す
+							Snacks.explorer({ enter = false })
+						end
+					end)
+					return true
+				end,
+			})
+			-- 最後の通常ウィンドウを :q したとき explorer だけが残らないよう、先に閉じる。
+			-- picker:close() は layout の破棄を schedule するので、layout も同期で閉じる。
+			vim.api.nvim_create_autocmd("QuitPre", {
+				group = group,
+				callback = function()
+					local cur = vim.api.nvim_get_current_win()
+					for _, win in ipairs(vim.api.nvim_tabpage_list_wins(0)) do
+						local ft = vim.bo[vim.api.nvim_win_get_buf(win)].filetype
+						local is_float = vim.api.nvim_win_get_config(win).relative ~= ""
+						if win ~= cur and not is_float and not ft:match("^snacks_") then
+							return
+						end
+					end
+					for _, picker in ipairs(Snacks.picker.get({ source = "explorer" })) do
+						if picker.layout.root:on_current_tab() then
+							picker:close()
+							picker.layout:close()
+						end
+					end
+				end,
+			})
+		end,
 		opts = {
 			quickfile = {
 				enabled = true,
