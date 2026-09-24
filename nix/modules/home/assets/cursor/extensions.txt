@@ -6,7 +6,6 @@ asvetliakov.vscode-neovim
 charliermarsh.ruff
 cweijan.dbclient-jdbc
 cweijan.vscode-database-client2
-eamodio.gitlens
 editorconfig.editorconfig
 golang.go
 llvm-vs-code-extensions.vscode-clangd
