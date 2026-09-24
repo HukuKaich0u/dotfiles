@@ -1,6 +1,6 @@
 ---
 created: 2026-07-16
-updated: 2026-08-06
+updated: 2026-09-24
 author: Koki Aoyagi
 type: reference
 ---
@@ -18,45 +18,42 @@ Herdr runs outside tmux and uses `Ctrl-g` as the same prefix.
 | pane | pane | independently focused terminal region within a tab |
 | server/socket | session | fully separate persistent runtime |
 
-## tmux-equivalent operations
+## Navigation model
 
-| Key | Herdr operation / tmux equivalent |
+`n/p` は tab、Shift を足すと space (workspace)、`a` は agent。番号で飛ぶのは tab だけ。
+
+| Layer | Previous / next | Jump | New | Close |
+| --- | --- | --- | --- | --- |
+| tab | `prefix+p` / `prefix+n` | `Ctrl-1..9` (prefix なし) | `prefix+c` | `prefix+Shift+x` |
+| space | `prefix+Shift+p` / `prefix+Shift+n` | `prefix+o` (picker) | `prefix+Shift+c` | `prefix+Shift+d` |
+| agent | `prefix+Shift+a` / `prefix+a` | — | — | — |
+
+- lowercase が tab、Shift が space という対応を new / close でも揃えている。pane は `prefix+x` で閉じる。
+- agent は `agent_panel_sort = "priority"` の順に巡回するので、`prefix+a` で対応が必要な agent から移動できる。
+
+## Other operations
+
+| Key | Operation |
 | --- | --- |
 | `Ctrl-g` | Prefix |
-| `prefix+c` | New tab / new window |
-| `prefix+1..9` | Numbered tab/window |
-| `prefix+comma` | Rename tab/window |
-| `prefix+ampersand` | Close tab/window |
+| `prefix+comma` | Rename tab |
+| `prefix+Shift+r` | Rename space |
+| `prefix+Shift+g` | New worktree |
+| `prefix+w` | Herdr navigator (`g` は lazygit popup に割り当て) |
 | `prefix+h/j/k/l` | Focus pane |
-| `prefix+Shift+j` | Split down (`J`) |
-| `prefix+Shift+l` | Split right (`L`) |
+| `prefix+Shift+j` | Split down |
+| `prefix+Shift+l` | Split right |
+| `prefix+;` | Last pane |
 | `prefix+[` | Copy mode |
 | `prefix+z` | Zoom |
-| `prefix+x` | Close pane |
 | `prefix+s` | Resize |
-| `prefix+r` | Reload |
-| `prefix+q` | Detach (tmux の `prefix+d` から移動。`d` は lazydocker popup に割り当て) |
-| `prefix+;` | Last pane |
-| `prefix+o` | Workspace picker / tmux-sessionx |
-| `prefix+Shift+p/n` | Previous/next workspace/session |
-| `prefix+Shift+1..9` | Numbered workspace/session |
-| `prefix+Shift+r` | Rename workspace/session |
-
-## Herdr-only operations
-
-| Key | Herdr operation |
-| --- | --- |
-| `prefix+Shift+w` | New workspace |
-| `prefix+Shift+g` | New worktree |
-| `prefix+Shift+d` | Close workspace |
-| `prefix+w` | Herdr navigator (`g` は lazygit popup に割り当て) |
 | `prefix+b` | Sidebar |
+| `prefix+r` | Reload config |
+| `prefix+q` | Detach (tmux の `prefix+d` から移動。`d` は lazydocker popup に割り当て) |
 | `prefix+Shift+s` | Settings |
 | `prefix+Shift+o` | Notification target |
 | `prefix+?` | Help |
 | `prefix+Shift+h` | Open `hunk diff --watch` in the focused pane's current working directory |
-| `prefix+p/n` | Previous/next agent (agent panel order) |
-| `prefix+Alt+1..9` | Focus agent by index (tab の `prefix+1..9` に対応) |
 
 ## Popups
 
@@ -73,11 +70,13 @@ A popup closes only when its command exits; Herdr does not intercept any key (no
 
 ## Intentionally unassigned
 
-- `prefix+a` / `prefix+Shift+a` are free (previously agent navigation).
-- `prefix+u` / `prefix+i` / `prefix+e` are free.
-- Previous/next tab cycling is unassigned because this setup does not use multiple tabs; numbered tab switching remains available as an escape hatch.
+- Numbered space / agent jumps (`prefix+Shift+1..9`, `prefix+Alt+1..9`) are unassigned: Shift+digit can arrive as a symbol depending on the terminal and keyboard layout, and the picker / priority-ordered agent cycling cover these cases.
+- `prefix+1..9` is unassigned because `Ctrl-1..9` already switches tabs directly.
+- Direct Ctrl bindings are limited to digits; Ctrl+letter would collide with Neovim and zsh emacs keybindings.
+- `rename_pane` is explicitly disabled so its default (`prefix+Shift+p`) cannot collide with previous space.
+- `prefix+u` / `prefix+i` / `prefix+e` / `prefix+&` / `prefix+Shift+w` are free.
 - H/K pane split bindings are unused because this setup only creates panes to the right or downward.
-- < > tab reordering is unassigned because Herdr has no corresponding tab-reordering operation.
+- Tab reordering and "last tab / last space" toggles are unassigned because Herdr has no corresponding operation.
 - All Shift+h/j/k/l pane swaps are disabled: Shift+j/l create splits, Shift+h opens Hunk, and Shift+k is left unassigned to keep the entire pane-swap group consistently disabled.
 
 This reference remains repository-only and is not deployed by the Home Manager module.
