@@ -11,7 +11,7 @@ type: reference
 
 プラグインをカテゴリ別に整理：
 
-1. **ファイル操作** - oil.nvim, mini.files
+1. **ファイル操作** - Snacks Explorer, oil.nvim
 2. **検索・ピッカー** - snacks.nvim
 3. **ナビゲーション** - harpoon
 4. **編集補助** - mini.comment, mini.surround, mini.splitjoin, mini.trailspace
@@ -40,16 +40,15 @@ type: reference
 
 **特徴**: ファイル操作（リネーム、削除、移動）をバッファ編集のように行える。
 
-### mini.files
+### Snacks Explorer
 
-ツリー形式のファイルエクスプローラー。
+ツリー形式のファイルエクスプローラー。`<leader>ee` で開く。`mini.files` は現在無効化されており、`<leader>ef` は割り当てられていない。
 
 | キー | 動作 |
 |------|------|
 | `<leader>ee` | ファイルエクスプローラーを開く |
-| `<leader>ef` | 現在のファイルの場所で開く |
-| `<CR>` / `L` | ディレクトリに入る / ファイルを開く |
-| `-` / `H` | 親ディレクトリに戻る |
+
+Oil は `-` で親ディレクトリを開く。Oil バッファ内では `<CR>` で開く、`q` で閉じる、`<M-h>` で横分割に開く。
 
 ---
 
@@ -81,7 +80,7 @@ Telescope風のファジーファインダー。
 
 | キー | 動作 |
 |------|------|
-| `<leader>lg` | lazygit を開く |
+| `<leader>gg` | lazygit を開く |
 | `<leader>gl` | lazygit ログ |
 | `<leader>cR` | ファイル名をリネーム |
 | `<leader>db` | バッファを削除 |
@@ -285,7 +284,7 @@ Markdown内に画像を貼り付け・表示。
 - 画像は `assets/` ディレクトリに保存
 - `![alt](path)` 形式で挿入
 
-**image.nvim** - ターミナル内で画像を表示
+**image.nvim** - ターミナル内で画像を表示。現在は無効化されている。
 
 - Kittyグラフィックプロトコル使用（WezTerm対応）
 - Markdownの画像リンクを自動検出して表示
@@ -496,7 +495,7 @@ LSPがアタッチされたバッファで使用可能。
 
 | キー | 動作 |
 |------|------|
-| `<leader>d` | 行の診断をフロート表示 |
+| `<leader>cd` | 行の診断をフロート表示 |
 | `<leader>D` | バッファ全体の診断 (Telescope) |
 | `<leader>lx` | 診断表示のトグル |
 

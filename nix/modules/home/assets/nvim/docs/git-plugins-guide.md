@@ -119,7 +119,7 @@ Diffview内では `Tab` / `Shift-Tab` でファイルを移動し、`q` また�
 
 | キー | 動作 |
 |------|------|
-| `<leader>lg` | lazygitを開く |
+| `<leader>gg` | lazygitを開く |
 | `<leader>gl` | lazygit ログビューで開く |
 
 ### パネル構成
@@ -275,7 +275,7 @@ Neovim builtin の `nvim.difftool`。2つのファイルまたはディレクト
 <leader>gs      " 良いhunkをstage
 
 [コミット時]
-<leader>lg      " lazygit起動
+<leader>gg      " lazygit起動
 c               " コミット
 ```
 
@@ -291,7 +291,7 @@ Tab / S-Tab     " ファイル間を移動
 ### 2. 部分的な変更だけコミット
 
 ```
-<leader>lg      " lazygit起動
+<leader>gg      " lazygit起動
 Enter           " ファイルのhunk画面へ
 v               " 範囲選択
 Space           " 選択部分をstage
@@ -302,14 +302,14 @@ c               " コミット
 ### 3. 直前コミットを修正
 
 ```
-<leader>lg
+<leader>gg
 A               " amend
 ```
 
 ### 4. 変更を一時退避
 
 ```
-<leader>lg
+<leader>gg
 s               " stash
 [作業]
 g               " stash pop
@@ -318,7 +318,7 @@ g               " stash pop
 ### 5. ブランチ切り替え
 
 ```
-<leader>lg
+<leader>gg
 3               " Branchesパネルへ
 /検索           " ブランチ検索
 Space           " checkout
@@ -328,5 +328,4 @@ Space           " checkout
 
 ## 補足: vim-fugitive
 
-`<leader>gg` でfugitiveステータス画面も使用可能。軽量な操作向け。
-lazygitが重く感じる場合の代替として。
+このリポジトリでは `vim-fugitive` の設定は無効。`<leader>gg` は Snacks 経由で lazygit を開く。
