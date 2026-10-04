@@ -13,9 +13,6 @@ return {
         local actions = require("telescope.actions")
         local builtin = require("telescope.builtin")
 
-        pcall(telescope.load_extension, "fzf")
-        telescope.load_extension("themes")
-
         telescope.setup({
             defaults = {
                 path_display = { "smart" },
@@ -40,6 +37,10 @@ return {
                 },
             },
         })
+
+        -- extension の setup は load 時の設定で走るので、telescope.setup より後で load する
+        pcall(telescope.load_extension, "fzf")
+        telescope.load_extension("themes")
 
         --Keymaps
         vim.keymap.set("n", "<leader>pr", function()
