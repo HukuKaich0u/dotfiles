@@ -69,7 +69,16 @@ return {
                 search = "#33467c",
             }
 
+            -- colors/ 配下の自前テーマは picker の色も自分で定義している
+            local self_styled_themes = {
+                ["sethy-default"] = true,
+            }
+
             local function apply_nvcode_highlights()
+                if self_styled_themes[vim.g.colors_name] then
+                    return
+                end
+
                 if not transparent_themes[vim.g.colors_name] then
                     apply_snacks_picker_highlights()
                     return
