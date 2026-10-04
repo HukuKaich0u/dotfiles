@@ -25,6 +25,11 @@
     interval = [{Weekday = 7; Hour = 3; Minute = 15;}];
     options = "--delete-older-than 30d";
   };
+  # 同じ内容のファイルを hardlink にまとめて store の重複を減らす。
+  nix.optimise = {
+    automatic = true;
+    interval = [{Weekday = 7; Hour = 4; Minute = 15;}];
+  };
 
   # nix-darwin requires its own state version for compatibility tracking.
   system.stateVersion = 6;
