@@ -16,6 +16,16 @@
   # "experimental Nix feature 'nix-command' is disabled".
   nix.settings.experimental-features = ["nix-command" "flakes"];
 
+  # switch のたびに増える古い世代と /nix/store を定期的に掃除する。
+  # 設定変更は 2 週に 1 回程度なので、30 日残せば直前の数世代へは戻せる。
+  # root で走るこの GC は system の世代だけを消す。ユーザー側の世代は
+  # ./default.nix の Home Manager 側 nix.gc が消す。
+  nix.gc = {
+    automatic = true;
+    interval = [{Weekday = 7; Hour = 3; Minute = 15;}];
+    options = "--delete-older-than 30d";
+  };
+
   # nix-darwin requires its own state version for compatibility tracking.
   system.stateVersion = 6;
   # Record which dotfiles revision produced the current darwin configuration.
