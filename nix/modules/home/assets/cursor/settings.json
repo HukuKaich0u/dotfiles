@@ -145,5 +145,6 @@
   },
   "git.openRepositoryInParentFolders": "always",
   "aws.cloudformation.telemetry.enabled": true,
-  "claudeCode.hideOnboarding": true
+  "claudeCode.hideOnboarding": true,
+  "python.defaultInterpreterPath": "/usr/local/bin/python3.13"
 }
