@@ -24,24 +24,8 @@ return {
 		lazy = false,
 		init = function()
 			local group = vim.api.nvim_create_augroup("SethyExplorerSidebar", { clear = true })
-			-- VSCode のように、最初にファイルかディレクトリを開いた時点で explorer を左に出しておく。
-			-- 一度だけなので、手動で閉じた後に勝手に再表示はしない。
-			vim.api.nvim_create_autocmd("BufWinEnter", {
-				group = group,
-				callback = function(ev)
-					if vim.bo[ev.buf].buftype ~= "" or vim.api.nvim_buf_get_name(ev.buf) == "" then
-						return
-					end
-					vim.schedule(function()
-						if #Snacks.picker.get({ source = "explorer" }) == 0 then
-							-- focus は開いたファイル側に残す
-							Snacks.explorer({ enter = false })
-						end
-					end)
-					return true
-				end,
-			})
-			-- 最後の通常ウィンドウを :q したとき explorer だけが残らないよう、先に閉じる。
+			-- <leader>ee で開いた explorer を残したまま最後の通常ウィンドウを :q すると、
+			-- explorer だけが残って nvim が終了しないので、先に閉じる。
 			-- picker:close() は layout の破棄を schedule するので、layout も同期で閉じる。
 			vim.api.nvim_create_autocmd("QuitPre", {
 				group = group,
