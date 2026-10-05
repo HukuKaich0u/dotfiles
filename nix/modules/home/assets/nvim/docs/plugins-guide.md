@@ -427,7 +427,7 @@ fzf-native と themes 拡張を組み込んだファジーピッカー。多く�
 - insert モードのリスト移動は `<C-j>` / `<C-k>`、normal モードは `q` で閉じる
 - 選んだテーマは `stdpath("state")/current-theme.lua` に永続化される
 - `sethy-default` は `colors/sethy-default.lua` にある自前テーマ。Neovim 標準の `default` の構文色はそのままに、背景透過と float / picker / 補完メニューの見た目を他テーマに揃えている(dark 固定)
-- `sethy-vim` は `colors/sethy-vim.lua` にある自前テーマ。Vim 標準の `vim` の色の割り当てを残しつつ原色を落ち着かせ、ピンクは include や見出しのアクセントにだけ使う(dark 固定)
+- `sethy-vim` は `colors/sethy-vim.lua` にある自前テーマ。Vim 標準の `vim` の見た目(構文色・黄色の行番号・青い `~` など)をほぼ残し、ネオンに近い色だけ少し抑えている。ピンクは文字のアクセントにだけ使い、補完メニューなどの面には使わない(dark 固定)
 - 自前テーマ共通の透過・float・picker・補完メニューの上書きは `lua/Sethy/colors/ui.lua` にまとめている
 
 ### auto-session

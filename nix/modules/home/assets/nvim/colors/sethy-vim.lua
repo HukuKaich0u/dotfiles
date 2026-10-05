@@ -1,8 +1,8 @@
--- Vim の標準 colorscheme (vim) をベースに、色の刺激を抑えたもの。
--- 色の割り当て (Comment は青、Statement は黄、Type は緑 …) は vim のまま残し、
--- 原色に近い値だけ彩度と明度を落とす。UI 面は lua/Sethy/colors/ui.lua で他の自前テーマと揃える。
--- ピンク系 (vim の PreProc / Title / Pmenu) は include や見出しなどのアクセントにだけ残し、
--- 補完メニューのように面で出る場所には使わない。
+-- Vim の標準 colorscheme (vim) をベースに、ネオンに近い色だけを少し抑えたもの。
+-- 構文色・黄色の行番号・青い ~・黄色の検索・DarkCyan の括弧など、vim の見た目はほぼそのまま残す。
+-- UI 面 (透過・float・picker) は lua/Sethy/colors/ui.lua で他の自前テーマと揃える。
+-- ピンク系 (vim の PreProc / Title) は文字のアクセントにだけ残し、
+-- vim の Pmenu (Magenta) のように面で出る場所には使わない。
 -- ターミナル側 (ghostty / wezterm) の黒背景を透かす前提なので dark に固定している。
 
 vim.o.background = "dark"
@@ -11,104 +11,112 @@ vim.cmd.runtime("colors/vim.lua")
 vim.g.colors_name = "sethy-vim"
 
 local c = {
-    black = "#0b0c10",
-    dark2 = "#17191e",
-    dark3 = "#2b2e35",
-    dark4 = "#50545c",
-    light1 = "#ececec",
-    light2 = "#d4d4d4",
-    light3 = "#b6b6b8",
-    light4 = "#8c8e93",
+    -- 中立色は vim に合わせて青みのない灰色。本文は灰色に寄せずはっきりした白にする
+    black = "#000000",
+    grey1 = "#1c1c1c",
+    grey2 = "#303030",
+    grey3 = "#3a3a3a",
+    grey4 = "#585858",
+    grey5 = "#8a8a8a",
+    grey7 = "#d0d0d0",
+    white = "#ffffff",
 
-    -- vim の構文色を落ち着かせた値。右は元の値
-    blue = "#8496c9", -- Comment    #80a0ff
-    cyan = "#79c2c2", -- Identifier #40ffff
-    yellow = "#dccb7a", -- Statement  #ffff60
-    green = "#8cc788", -- Type       #60ff60
-    coral = "#dfa48f", -- Constant   #ffa0a0 (ピンク寄りから橙寄りへ)
-    orange = "#d6a066", -- Special    Orange
-    orchid = "#be98cf", -- PreProc    #ff80ff (アクセント用)
-    red = "#e0857b", -- Error / Removed
+    -- vim の構文色。右は元の値。ネオンに近いものだけ少し抑えている
+    blue = "#80a0ff", -- Comment    #80a0ff
+    salmon = "#ffa0a0", -- Constant   #ffa0a0
+    cyan = "#48eaea", -- Identifier #40ffff
+    yellow = "#fafa5a", -- Statement  #ffff60
+    green = "#5ff55f", -- Type       #60ff60
+    orange = "#f5a623", -- Special    Orange
+    magenta = "#ee88ee", -- PreProc    #ff80ff / Title Magenta
+    red = "#ee4444", -- Red
 
-    blue_bright = "#9fb3e6",
-    search_bg = "#4a4422",
+    line_yellow = "#d7d75f", -- LineNr     Yellow
+    nontext_blue = "#5f5fff", -- NonText    Blue
+    dark_cyan = "#008b8b", -- MatchParen DarkCyan
 }
 
 require("Sethy.colors.ui").apply({
-    fg = c.light2,
-    fg_strong = c.light1,
-    fg_sub = c.light3,
-    fg_muted = c.light4,
-    faint = c.dark3,
-    border = c.dark4,
-    bg_subtle = c.dark2,
-    bg_sel = c.dark3,
-    accent = c.blue_bright,
+    fg = c.white,
+    fg_strong = c.white,
+    fg_sub = c.grey7,
+    fg_muted = c.grey5,
+    faint = c.grey2,
+    border = c.grey4,
+    bg_subtle = c.grey1,
+    bg_sel = c.grey3,
+    accent = c.blue,
     accent_alt = c.cyan,
-    search_fg = c.light1,
-    search_bg = c.search_bg,
+    search_fg = c.black,
+    search_bg = c.yellow,
     cur_search_fg = c.black,
-    cur_search_bg = c.yellow,
+    cur_search_bg = c.orange,
 })
 
 require("Sethy.colors.ui").set({
     -- 構文
     Comment = { fg = c.blue },
-    Constant = { fg = c.coral },
+    Constant = { fg = c.salmon },
     Special = { fg = c.orange },
     Identifier = { fg = c.cyan },
     Statement = { fg = c.yellow, bold = true },
-    PreProc = { fg = c.orchid },
+    PreProc = { fg = c.magenta },
     Type = { fg = c.green, bold = true },
-    Underlined = { fg = c.blue_bright, underline = true },
-    Title = { fg = c.orchid, bold = true },
-    Todo = { fg = c.black, bg = c.yellow, bold = true },
-    Error = { fg = c.red, bold = true },
-    -- vim は変数を全部 Identifier (シアン) にするので画面がシアンで埋まる。素の変数だけ本文色にする
-    ["@variable"] = { fg = c.light2 },
+    Underlined = { fg = c.blue, underline = true },
+    Title = { fg = c.magenta, bold = true },
+    Todo = { fg = "#0000c0", bg = c.yellow },
+    Error = { fg = c.white, bg = "#b22222" },
 
-    -- vim らしさとして残す小さなアクセント
+    -- vim の UI の特徴
+    LineNr = { fg = c.line_yellow, bg = "none" },
     CursorLineNr = { fg = c.yellow, bg = "none", bold = true },
-    NonText = { fg = "#4c5878" },
-    SpecialKey = { fg = "#5f8f8f" },
+    NonText = { fg = c.nontext_blue, bold = true },
+    EndOfBuffer = { link = "NonText" },
+    SpecialKey = { fg = "#40c0c0" },
     Directory = { fg = c.cyan },
-    MatchParen = { bg = "#2d4b4b", bold = true },
-    CursorColumn = { bg = c.dark2 },
-    Conceal = { fg = c.light4, bg = "none" },
+    MatchParen = { bg = c.dark_cyan },
+    Visual = { fg = "#d3d3d3", bg = "#575757" },
+    Folded = { fg = c.cyan, bg = "none" },
+    FoldColumn = { fg = c.cyan, bg = "none" },
+    CursorLine = { bg = c.grey2 },
+    CursorColumn = { bg = c.grey2 },
+    -- colorcolumn = 80 で縦一列に出るので、vim の DarkRed を暗く落とす
+    ColorColumn = { bg = "#3a1414" },
+    Conceal = { fg = "#d3d3d3", bg = "none" },
 
     -- メッセージ
-    ErrorMsg = { fg = c.red, bold = true },
+    ErrorMsg = { fg = c.white, bg = "#b22222" },
     WarningMsg = { fg = c.red },
-    MoreMsg = { fg = c.green, bold = true },
-    Question = { fg = c.green, bold = true },
+    MoreMsg = { fg = "#3cb371", bold = true },
+    Question = { fg = "#44dd44", bold = true },
     WildMenu = { fg = c.black, bg = c.yellow },
     -- vim は terminal の statusline を明るい緑の面にするので、通常の statusline に揃える
     StatusLineTerm = { link = "StatusLine" },
     StatusLineTermNC = { link = "StatusLineNC" },
 
-    -- diff: vim の色相 (青 / 紫 / シアン / 赤) を暗い面に置き換える
-    DiffAdd = { bg = "#1f3326" },
-    DiffChange = { bg = "#252b40" },
-    DiffDelete = { fg = "#8a4a4a", bg = "#2e1c1e" },
-    DiffText = { bg = "#354470", bold = true },
-    Added = { fg = c.green },
-    Changed = { fg = c.blue_bright },
+    -- diff: vim の色相 (DarkBlue / DarkMagenta / DarkCyan / Red) のまま暗くする
+    DiffAdd = { bg = "#1c2a5c" },
+    DiffChange = { bg = "#33213f" },
+    DiffDelete = { fg = c.nontext_blue, bg = "#123b3b", bold = true },
+    DiffText = { bg = "#6b1f1f", bold = true },
+    Added = { fg = "#44cc44" },
+    Changed = { fg = "#3a8ee6" },
     Removed = { fg = c.red },
 
     DiagnosticError = { fg = c.red },
     DiagnosticWarn = { fg = c.orange },
-    DiagnosticInfo = { fg = c.blue_bright },
-    DiagnosticHint = { fg = c.light4 },
-    DiagnosticOk = { fg = c.green },
+    DiagnosticInfo = { fg = "#add8e6" },
+    DiagnosticHint = { fg = "#d3d3d3" },
+    DiagnosticOk = { fg = "#90ee90" },
     DiagnosticUnderlineError = { sp = c.red, underline = true },
     DiagnosticUnderlineWarn = { sp = c.orange, underline = true },
-    DiagnosticUnderlineInfo = { sp = c.blue_bright, underline = true },
-    DiagnosticUnderlineHint = { sp = c.light4, underline = true },
-    DiagnosticUnderlineOk = { sp = c.green, underline = true },
+    DiagnosticUnderlineInfo = { sp = "#add8e6", underline = true },
+    DiagnosticUnderlineHint = { sp = "#d3d3d3", underline = true },
+    DiagnosticUnderlineOk = { sp = "#90ee90", underline = true },
     DiagnosticDeprecated = { sp = c.red, strikethrough = true },
 
     SpellBad = { sp = c.red, undercurl = true },
-    SpellCap = { sp = c.blue_bright, undercurl = true },
+    SpellCap = { sp = c.blue, undercurl = true },
     SpellLocal = { sp = c.cyan, undercurl = true },
-    SpellRare = { sp = c.orchid, undercurl = true },
+    SpellRare = { sp = c.magenta, undercurl = true },
 })
