@@ -427,7 +427,7 @@ fzf-native と themes 拡張を組み込んだファジーピッカー。多く�
 - insert モードのリスト移動は `<C-j>` / `<C-k>`、normal モードは `q` で閉じる
 - 選んだテーマは `stdpath("state")/current-theme.lua` に永続化される
 - `sethy-default` は `colors/sethy-default.lua` にある自前テーマ。Neovim 標準の `default` の構文色はそのままに、背景透過と float / picker / 補完メニューの見た目を他テーマに揃えている(dark 固定)
-- `sethy-vim` は `colors/sethy-vim.lua` にある自前テーマ。Vim 標準の `vim` の見た目(構文色・黄色の行番号・青い `~` など)を残し、色の濃さは端末で vim を動かしたときの ANSI 色(WezTerm 標準の `#55cc55` など)に合わせている。vim では変数・引数・プロパティ・関数がすべてシアンになるので、関数だけをシアンにして、変数は白、引数は金色、フィールド・プロパティは型と同系の緑(型は太字)に分けている。ピンクは文字のアクセントにだけ使い、補完メニューなどの面には使わない(dark 固定)
+- `sethy-vim` は `colors/sethy-vim.lua` にある自前テーマ。Vim 標準の `vim` と Neovim 標準の `default` を混ぜている。骨格は `default` に倣って白を多くし(宣言系のキーワード・演算子・型・変数・引数は白、コメントは灰色、文字列は緑)、vim の色は制御フロー(`if` / `for` / `return` など)の黄、関数のシアン、数値・定数のサーモン、`import` / `export` のマゼンタ、`this` / `self` / 組み込みのオレンジとして残している。フィールド・プロパティは水色。色の濃さは端末で vim を動かしたときの ANSI 色(WezTerm 標準の `#55cc55` など)に合わせている。黄色の行番号・青い `~` など vim の UI の特徴も残し、ピンクは補完メニューなどの面には使わない(dark 固定)
 - 自前テーマ共通の透過・float・picker・補完メニューの上書きは `lua/Sethy/colors/ui.lua` にまとめている
 
 ### auto-session

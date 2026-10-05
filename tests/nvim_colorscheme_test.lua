@@ -26,7 +26,9 @@ end
 assert_equal(hl("String").fg, tonumber("b3f6c0", 16), "String should keep the default colorscheme color")
 assert_equal(hl("PmenuSel").reverse, nil, "PmenuSel should not use reverse video")
 
-local syntax_groups = { "Comment", "Constant", "Identifier", "Statement", "PreProc", "Type" }
+-- sethy-vim で vim の色を残すグループと、default に倣うグループ
+local vim_groups = { "Constant", "Identifier", "Statement", "PreProc", "Special" }
+local default_groups = { "Comment", "String" }
 
 local function rgb(color)
   return math.floor(color / 0x10000), math.floor(color / 0x100) % 0x100, color % 0x100
@@ -52,8 +54,14 @@ end
 
 vim.cmd("colorscheme vim")
 local vim_fg = {}
-for _, group in ipairs(syntax_groups) do
+for _, group in ipairs(vim_groups) do
   vim_fg[group] = hl(group).fg
+end
+
+vim.cmd("colorscheme default")
+local default_fg = {}
+for _, group in ipairs(default_groups) do
+  default_fg[group] = hl(group).fg
 end
 
 vim.o.background = "light"
@@ -76,17 +84,27 @@ do
   assert(hl("ColorColumn").bg ~= hl("CursorLine").bg, "ColorColumn should be distinguishable from CursorLine")
 end
 
--- 構文色は vim の色相を保つ
-for _, group in ipairs(syntax_groups) do
-  local fg = hl(group).fg
-  assert(fg, group .. " should have a foreground color")
-  local diff = math.abs(hue(fg) - hue(vim_fg[group]))
-  diff = math.min(diff, 360 - diff)
-  assert(diff <= 10, ("%s should keep vim's hue: #%06x vs #%06x"):format(group, fg, vim_fg[group]))
+local function hue_diff(a, b)
+  local diff = math.abs(hue(a) - hue(b))
+  return math.min(diff, 360 - diff)
 end
 
+-- vim の色を残すグループは vim の色相を保つ
+for _, group in ipairs(vim_groups) do
+  local fg = hl(group).fg
+  assert(fg, group .. " should have a foreground color")
+  assert(hue_diff(fg, vim_fg[group]) <= 10, ("%s should keep vim's hue: #%06x vs #%06x"):format(group, fg, vim_fg[group]))
+end
+
+-- default に倣うグループ: コメントは default と同じ灰色、文字列は default と同じ緑の色相 (濃さは ANSI 寄り)
+assert_equal(hl("Comment").fg, default_fg.Comment, "Comment should use default's grey")
+assert(hue_diff(hl("String").fg, default_fg.String) <= 15, ("String should keep default's green hue: #%06x"):format(hl("String").fg))
+-- 型は default と同じく本文色。太字で見分ける
+assert_equal(hl("Type").fg, hl("Normal").fg, "Type should use the normal foreground like default")
+assert_equal(hl("Type").bold, true, "Type should be bold")
+
 -- ネオンに近い色だけは vim より抑える
-for _, group in ipairs({ "Identifier", "Statement", "Type" }) do
+for _, group in ipairs({ "Identifier", "Statement" }) do
   local r, g, b = rgb(hl(group).fg)
   local vr, vg, vb = rgb(vim_fg[group])
   assert(r + g + b < vr + vg + vb, group .. " should be dimmer than vim's original")
@@ -94,7 +112,7 @@ end
 
 assert_equal(vim.api.nvim_get_hl(0, { name = "@function" }).link, "Function", "@function should keep vim's link")
 
--- 実際のコードで、変数・引数・フィールド・関数呼び出しが別の色になる
+-- 実際のコードで、変数・フィールド・関数呼び出しが別の色になる。引数は default と同じく変数と同じ白
 local buf = vim.api.nvim_create_buf(false, true)
 vim.api.nvim_buf_set_lines(buf, 0, -1, false, {
   "local function greet(name)",
@@ -124,7 +142,7 @@ local roles = {
   function_name = { fg_at(0, 15) }, -- greet
 }
 local seen = {}
-for _, role in ipairs({ "variable", "parameter", "member", "method" }) do
+for _, role in ipairs({ "variable", "member", "method" }) do
   local fg, group = roles[role][1], roles[role][2]
   assert(fg, role .. " should resolve to a color (" .. group .. ")")
   assert(not seen[fg], ("%s (%s) should not share a color with %s"):format(role, group, tostring(seen[fg])))
@@ -132,8 +150,22 @@ for _, role in ipairs({ "variable", "parameter", "member", "method" }) do
 end
 assert_equal(roles.method[1], roles.function_name[1], "method calls and function names should share the function color")
 assert_equal(roles.variable[1], hl("Normal").fg, "plain variables should use the normal foreground")
-assert(roles.member[1] ~= hl("Type").fg, "fields should not share the type color")
-assert(not hl("@variable.member").bold and hl("Type").bold, "types should be bold and fields should not")
+assert(roles.parameter[1], "parameter should resolve to a color (" .. roles.parameter[2] .. ")")
+assert_equal(roles.parameter[1], roles.variable[1], "parameters should use the same white as variables")
+assert(roles.member[1] ~= hl("String").fg, "fields should not share the string color")
+
+-- 宣言系のキーワードと演算子は白、制御フローのキーワードだけ vim の黄色
+local function hl_at(row, col)
+  local _, group = fg_at(row, col)
+  return hl(group), group
+end
+for _, pos in ipairs({ { 0, 0 }, { 0, 6 } }) do -- local / function
+  local h, group = hl_at(pos[1], pos[2])
+  assert_equal(h.fg, hl("Normal").fg, group .. " should use white like Neovim's default")
+  assert_equal(h.bold, true, group .. " should stay bold")
+end
+assert_equal(hl_at(2, 2).fg, hl("Statement").fg, "return should keep vim's yellow")
+assert_equal(hl_at(1, 13).fg, hl("Normal").fg, "operators should use white")
 
 -- sethy-vim の上書きが sethy-default に残らない
 vim.cmd("colorscheme sethy-default")

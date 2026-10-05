@@ -1,5 +1,7 @@
--- Vim の標準 colorscheme (vim) をベースにしたもの。色の濃さは vim の GUI 用の淡い値ではなく、
--- 端末で vim を動かしたときの ANSI 色 (WezTerm 標準の #55cc55 など) に合わせている。
+-- Vim の標準 colorscheme (vim) と Neovim 標準の default を混ぜたもの。
+-- 骨格は default に倣って白を多くし (宣言系キーワード・演算子・型・引数は白、コメントは灰色、文字列は緑)、
+-- vim の色は制御フローの黄・関数のシアン・定数のサーモン・import のマゼンタ・組み込みのオレンジとして残す。
+-- 色の濃さは vim の GUI 用の淡い値ではなく、端末で vim を動かしたときの ANSI 色 (WezTerm 標準の #55cc55 など) に合わせている。
 -- 構文色・黄色の行番号・青い ~・黄色の検索・DarkCyan の括弧など、vim の見た目はほぼそのまま残す。
 -- UI 面 (透過・float・picker) は lua/Sethy/colors/ui.lua で他の自前テーマと揃える。
 -- ピンク系 (vim の PreProc / Title) は文字のアクセントにだけ残し、
@@ -23,18 +25,18 @@ local c = {
     white = "#ffffff",
 
     -- vim の構文色。右は vim (GUI) の値。色相は保ち、パステル寄りのものは濃くしている
-    blue = "#7090ff", -- Comment    #80a0ff
+    blue = "#7090ff", -- Comment    #80a0ff (コメントには使わず、リンクや UI のアクセントに使う)
     salmon = "#ff8787", -- Constant   #ffa0a0
     cyan = "#40e0e0", -- Identifier #40ffff
     yellow = "#fafa5a", -- Statement  #ffff60
-    green = "#55cc55", -- Type       #60ff60 (WezTerm 標準の ANSI green)
+    green = "#55cc55", -- Type       #60ff60 (WezTerm 標準の ANSI green。default に倣い文字列に使う)
     orange = "#f5a623", -- Special    Orange
     magenta = "#e070e0", -- PreProc    #ff80ff / Title Magenta
     red = "#ee4444", -- Red
 
-    -- vim にない役割用。vim の 256 色の範囲から選び、既存の色相と並べて区別できる値にする
-    param = "#e8c060", -- 引数: キーワードの黄より橙寄りの金色
-    member = "#5fd75f", -- フィールド・プロパティ: 型と同系の緑。型は太字なので太さで見分ける
+    -- default 由来の色
+    comment = "#9b9ea4", -- Comment: default の NvimLightGrey4
+    member = "#87d7ff", -- フィールド・プロパティ: default の水色 (NvimLightBlue) を ANSI 寄りに濃くしたもの
 
     line_yellow = "#d7d75f", -- LineNr     Yellow
     nontext_blue = "#5f5fff", -- NonText    Blue
@@ -60,13 +62,15 @@ require("Sethy.colors.ui").apply({
 
 require("Sethy.colors.ui").set({
     -- 構文
-    Comment = { fg = c.blue },
+    Comment = { fg = c.comment },
     Constant = { fg = c.salmon },
+    String = { fg = c.green },
+    Character = { link = "String" },
     Special = { fg = c.orange },
     Identifier = { fg = c.cyan },
     Statement = { fg = c.yellow, bold = true },
     PreProc = { fg = c.magenta },
-    Type = { fg = c.green, bold = true },
+    Type = { fg = c.white, bold = true },
     Underlined = { fg = c.blue, underline = true },
     Title = { fg = c.magenta, bold = true },
     Todo = { fg = "#0000c0", bg = c.yellow },
@@ -78,15 +82,29 @@ require("Sethy.colors.ui").set({
     Function = { fg = c.cyan },
     ["@variable"] = { fg = c.white },
     ["@variable.builtin"] = { link = "Special" }, -- self / this
-    ["@variable.parameter"] = { fg = c.param },
+    ["@variable.parameter"] = { link = "@variable" },
     ["@variable.member"] = { fg = c.member },
     ["@property"] = { link = "@variable.member" },
     ["@module"] = { link = "Structure" },
-    -- string / number などの組み込み型は Neovim 既定だと Special (オレンジ) になる。型は緑に揃える
+    -- string / number などの組み込み型は Neovim 既定だと Special (オレンジ) になる。型と同じ白の太字に揃える
     ["@type.builtin"] = { link = "Type" },
-    -- 括弧やカンマは vim だと Delimiter (Special のオレンジ) になり画面がうるさいので、一段薄くする
-    ["@punctuation"] = { fg = c.grey5 },
+    -- 括弧やカンマは vim だと Delimiter (Special のオレンジ) になり画面がうるさいので、白に近い灰色にする
+    ["@punctuation"] = { fg = c.grey7 },
     ["@punctuation.special"] = { link = "Special" }, -- 文字列補間の ${} など
+
+    -- default に倣い、宣言系のキーワード (local / const / function / class / private …) と演算子は白にする。
+    -- vim の黄色は制御フロー (if / for / return / await …) だけに残し、処理の流れが目に入るようにする
+    Operator = { fg = c.white },
+    ["@keyword"] = { fg = c.white, bold = true },
+    ["@keyword.function"] = { link = "@keyword" },
+    ["@keyword.modifier"] = { link = "@keyword" },
+    ["@keyword.type"] = { link = "@keyword" },
+    ["@keyword.conditional"] = { link = "Statement" },
+    ["@keyword.repeat"] = { link = "Statement" },
+    ["@keyword.return"] = { link = "Statement" },
+    ["@keyword.exception"] = { link = "Statement" },
+    ["@keyword.coroutine"] = { link = "Statement" },
+    ["@keyword.operator"] = { link = "Statement" }, -- and / or / in など
 
     -- LSP の semantic token は Treesitter より優先されるので、同じ割り当てに揃える
     ["@lsp.type.variable"] = { link = "@variable" },
