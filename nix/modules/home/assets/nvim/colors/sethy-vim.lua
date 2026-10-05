@@ -1,4 +1,5 @@
--- Vim の標準 colorscheme (vim) をベースに、ネオンに近い色だけを少し抑えたもの。
+-- Vim の標準 colorscheme (vim) をベースにしたもの。色の濃さは vim の GUI 用の淡い値ではなく、
+-- 端末で vim を動かしたときの ANSI 色 (WezTerm 標準の #55cc55 など) に合わせている。
 -- 構文色・黄色の行番号・青い ~・黄色の検索・DarkCyan の括弧など、vim の見た目はほぼそのまま残す。
 -- UI 面 (透過・float・picker) は lua/Sethy/colors/ui.lua で他の自前テーマと揃える。
 -- ピンク系 (vim の PreProc / Title) は文字のアクセントにだけ残し、
@@ -21,19 +22,19 @@ local c = {
     grey7 = "#d0d0d0",
     white = "#ffffff",
 
-    -- vim の構文色。右は元の値。ネオンに近いものだけ少し抑えている
-    blue = "#80a0ff", -- Comment    #80a0ff
-    salmon = "#ffa0a0", -- Constant   #ffa0a0
-    cyan = "#48eaea", -- Identifier #40ffff
+    -- vim の構文色。右は vim (GUI) の値。色相は保ち、パステル寄りのものは濃くしている
+    blue = "#7090ff", -- Comment    #80a0ff
+    salmon = "#ff8787", -- Constant   #ffa0a0
+    cyan = "#40e0e0", -- Identifier #40ffff
     yellow = "#fafa5a", -- Statement  #ffff60
-    green = "#5ff55f", -- Type       #60ff60
+    green = "#55cc55", -- Type       #60ff60 (WezTerm 標準の ANSI green)
     orange = "#f5a623", -- Special    Orange
-    magenta = "#ee88ee", -- PreProc    #ff80ff / Title Magenta
+    magenta = "#e070e0", -- PreProc    #ff80ff / Title Magenta
     red = "#ee4444", -- Red
 
     -- vim にない役割用。vim の 256 色の範囲から選び、既存の色相と並べて区別できる値にする
-    param = "#ffd787", -- 引数: キーワードの黄より橙寄りで淡い金色
-    member = "#87ff87", -- フィールド・プロパティ: 型 (太字の緑) より明るい緑。メソッドのシアンと区別する
+    param = "#e8c060", -- 引数: キーワードの黄より橙寄りの金色
+    member = "#5fd75f", -- フィールド・プロパティ: 型と同系の緑。型は太字なので太さで見分ける
 
     line_yellow = "#d7d75f", -- LineNr     Yellow
     nontext_blue = "#5f5fff", -- NonText    Blue

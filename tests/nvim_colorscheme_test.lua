@@ -133,6 +133,7 @@ end
 assert_equal(roles.method[1], roles.function_name[1], "method calls and function names should share the function color")
 assert_equal(roles.variable[1], hl("Normal").fg, "plain variables should use the normal foreground")
 assert(roles.member[1] ~= hl("Type").fg, "fields should not share the type color")
+assert(not hl("@variable.member").bold and hl("Type").bold, "types should be bold and fields should not")
 
 -- sethy-vim の上書きが sethy-default に残らない
 vim.cmd("colorscheme sethy-default")
