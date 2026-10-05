@@ -50,7 +50,25 @@ vim.opt.mousescroll = "ver:3,hor:1"
 
 vim.opt.isfname:append("@-@")
 vim.opt.updatetime = 50
-vim.opt.colorcolumn = "80"
+
+-- 80 桁の目安線はコードのときだけ出す。文章・help・plugin の画面 (explorer / picker / terminal) では消す
+local prose_filetypes = {
+    markdown = true,
+    text = true,
+    help = true,
+    gitcommit = true,
+}
+vim.opt.colorcolumn = ""
+vim.api.nvim_create_autocmd({ "FileType", "BufWinEnter" }, {
+    group = vim.api.nvim_create_augroup("SethyColorColumn", { clear = true }),
+    callback = function(args)
+        local bo = vim.bo[args.buf]
+        local is_code = bo.buftype == "" and bo.filetype ~= "" and not prose_filetypes[bo.filetype]
+        for _, win in ipairs(vim.fn.win_findbuf(args.buf)) do
+            vim.api.nvim_set_option_value("colorcolumn", is_code and "80" or "", { scope = "local", win = win })
+        end
+    end,
+})
 
 if env.clipboard_available() then
     vim.opt.clipboard = "unnamedplus"
