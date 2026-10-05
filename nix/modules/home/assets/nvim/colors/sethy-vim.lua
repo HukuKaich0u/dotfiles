@@ -31,6 +31,10 @@ local c = {
     magenta = "#ee88ee", -- PreProc    #ff80ff / Title Magenta
     red = "#ee4444", -- Red
 
+    -- vim にない役割用。vim の 256 色の範囲から選び、既存の色相と並べて区別できる値にする
+    param = "#ffd787", -- 引数: キーワードの黄より橙寄りで淡い金色
+    member = "#87ff87", -- フィールド・プロパティ: 型 (太字の緑) より明るい緑。メソッドのシアンと区別する
+
     line_yellow = "#d7d75f", -- LineNr     Yellow
     nontext_blue = "#5f5fff", -- NonText    Blue
     dark_cyan = "#008b8b", -- MatchParen DarkCyan
@@ -66,6 +70,28 @@ require("Sethy.colors.ui").set({
     Title = { fg = c.magenta, bold = true },
     Todo = { fg = "#0000c0", bg = c.yellow },
     Error = { fg = c.white, bg = "#b22222" },
+
+    -- vim.lua は変数・引数・プロパティ・関数をすべて Identifier (シアン) に link するので、
+    -- 変数と関数の区別がつかない。本家 Vim の正規表現 syntax では変数にはほぼ色が付かず、
+    -- シアンになるのは主に関数なので、その見え方に合わせて役割を分ける。
+    Function = { fg = c.cyan },
+    ["@variable"] = { fg = c.white },
+    ["@variable.builtin"] = { link = "Special" }, -- self / this
+    ["@variable.parameter"] = { fg = c.param },
+    ["@variable.member"] = { fg = c.member },
+    ["@property"] = { link = "@variable.member" },
+    ["@module"] = { link = "Structure" },
+    -- string / number などの組み込み型は Neovim 既定だと Special (オレンジ) になる。型は緑に揃える
+    ["@type.builtin"] = { link = "Type" },
+    -- 括弧やカンマは vim だと Delimiter (Special のオレンジ) になり画面がうるさいので、一段薄くする
+    ["@punctuation"] = { fg = c.grey5 },
+    ["@punctuation.special"] = { link = "Special" }, -- 文字列補間の ${} など
+
+    -- LSP の semantic token は Treesitter より優先されるので、同じ割り当てに揃える
+    ["@lsp.type.variable"] = { link = "@variable" },
+    ["@lsp.type.parameter"] = { link = "@variable.parameter" },
+    ["@lsp.type.property"] = { link = "@variable.member" },
+    ["@lsp.type.namespace"] = { link = "@module" },
 
     -- vim の UI の特徴
     LineNr = { fg = c.line_yellow, bg = "none" },

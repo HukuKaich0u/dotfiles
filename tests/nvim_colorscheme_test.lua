@@ -87,8 +87,45 @@ end
 
 assert_equal(vim.api.nvim_get_hl(0, { name = "@function" }).link, "Function", "@function should keep vim's link")
 
--- vim の link 構造 (変数もシアン) は引き継ぐ
-assert_equal(vim.api.nvim_get_hl(0, { name = "@variable" }).link, "Identifier", "@variable should keep vim's link")
+-- 実際のコードで、変数・引数・フィールド・関数呼び出しが別の色になる
+local buf = vim.api.nvim_create_buf(false, true)
+vim.api.nvim_buf_set_lines(buf, 0, -1, false, {
+  "local function greet(name)",
+  "  local user = { name = name }",
+  "  return user.name:upper()",
+  "end",
+})
+vim.treesitter.start(buf, "lua")
+vim.treesitter.get_parser(buf, "lua"):parse()
+
+local function fg_at(row, col)
+  local captures = vim.treesitter.get_captures_at_pos(buf, row, col)
+  local group = "Normal"
+  for _, capture in ipairs(captures) do
+    if capture.lang == "lua" then
+      group = "@" .. capture.capture
+    end
+  end
+  return hl(group).fg, group
+end
+
+local roles = {
+  variable = { fg_at(2, 9) }, -- user
+  parameter = { fg_at(0, 21) }, -- name (引数)
+  member = { fg_at(2, 14) }, -- .name
+  method = { fg_at(2, 19) }, -- :upper()
+  function_name = { fg_at(0, 15) }, -- greet
+}
+local seen = {}
+for _, role in ipairs({ "variable", "parameter", "member", "method" }) do
+  local fg, group = roles[role][1], roles[role][2]
+  assert(fg, role .. " should resolve to a color (" .. group .. ")")
+  assert(not seen[fg], ("%s (%s) should not share a color with %s"):format(role, group, tostring(seen[fg])))
+  seen[fg] = role
+end
+assert_equal(roles.method[1], roles.function_name[1], "method calls and function names should share the function color")
+assert_equal(roles.variable[1], hl("Normal").fg, "plain variables should use the normal foreground")
+assert(roles.member[1] ~= hl("Type").fg, "fields should not share the type color")
 
 -- sethy-vim の上書きが sethy-default に残らない
 vim.cmd("colorscheme sethy-default")
