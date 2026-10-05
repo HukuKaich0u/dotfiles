@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# 実際の Starship を使い、親パスの表示・表示幅・長いブランチ名を検証する。
+# 実際の Starship を使い、親パスの表示・表示幅・長いブランチ名・仮想環境を検証する。
 set -eu
 
 for tool in starship nix-instantiate python3 git; do
@@ -45,12 +45,14 @@ with tempfile.TemporaryDirectory(prefix="starship-prompt-") as tmp:
     (project / "example.txt").write_text("untracked\n")
     env = dict(os.environ, PWD=str(project), STARSHIP_CONFIG=str(config), STARSHIP_SHELL="nu",
                STARSHIP_CACHE=str(root / "cache"))
-    for key in ("SSH_CONNECTION", "SSH_CLIENT", "SSH_TTY", "GIT_DIR", "GIT_WORK_TREE"):
+    for key in ("SSH_CONNECTION", "SSH_CLIENT", "SSH_TTY", "GIT_DIR", "GIT_WORK_TREE",
+                "VIRTUAL_ENV", "CONDA_DEFAULT_ENV", "IN_NIX_SHELL"):
         env.pop(key, None)
 
-    def prompt(*args):
+    def prompt(*args, extra_env=None):
         result = subprocess.run(["starship", "prompt", "--terminal-width", "80", *args],
-                                cwd=project, env=env, text=True, capture_output=True, check=True)
+                                cwd=project, env=dict(env, **(extra_env or {})),
+                                text=True, capture_output=True, check=True)
         assert not result.stderr, result.stderr
         plain = re.sub(r"\x1b\[[0-9;]*m", "", result.stdout)
         return result.stdout, plain
@@ -69,5 +71,15 @@ with tempfile.TemporaryDirectory(prefix="starship-prompt-") as tmp:
     assert "2s" in slow and "2s" not in plain, (plain, slow)
     _, jobs = prompt("--jobs", "1")
     assert "&" in jobs, f"Background jobs must remain visible: {jobs!r}"
-    print(f"OK: compact prompt, branch truncation, Git status, error, duration, jobs ({width} columns)")
+    assert "nix" not in plain and "(" not in plain, f"Inactive environments must stay hidden: {plain!r}"
+    (project / "pyproject.toml").write_text("[project]\nname = 'example'\n")
+    _, no_venv = prompt()
+    assert no_venv == plain, f"A Python project without a venv must not change the prompt: {no_venv!r}"
+    _, venv = prompt(extra_env={"VIRTUAL_ENV": str(root / "envs" / "demo-env")})
+    assert venv.startswith("(demo-env) "), f"Active venv must be visible: {venv!r}"
+    _, conda = prompt(extra_env={"CONDA_DEFAULT_ENV": "ml"})
+    assert conda.startswith("(ml) "), f"Active conda env must be visible: {conda!r}"
+    _, nix = prompt(extra_env={"IN_NIX_SHELL": "impure"})
+    assert nix.startswith("nix "), f"Nix dev shell must be visible: {nix!r}"
+    print(f"OK: compact prompt, branch truncation, Git status, error, duration, jobs, envs ({width} columns)")
 PY

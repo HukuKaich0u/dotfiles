@@ -6,13 +6,35 @@
     settings = {
       add_newline = false;
       # 全幅の fill と複数行を避け、リサイズ時の折り返し・再描画を安定させる。
-      format = "$hostname$directory$git_branch$git_status$git_state$cmd_duration$jobs$character";
+      format = "$hostname$python$conda$nix_shell$directory$git_branch$git_status$git_state$cmd_duration$jobs$character";
       right_format = "";
 
       hostname = {
         ssh_only = true;
         format = "[$hostname]($style) ";
         style = "bold #bb9af7";
+      };
+
+      # 仮想環境は有効なときだけ表示する。プロンプトを starship が毎回描くため、
+      # venv の activate が PS1 に足す "(name)" は残らない。
+      python = {
+        # 言語バージョンは出さず、VIRTUAL_ENV があるときだけ名前を出す。
+        detect_extensions = [];
+        detect_files = [];
+        detect_folders = [];
+        format = "[(\\($virtualenv\\) )]($style)";
+        style = "#7dcfff";
+      };
+
+      conda = {
+        format = "[\\($environment\\)]($style) ";
+        style = "#7dcfff";
+      };
+
+      # nix develop / direnv の use flake などで入った開発環境。
+      nix_shell = {
+        format = "[nix]($style) ";
+        style = "#73daca";
       };
 
       directory = {
