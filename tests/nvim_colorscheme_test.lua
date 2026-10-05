@@ -69,6 +69,13 @@ end
 -- vim の明るい色の面 (Pmenu の Magenta、terminal statusline の LightGreen) は残さない
 assert_equal(hl("StatusLineTerm").bg, nil, "StatusLineTerm should not use a bright green background")
 
+-- 80 桁の線は vim の DarkRed ではなく、色味のない灰色にする
+do
+  local r, g, b = rgb(hl("ColorColumn").bg)
+  assert(r == g and g == b, ("ColorColumn should be grey, got #%06x"):format(hl("ColorColumn").bg))
+  assert(hl("ColorColumn").bg ~= hl("CursorLine").bg, "ColorColumn should be distinguishable from CursorLine")
+end
+
 -- 構文色は vim の色相を保つ
 for _, group in ipairs(syntax_groups) do
   local fg = hl(group).fg

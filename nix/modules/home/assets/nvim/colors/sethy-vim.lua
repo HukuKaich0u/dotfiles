@@ -106,8 +106,8 @@ require("Sethy.colors.ui").set({
     FoldColumn = { fg = c.cyan, bg = "none" },
     CursorLine = { bg = c.grey2 },
     CursorColumn = { bg = c.grey2 },
-    -- colorcolumn = 80 で縦一列に出るので、vim の DarkRed を暗く落とす
-    ColorColumn = { bg = "#3a1414" },
+    -- colorcolumn = 80 で縦一列に出るので、vim の DarkRed ではなく CursorLine より一段暗い灰色にする
+    ColorColumn = { bg = "#262626" },
     Conceal = { fg = "#d3d3d3", bg = "none" },
 
     -- メッセージ
