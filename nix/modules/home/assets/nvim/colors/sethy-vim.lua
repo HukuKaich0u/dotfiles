@@ -65,6 +65,8 @@ require("Sethy.colors.ui").set({
     Comment = { fg = c.comment },
     Constant = { fg = c.salmon },
     String = { fg = c.green },
+    -- true / false は設定ファイルに頻出し、サーモンだとピンクが多く見えるので default と同じく白にする
+    Boolean = { fg = c.white },
     Character = { link = "String" },
     Special = { fg = c.orange },
     Identifier = { fg = c.cyan },
@@ -85,6 +87,12 @@ require("Sethy.colors.ui").set({
     ["@variable.parameter"] = { link = "@variable" },
     ["@variable.member"] = { fg = c.member },
     ["@property"] = { link = "@variable.member" },
+    -- JSON / TOML / YAML などのデータファイルはキーが大半を占めるので、キーは白にして値 (文字列の緑など) と分ける
+    ["@property.json"] = { fg = c.white },
+    ["@property.jsonc"] = { link = "@property.json" },
+    ["@property.json5"] = { link = "@property.json" },
+    ["@property.toml"] = { link = "@property.json" },
+    ["@property.yaml"] = { link = "@property.json" },
     ["@module"] = { link = "Structure" },
     -- string / number などの組み込み型は Neovim 既定だと Special (オレンジ) になる。型と同じ白の太字に揃える
     ["@type.builtin"] = { link = "Type" },

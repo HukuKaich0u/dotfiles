@@ -112,6 +112,16 @@ do
   assert_equal(hl("@attribute").fg, hl("PreProc").fg, "decorators / attributes should keep the pink accent")
 end
 
+-- true / false は default と同じく白 (サーモンだと設定ファイルがピンクだらけに見える)。数値は vim のサーモンのまま
+assert_equal(hl("Boolean").fg, hl("Normal").fg, "booleans should use white")
+assert_equal(hl("Number").fg, hl("Constant").fg, "numbers should keep vim's salmon")
+
+-- データファイルのキーは白にして、値の色と分ける
+for _, lang in ipairs({ "json", "jsonc", "json5", "toml", "yaml" }) do
+  assert_equal(hl("@property." .. lang).fg, hl("Normal").fg, lang .. " keys should use white")
+end
+assert(hl("@property").fg ~= hl("Normal").fg, "properties in code should keep their own color")
+
 -- ネオンに近い色だけは vim より抑える
 for _, group in ipairs({ "Identifier", "Statement" }) do
   local r, g, b = rgb(hl(group).fg)
