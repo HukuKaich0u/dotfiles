@@ -44,4 +44,11 @@ require("Sethy.colors.ui").apply({
     search_bg = c.dark_blue,
     cur_search_fg = c.dark1,
     cur_search_bg = c.yellow,
+    -- lualine のモード表示: default の構文と同じ Nvim* の淡い色から選ぶ
+    mode_fg = c.dark1,
+    mode_normal = c.blue,
+    mode_insert = c.green,
+    mode_visual = c.cyan,
+    mode_replace = c.red,
+    mode_command = c.yellow,
 })

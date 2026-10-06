@@ -10,8 +10,20 @@
 --   accent / accent_alt                : タイトル・入力枠 / 補完の種類やトグル
 --   search_fg / search_bg              : 検索ヒット
 --   cur_search_fg / cur_search_bg      : 現在の検索ヒット
+--   mode_fg                            : lualine のモード表示の面に乗せる文字
+--   mode_normal / mode_insert / mode_visual / mode_replace / mode_command
+--                                      : lualine のモード表示の面。コードで使っている色から選ぶ
 
 local M = {}
+
+-- colors_name ごとに最後に apply したパレット。lualine など、ハイライトでは表せない UI が参照する
+---@type table<string, table<string, string>>
+M.palettes = {}
+
+---@return table<string, string>?
+function M.palette()
+    return vim.g.colors_name and M.palettes[vim.g.colors_name] or nil
+end
 
 local none = "none"
 
@@ -145,6 +157,9 @@ end
 
 ---@param c table<string, string>
 function M.apply(c)
+    if vim.g.colors_name then
+        M.palettes[vim.g.colors_name] = c
+    end
     M.set(M.highlights(c))
 end
 

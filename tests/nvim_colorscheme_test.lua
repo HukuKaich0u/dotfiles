@@ -231,6 +231,7 @@ vim.cmd.source(markdown_ftplugin)
 assert_equal(hl("@markup.heading.1.markdown").fg, tonumber("569CD6", 16), "other colorschemes should keep the ftplugin markdown colors")
 
 -- 自前テーマの UI は構文用のグループに引きずられず、UI の役割の色に揃う
+local ui = require("Sethy.colors.ui")
 for _, scheme in ipairs({ "sethy-vim", "sethy-default" }) do
   vim.cmd("colorscheme " .. scheme)
   -- snacks は ColorScheme の後に既定の link を default = true で足すので、先に定義した色が残ることを確かめる
@@ -243,4 +244,28 @@ for _, scheme in ipairs({ "sethy-vim", "sethy-default" }) do
     assert_equal(hl(group).fg, hl("FloatFooter").fg, scheme .. ": " .. group .. " should use the muted text color")
     assert(not hl(group).bold, scheme .. ": " .. group .. " should not be bold")
   end
+
+  local palette = ui.palette()
+  assert(palette, scheme .. ": the palette should be available for lualine")
+  for _, role in ipairs({ "mode_fg", "mode_normal", "mode_insert", "mode_visual", "mode_replace", "mode_command" }) do
+    assert(palette[role], scheme .. ": palette should define " .. role)
+  end
 end
+
+-- sethy-vim の lualine のモード表示は、コードで使っている色から選ぶ
+vim.cmd("colorscheme sethy-vim")
+do
+  local palette = ui.palette()
+  local function color(name)
+    return tonumber(palette[name]:sub(2), 16)
+  end
+  assert_equal(color("mode_normal"), hl("Function").fg, "normal mode should use the function blue")
+  assert_equal(color("mode_insert"), hl("String").fg, "insert mode should use the string green")
+  assert_equal(color("mode_visual"), hl("@variable.member").fg, "visual mode should use the field light blue")
+  assert_equal(color("mode_replace"), hl("Constant").fg, "replace mode should use the type / constant red")
+  assert_equal(color("mode_command"), hl("Special").fg, "command mode should use the builtin orange")
+end
+
+-- 自前テーマ以外ではパレットを返さず、lualine は従来の色を使う
+vim.cmd("colorscheme default")
+assert_equal(ui.palette(), nil, "non-sethy colorschemes should not expose a palette")

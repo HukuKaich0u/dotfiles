@@ -61,6 +61,13 @@ require("Sethy.colors.ui").apply({
     search_bg = c.yellow,
     cur_search_fg = c.black,
     cur_search_bg = c.orange,
+    -- lualine のモード表示: コードと同じ系統 (関数の青・文字列の緑・フィールドの水色・型の赤・組み込みのオレンジ)
+    mode_fg = c.black,
+    mode_normal = c.func_blue,
+    mode_insert = c.green,
+    mode_visual = c.member,
+    mode_replace = c.red_soft,
+    mode_command = c.orange,
 })
 
 require("Sethy.colors.ui").set({
