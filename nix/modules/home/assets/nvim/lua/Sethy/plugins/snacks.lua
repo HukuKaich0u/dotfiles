@@ -74,11 +74,18 @@ return {
 							ignored = true,
 						},
 					},
+					-- タイトル横の目印を、切り替えに使うキーと同じ文字にする
+					toggles = {
+						hidden = "H",
+						ignored = "I",
+					},
 					win = {
 						input = {
+							-- insert では大文字を検索語として打てるよう、normal だけに割り当てる。
+							-- 1 行の入力欄では H (画面最上行へ) と I (行頭から insert) はほぼ使わない。
 							keys = {
-								["H"] = { "toggle_hidden", mode = { "i", "n" } },
-								["I"] = { "toggle_ignored", mode = { "i", "n" } },
+								["H"] = { "toggle_hidden", mode = { "n" } },
+								["I"] = { "toggle_ignored", mode = { "n" } },
 							},
 						},
 						list = {
