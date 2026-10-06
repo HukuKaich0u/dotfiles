@@ -229,3 +229,18 @@ assert_equal(hl("@variable").fg, hl("Normal").fg, "@variable should not keep set
 -- sethy-vim 以外では、これまでどおり ftplugin の VS Code 風の色が当たる
 vim.cmd.source(markdown_ftplugin)
 assert_equal(hl("@markup.heading.1.markdown").fg, tonumber("569CD6", 16), "other colorschemes should keep the ftplugin markdown colors")
+
+-- 自前テーマの UI は構文用のグループに引きずられず、UI の役割の色に揃う
+for _, scheme in ipairs({ "sethy-vim", "sethy-default" }) do
+  vim.cmd("colorscheme " .. scheme)
+  -- snacks は ColorScheme の後に既定の link を default = true で足すので、先に定義した色が残ることを確かめる
+  vim.api.nvim_set_hl(0, "SnacksPickerTree", { link = "LineNr", default = true })
+  assert_equal(hl("SnacksPickerTree").fg, hl("FloatBorder").fg, scheme .. ": explorer tree lines should use the border grey")
+  for _, group in ipairs({ "SnacksPickerMatch", "SnacksPickerPrompt", "SnacksDashboardHeader" }) do
+    assert_equal(hl(group).fg, hl("FloatTitle").fg, scheme .. ": " .. group .. " should use the UI accent")
+  end
+  for _, group in ipairs({ "SnacksPickerTotals", "SnacksPickerGitStatusUntracked" }) do
+    assert_equal(hl(group).fg, hl("FloatFooter").fg, scheme .. ": " .. group .. " should use the muted text color")
+    assert(not hl(group).bold, scheme .. ": " .. group .. " should not be bold")
+  end
+end

@@ -93,6 +93,28 @@ function M.highlights(c)
         SnacksPickerToggle = { fg = c.accent_alt, bg = none },
         SnacksPickerToggleHidden = { fg = c.accent_alt, bg = none },
         SnacksPickerToggleIgnored = { fg = c.accent_alt, bg = none },
+        -- snacks の既定は LineNr / NonText / Special などの構文寄りのグループに link しており、
+        -- テーマによってはツリーの罫線が行番号の色になったり、件数が太字の色付きになったりする
+        SnacksPickerTree = { fg = c.border },
+        SnacksPickerMatch = { fg = c.accent, bold = true },
+        SnacksPickerPrompt = { fg = c.accent },
+        SnacksPickerSpinner = { fg = c.accent },
+        SnacksPickerTotals = { fg = c.fg_muted },
+        SnacksPickerDimmed = { fg = c.fg_muted },
+        SnacksPickerGitStatusUntracked = { fg = c.fg_muted },
+        SnacksPickerGitStatusIgnored = { fg = c.border },
+        SnacksPickerGitStatusStaged = { fg = c.accent_alt },
+        SnacksWinBar = { link = "WinBar" },
+
+        SnacksDashboardHeader = { fg = c.accent, bold = true },
+        SnacksDashboardIcon = { fg = c.accent },
+        SnacksDashboardKey = { fg = c.accent_alt },
+        SnacksDashboardDesc = { fg = c.fg_sub },
+        SnacksDashboardTitle = { fg = c.fg_strong, bold = true },
+        SnacksDashboardFooter = { fg = c.fg_muted },
+        SnacksDashboardSpecial = { fg = c.accent_alt },
+        SnacksDashboardDir = { fg = c.fg_muted },
+        SnacksDashboardFile = { fg = c.fg },
 
         BlinkCmpMenu = { fg = c.fg_sub, bg = none },
         BlinkCmpMenuBorder = { fg = c.border, bg = none },
