@@ -65,7 +65,7 @@ Telescope風のファジーファインダー。
 | `<leader>ps` | grep検索 |
 | `<leader>pws` | カーソル下の単語/選択範囲をgrep |
 
-ファイル検索・grep・explorer は dotfile(hidden)と `.gitignore` 対象(ignored)も最初から表示する。picker 内では `Esc` で normal モードに出てから切り替える。insert モードでは `H` / `I` は普通に入力される。タイトル横の `H` / `I` は、その対象が表示中であることを示す。
+ファイル検索と grep は、dotfile(hidden)と `.gitignore` 対象(ignored)を最初は表示しない。explorer は最初から両方を表示する。picker 内では `Esc` で normal モードに出てから切り替える。insert モードでは `H` / `I` は普通に入力される。タイトル横の `H` / `I` は、その対象が表示中であることを示す。
 
 | キー | 動作 |
 |------|------|

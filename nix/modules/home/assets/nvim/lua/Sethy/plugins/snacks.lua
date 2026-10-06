@@ -60,15 +60,9 @@ return {
 			-- HACK: read picker docs @ https://github.com/folke/snakcs.nvim/blob/main/docs/picker.md
 				picker = {
 					enabled = true,
+					-- files / grep は snacks 既定 (hidden / ignored を出さない) のまま使い、
+					-- 必要なときだけ picker 内の H / I で表示する
 					sources = {
-						files = {
-							hidden = true,
-							ignored = true,
-						},
-						grep = {
-							hidden = true,
-							ignored = true,
-						},
 						explorer = {
 							hidden = true,
 							ignored = true,
