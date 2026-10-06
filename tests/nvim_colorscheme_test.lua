@@ -27,7 +27,7 @@ assert_equal(hl("String").fg, tonumber("b3f6c0", 16), "String should keep the de
 assert_equal(hl("PmenuSel").reverse, nil, "PmenuSel should not use reverse video")
 
 -- sethy-vim で vim の色を残すグループと、default に倣うグループ
-local vim_groups = { "Constant", "Identifier", "Statement", "Special" }
+local vim_groups = { "Constant", "Identifier", "Special" }
 local default_groups = { "Comment", "String" }
 
 local function rgb(color)
@@ -123,7 +123,7 @@ end
 assert(hl("@property").fg ~= hl("Normal").fg, "properties in code should keep their own color")
 
 -- ネオンに近い色だけは vim より抑える
-for _, group in ipairs({ "Identifier", "Statement" }) do
+for _, group in ipairs({ "Identifier" }) do
   local r, g, b = rgb(hl(group).fg)
   local vr, vg, vb = rgb(vim_fg[group])
   assert(r + g + b < vr + vg + vb, group .. " should be dimmer than vim's original")
@@ -173,17 +173,22 @@ assert(roles.parameter[1], "parameter should resolve to a color (" .. roles.para
 assert_equal(roles.parameter[1], roles.variable[1], "parameters should use the same white as variables")
 assert(roles.member[1] ~= hl("String").fg, "fields should not share the string color")
 
--- 宣言系のキーワードと演算子は白、制御フローのキーワードだけ vim の黄色
+-- キーワードは制御フローも含めて白の太字、演算子は白。黄色は行番号だけに使い、コードには出さない
 local function hl_at(row, col)
   local _, group = fg_at(row, col)
   return hl(group), group
 end
-for _, pos in ipairs({ { 0, 0 }, { 0, 6 } }) do -- local / function
+for _, pos in ipairs({ { 0, 0 }, { 0, 6 }, { 2, 2 } }) do -- local / function / return
   local h, group = hl_at(pos[1], pos[2])
   assert_equal(h.fg, hl("Normal").fg, group .. " should use white like Neovim's default")
   assert_equal(h.bold, true, group .. " should stay bold")
 end
-assert_equal(hl_at(2, 2).fg, hl("Statement").fg, "return should keep vim's yellow")
+assert(hl("Statement").fg ~= hl("CursorLineNr").fg, "Statement should not share the line number yellow")
+for _, group in ipairs({ "Statement", "Conditional", "Repeat", "Keyword", "Operator", "@keyword.return", "@keyword.operator", "@keyword.coroutine" }) do
+  local h = hue(hl(group).fg)
+  local r, g, b = rgb(hl(group).fg)
+  assert(not (h >= 40 and h <= 70 and math.max(r, g, b) - math.min(r, g, b) > 60), ("%s should not be yellow in code, got #%06x"):format(group, hl(group).fg))
+end
 assert_equal(hl_at(1, 13).fg, hl("Normal").fg, "operators should use white")
 
 -- sethy-vim の上書きが sethy-default に残らない

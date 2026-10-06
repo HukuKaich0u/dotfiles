@@ -1,6 +1,7 @@
 -- Vim の標準 colorscheme (vim) と Neovim 標準の default を混ぜたもの。
--- 骨格は default に倣って白を多くし (宣言系キーワード・演算子・型・引数は白、コメントは灰色、文字列は緑)、
--- vim の色は制御フローの黄・関数のシアン・定数のサーモン・組み込みのオレンジとして残す。
+-- 骨格は default に倣って白を多くし (キーワード・演算子・型・変数・引数は白、コメントは灰色、文字列は緑)、
+-- vim の色は関数のシアン・数値と定数のサーモン・組み込みのオレンジとして残す。
+-- vim の黄色は行番号と検索などの UI にだけ使い、コードには使わない (同じ黄色が行番号とコードの両方に出ると黄色が多く見えるため)。
 -- 色の濃さは vim の GUI 用の淡い値ではなく、端末で vim を動かしたときの ANSI 色 (WezTerm 標準の #55cc55 など) に合わせている。
 -- 構文色・黄色の行番号・青い ~・黄色の検索・DarkCyan の括弧など、vim の見た目はほぼそのまま残す。
 -- UI 面 (透過・float・picker) は lua/Sethy/colors/ui.lua で他の自前テーマと揃える。
@@ -28,7 +29,7 @@ local c = {
     blue = "#7090ff", -- Comment    #80a0ff (コメントには使わず、リンクや UI のアクセントに使う)
     salmon = "#ff8787", -- Constant   #ffa0a0
     cyan = "#40e0e0", -- Identifier #40ffff
-    yellow = "#fafa5a", -- Statement  #ffff60
+    yellow = "#fafa5a", -- Statement  #ffff60 (コードには使わず、行番号・検索などの UI に使う)
     green = "#55cc55", -- Type       #60ff60 (WezTerm 標準の ANSI green。default に倣い文字列に使う)
     orange = "#f5a623", -- Special    Orange
     pink = "#ff5faf", -- PreProc    #ff80ff / Title Magenta (紫を抑えた ANSI 256 色の 205)
@@ -70,7 +71,7 @@ require("Sethy.colors.ui").set({
     Character = { link = "String" },
     Special = { fg = c.orange },
     Identifier = { fg = c.cyan },
-    Statement = { fg = c.yellow, bold = true },
+    Statement = { fg = c.white, bold = true },
     PreProc = { fg = c.pink },
     Type = { fg = c.white, bold = true },
     Underlined = { fg = c.blue, underline = true },
@@ -100,8 +101,8 @@ require("Sethy.colors.ui").set({
     ["@punctuation"] = { fg = c.grey7 },
     ["@punctuation.special"] = { link = "Special" }, -- 文字列補間の ${} など
 
-    -- default に倣い、宣言系のキーワード (local / const / function / class / private …) と演算子は白にする。
-    -- vim の黄色は制御フロー (if / for / return / await …) だけに残し、処理の流れが目に入るようにする
+    -- default に倣い、キーワード (local / function / if / return …) は白の太字、演算子は白にする。
+    -- 制御フローのキーワードも vim.lua の link (Conditional / Repeat → Statement) で同じ白の太字になる
     Operator = { fg = c.white },
     ["@keyword"] = { fg = c.white, bold = true },
     ["@keyword.function"] = { link = "@keyword" },
@@ -110,12 +111,6 @@ require("Sethy.colors.ui").set({
     -- import / export / from は vim だと PreProc (ピンク) になるが、どのファイルにも何度も出るので宣言系と同じ白にする。
     -- ピンクはデコレータ・属性・マクロ・プリプロセッサ指令 (PreProc に link したまま) に残す
     ["@keyword.import"] = { link = "@keyword" },
-    ["@keyword.conditional"] = { link = "Statement" },
-    ["@keyword.repeat"] = { link = "Statement" },
-    ["@keyword.return"] = { link = "Statement" },
-    ["@keyword.exception"] = { link = "Statement" },
-    ["@keyword.coroutine"] = { link = "Statement" },
-    ["@keyword.operator"] = { link = "Statement" }, -- and / or / in など
 
     -- LSP の semantic token は Treesitter より優先されるので、同じ割り当てに揃える
     ["@lsp.type.variable"] = { link = "@variable" },
