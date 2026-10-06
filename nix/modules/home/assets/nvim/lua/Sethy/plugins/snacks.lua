@@ -192,8 +192,11 @@ return {
 					sections = dashboard_sections,
 			},
 			lazygit = {
+				-- lazygit は端末で動くので、色は nvim のハイライトから snacks が theme ファイルに書き出す。
+				-- 参照先は構文の色に寄せず、どのテーマにもある UI 寄りのグループにする
 				theme = {
-					[241] = { fg = "Special" },
+					-- 241 は lazygit が多用する 256 色の番号 (snacks の既定設定の注記より)。Special だとテーマの強調色が画面中に散る
+					[241] = { fg = "Comment" },
 					activeBorderColor = { fg = "FloatTitle", bold = true },
 					cherryPickedCommitBgColor = { fg = "Identifier" },
 					cherryPickedCommitFgColor = { fg = "Function" },
@@ -201,7 +204,8 @@ return {
 					inactiveBorderColor = { fg = "FloatBorder" },
 					optionsTextColor = { fg = "Function" },
 					searchingActiveBorderColor = { fg = "FloatTitle", bold = true },
-					selectedLineBgColor = { bg = "Visual" },
+					-- picker や補完の選択行と同じ面にする (Visual はテーマによって明るすぎる)
+					selectedLineBgColor = { bg = "PmenuSel" },
 					unstagedChangesColor = { fg = "DiagnosticError" },
 				},
 			},

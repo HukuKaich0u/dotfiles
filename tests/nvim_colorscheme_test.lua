@@ -269,3 +269,11 @@ end
 -- 自前テーマ以外ではパレットを返さず、lualine は従来の色を使う
 vim.cmd("colorscheme default")
 assert_equal(ui.palette(), nil, "non-sethy colorschemes should not expose a palette")
+
+-- lazygit の theme は構文の強調色や Visual ではなく UI 寄りのグループを参照する
+do
+  local spec = dofile(repo_root .. "/nix/modules/home/assets/nvim/lua/Sethy/plugins/snacks.lua")
+  local theme = spec[1].opts.lazygit.theme
+  assert_equal(theme[241].fg, "Comment", "lazygit's color 241 should use the comment grey")
+  assert_equal(theme.selectedLineBgColor.bg, "PmenuSel", "lazygit's selected line should match picker selection")
+end
