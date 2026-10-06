@@ -27,7 +27,7 @@ assert_equal(hl("String").fg, tonumber("b3f6c0", 16), "String should keep the de
 assert_equal(hl("PmenuSel").reverse, nil, "PmenuSel should not use reverse video")
 
 -- sethy-vim で vim の色を残すグループと、default に倣うグループ
-local vim_groups = { "Constant", "Identifier", "Statement", "PreProc", "Special" }
+local vim_groups = { "Constant", "Identifier", "Statement", "Special" }
 local default_groups = { "Comment", "String" }
 
 local function rgb(color)
@@ -102,6 +102,15 @@ assert(hue_diff(hl("String").fg, default_fg.String) <= 15, ("String should keep 
 -- 型は default と同じく本文色。太字で見分ける
 assert_equal(hl("Type").fg, hl("Normal").fg, "Type should use the normal foreground like default")
 assert_equal(hl("Type").bold, true, "Type should be bold")
+
+-- ピンク (PreProc) は vim のマゼンタより紫を抑え、import / export には使わない
+do
+  local h = hue(hl("PreProc").fg)
+  assert(h >= 320 and h <= 345, ("PreProc should be a pink with less purple, got #%06x (hue %d)"):format(hl("PreProc").fg, h))
+  assert_equal(hl("@keyword.import").fg, hl("Normal").fg, "import / export should use white instead of pink")
+  assert_equal(hl("@keyword.import").bold, true, "import / export should be bold like other declaration keywords")
+  assert_equal(hl("@attribute").fg, hl("PreProc").fg, "decorators / attributes should keep the pink accent")
+end
 
 -- ネオンに近い色だけは vim より抑える
 for _, group in ipairs({ "Identifier", "Statement" }) do

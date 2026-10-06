@@ -1,10 +1,10 @@
 -- Vim の標準 colorscheme (vim) と Neovim 標準の default を混ぜたもの。
 -- 骨格は default に倣って白を多くし (宣言系キーワード・演算子・型・引数は白、コメントは灰色、文字列は緑)、
--- vim の色は制御フローの黄・関数のシアン・定数のサーモン・import のマゼンタ・組み込みのオレンジとして残す。
+-- vim の色は制御フローの黄・関数のシアン・定数のサーモン・組み込みのオレンジとして残す。
 -- 色の濃さは vim の GUI 用の淡い値ではなく、端末で vim を動かしたときの ANSI 色 (WezTerm 標準の #55cc55 など) に合わせている。
 -- 構文色・黄色の行番号・青い ~・黄色の検索・DarkCyan の括弧など、vim の見た目はほぼそのまま残す。
 -- UI 面 (透過・float・picker) は lua/Sethy/colors/ui.lua で他の自前テーマと揃える。
--- ピンク系 (vim の PreProc / Title) は文字のアクセントにだけ残し、
+-- ピンク系 (vim の PreProc / Title) は、デコレータ・マクロ・見出しなど出現頻度の低いアクセントにだけ残し、
 -- vim の Pmenu (Magenta) のように面で出る場所には使わない。
 -- ターミナル側 (ghostty / wezterm) の黒背景を透かす前提なので dark に固定している。
 
@@ -31,7 +31,7 @@ local c = {
     yellow = "#fafa5a", -- Statement  #ffff60
     green = "#55cc55", -- Type       #60ff60 (WezTerm 標準の ANSI green。default に倣い文字列に使う)
     orange = "#f5a623", -- Special    Orange
-    magenta = "#e070e0", -- PreProc    #ff80ff / Title Magenta
+    pink = "#ff5faf", -- PreProc    #ff80ff / Title Magenta (紫を抑えた ANSI 256 色の 205)
     red = "#ee4444", -- Red
 
     -- default 由来の色
@@ -69,10 +69,10 @@ require("Sethy.colors.ui").set({
     Special = { fg = c.orange },
     Identifier = { fg = c.cyan },
     Statement = { fg = c.yellow, bold = true },
-    PreProc = { fg = c.magenta },
+    PreProc = { fg = c.pink },
     Type = { fg = c.white, bold = true },
     Underlined = { fg = c.blue, underline = true },
-    Title = { fg = c.magenta, bold = true },
+    Title = { fg = c.pink, bold = true },
     Todo = { fg = "#0000c0", bg = c.yellow },
     Error = { fg = c.white, bg = "#b22222" },
 
@@ -99,6 +99,9 @@ require("Sethy.colors.ui").set({
     ["@keyword.function"] = { link = "@keyword" },
     ["@keyword.modifier"] = { link = "@keyword" },
     ["@keyword.type"] = { link = "@keyword" },
+    -- import / export / from は vim だと PreProc (ピンク) になるが、どのファイルにも何度も出るので宣言系と同じ白にする。
+    -- ピンクはデコレータ・属性・マクロ・プリプロセッサ指令 (PreProc に link したまま) に残す
+    ["@keyword.import"] = { link = "@keyword" },
     ["@keyword.conditional"] = { link = "Statement" },
     ["@keyword.repeat"] = { link = "Statement" },
     ["@keyword.return"] = { link = "Statement" },
@@ -163,5 +166,5 @@ require("Sethy.colors.ui").set({
     SpellBad = { sp = c.red, undercurl = true },
     SpellCap = { sp = c.blue, undercurl = true },
     SpellLocal = { sp = c.cyan, undercurl = true },
-    SpellRare = { sp = c.magenta, undercurl = true },
+    SpellRare = { sp = c.pink, undercurl = true },
 })
