@@ -99,9 +99,18 @@ end
 -- default に倣うグループ: コメントは default と同じ灰色、文字列は default と同じ緑の色相 (濃さは ANSI 寄り)
 assert_equal(hl("Comment").fg, default_fg.Comment, "Comment should use default's grey")
 assert(hue_diff(hl("String").fg, default_fg.String) <= 15, ("String should keep default's green hue: #%06x"):format(hl("String").fg))
--- 型は default と同じく本文色。太字で見分ける
-assert_equal(hl("Type").fg, hl("Normal").fg, "Type should use the normal foreground like default")
+-- 型は数値・定数と同じ赤の太字
+assert_equal(hl("Type").fg, hl("Constant").fg, "Type should share the red with constants")
 assert_equal(hl("Type").bold, true, "Type should be bold")
+
+-- 白・緑・水色・赤・青の5系統: 関数は青、フィールドは水色で、互いに区別できる
+do
+  local fh, mh = hue(hl("Function").fg), hue(hl("@variable.member").fg)
+  assert(fh >= 215 and fh <= 235, ("Function should be blue, got #%06x"):format(hl("Function").fg))
+  assert(mh >= 190 and mh <= 210, ("fields should be light blue, got #%06x"):format(hl("@variable.member").fg))
+  local ch = hue(hl("Constant").fg)
+  assert(ch <= 10 or ch >= 350, ("Constant should be red, got #%06x"):format(hl("Constant").fg))
+end
 
 -- ピンク (PreProc) は vim のマゼンタより紫を抑え、import / export には使わない
 do

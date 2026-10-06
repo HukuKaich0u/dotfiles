@@ -1,6 +1,7 @@
 -- Vim の標準 colorscheme (vim) と Neovim 標準の default を混ぜたもの。
--- 骨格は default に倣って白を多くし (キーワード・演算子・型・変数・引数は白、コメントは灰色、文字列は緑)、
--- vim の色は関数のシアン・数値と定数のサーモン・組み込みのオレンジとして残す。
+-- 骨格は default に倣って白を多くし (キーワード・演算子・変数・引数は白、コメントは灰色、文字列は緑)、
+-- 色は 白・緑・水色・赤・青 の5系統が混ざるように割り当てる
+-- (文字列=緑、フィールド=水色、型と数値・定数=赤、関数=濃く淡い青、組み込み=vim のオレンジ)。
 -- vim の黄色は行番号と検索などの UI にだけ使い、コードには使わない (同じ黄色が行番号とコードの両方に出ると黄色が多く見えるため)。
 -- 色の濃さは vim の GUI 用の淡い値ではなく、端末で vim を動かしたときの ANSI 色 (WezTerm 標準の #55cc55 など) に合わせている。
 -- 構文色・黄色の行番号・青い ~・黄色の検索・DarkCyan の括弧など、vim の見た目はほぼそのまま残す。
@@ -27,7 +28,7 @@ local c = {
 
     -- vim の構文色。右は vim (GUI) の値。色相は保ち、パステル寄りのものは濃くしている
     blue = "#7090ff", -- Comment    #80a0ff (コメントには使わず、リンクや UI のアクセントに使う)
-    salmon = "#ff8787", -- Constant   #ffa0a0
+    red_soft = "#ff6b6b", -- Constant   #ffa0a0 (型にも使う。サーモンだとピンクに見えるので赤に寄せた)
     cyan = "#40e0e0", -- Identifier #40ffff
     yellow = "#fafa5a", -- Statement  #ffff60 (コードには使わず、行番号・検索などの UI に使う)
     green = "#55cc55", -- Type       #60ff60 (WezTerm 標準の ANSI green。default に倣い文字列に使う)
@@ -38,6 +39,7 @@ local c = {
     -- default 由来の色
     comment = "#9b9ea4", -- Comment: default の NvimLightGrey4
     member = "#87d7ff", -- フィールド・プロパティ: default の水色 (NvimLightBlue) を ANSI 寄りに濃くしたもの
+    func_blue = "#7b9cff", -- 関数・メソッド: フィールドの水色と並べて区別できる、濃く淡い青
 
     line_yellow = "#d7d75f", -- LineNr     Yellow
     nontext_blue = "#5f5fff", -- NonText    Blue
@@ -64,7 +66,7 @@ require("Sethy.colors.ui").apply({
 require("Sethy.colors.ui").set({
     -- 構文
     Comment = { fg = c.comment },
-    Constant = { fg = c.salmon },
+    Constant = { fg = c.red_soft },
     String = { fg = c.green },
     -- true / false は設定ファイルに頻出し、サーモンだとピンクが多く見えるので default と同じく白にする
     Boolean = { fg = c.white },
@@ -73,16 +75,15 @@ require("Sethy.colors.ui").set({
     Identifier = { fg = c.cyan },
     Statement = { fg = c.white, bold = true },
     PreProc = { fg = c.pink },
-    Type = { fg = c.white, bold = true },
+    Type = { fg = c.red_soft, bold = true },
     Underlined = { fg = c.blue, underline = true },
     Title = { fg = c.pink, bold = true },
     Todo = { fg = "#0000c0", bg = c.yellow },
     Error = { fg = c.white, bg = "#b22222" },
 
     -- vim.lua は変数・引数・プロパティ・関数をすべて Identifier (シアン) に link するので、
-    -- 変数と関数の区別がつかない。本家 Vim の正規表現 syntax では変数にはほぼ色が付かず、
-    -- シアンになるのは主に関数なので、その見え方に合わせて役割を分ける。
-    Function = { fg = c.cyan },
+    -- 変数と関数の区別がつかない。変数・引数は白、フィールドは水色、関数は青に分ける。
+    Function = { fg = c.func_blue },
     ["@variable"] = { fg = c.white },
     ["@variable.builtin"] = { link = "Special" }, -- self / this
     ["@variable.parameter"] = { link = "@variable" },
@@ -95,7 +96,7 @@ require("Sethy.colors.ui").set({
     ["@property.toml"] = { link = "@property.json" },
     ["@property.yaml"] = { link = "@property.json" },
     ["@module"] = { link = "Structure" },
-    -- string / number などの組み込み型は Neovim 既定だと Special (オレンジ) になる。型と同じ白の太字に揃える
+    -- string / number などの組み込み型は Neovim 既定だと Special (オレンジ) になる。型と同じ赤の太字に揃える
     ["@type.builtin"] = { link = "Type" },
     -- 括弧やカンマは vim だと Delimiter (Special のオレンジ) になり画面がうるさいので、白に近い灰色にする
     ["@punctuation"] = { fg = c.grey7 },
