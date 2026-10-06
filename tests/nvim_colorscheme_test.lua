@@ -200,7 +200,32 @@ for _, group in ipairs({ "Statement", "Conditional", "Repeat", "Keyword", "Opera
 end
 assert_equal(hl_at(1, 13).fg, hl("Normal").fg, "operators should use white")
 
+-- Markdown もコードと同じ5系統の色を使い、ftplugin の VS Code 風の色で上書きされない
+local markdown_ftplugin = repo_root .. "/nix/modules/home/assets/nvim/after/ftplugin/markdown.lua"
+local md_buf = vim.api.nvim_create_buf(false, true)
+vim.api.nvim_set_current_buf(md_buf)
+vim.cmd.source(markdown_ftplugin)
+local code_colors = {}
+for _, group in ipairs({ "Normal", "String", "Function", "Type", "Special", "@variable.member" }) do
+  code_colors[hl(group).fg] = group
+end
+for level = 1, 6 do
+  local group = "@markup.heading." .. level .. ".markdown"
+  assert(code_colors[hl(group).fg], ("%s should use a code color, got %s"):format(group, vim.inspect(hl(group).fg)))
+  assert_equal(hl(group).bold, true, group .. " should be bold")
+end
+assert_equal(hl("@markup.raw.markdown_inline").fg, hl("String").fg, "inline code should use the string green")
+assert_equal(hl("@markup.link.label.markdown_inline").fg, hl("@variable.member").fg, "link labels should use the field light blue")
+assert_equal(hl("@markup.quote.markdown").fg, hl("Comment").fg, "quotes should use the comment grey")
+-- render-markdown のアイコンは言語なしの基底グループに link するので、そちらもコードの色に揃う
+assert_equal(hl("@markup.list.checked").fg, hl("String").fg, "checked checkboxes should use the string green")
+assert_equal(hl("@markup.quote").fg, hl("Comment").fg, "quote bars should use the comment grey")
+
 -- sethy-vim の上書きが sethy-default に残らない
 vim.cmd("colorscheme sethy-default")
 assert_equal(hl("String").fg, tonumber("b3f6c0", 16), "String should return to the default color after switching from sethy-vim")
 assert_equal(hl("@variable").fg, hl("Normal").fg, "@variable should not keep sethy-vim's override after switching")
+
+-- sethy-vim 以外では、これまでどおり ftplugin の VS Code 風の色が当たる
+vim.cmd.source(markdown_ftplugin)
+assert_equal(hl("@markup.heading.1.markdown").fg, tonumber("569CD6", 16), "other colorschemes should keep the ftplugin markdown colors")

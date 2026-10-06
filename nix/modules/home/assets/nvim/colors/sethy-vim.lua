@@ -171,4 +171,27 @@ require("Sethy.colors.ui").set({
     SpellCap = { sp = c.blue, undercurl = true },
     SpellLocal = { sp = c.cyan, undercurl = true },
     SpellRare = { sp = c.pink, undercurl = true },
+
+    -- Markdown: コードと同じ5系統 (白・緑・水色・赤・青) で塗る。
+    -- after/ftplugin/markdown.lua の VS Code 風の色は sethy-vim のときは当てない。
+    -- render-markdown の RenderMarkdown* は既定でこれらの Treesitter グループに link している
+    ["@markup.heading.1.markdown"] = { fg = c.red_soft, bold = true }, -- 型と同じ赤
+    ["@markup.heading.2.markdown"] = { fg = c.func_blue, bold = true }, -- 関数と同じ青
+    ["@markup.heading.3.markdown"] = { fg = c.member, bold = true }, -- フィールドと同じ水色
+    ["@markup.heading.4.markdown"] = { fg = c.green, bold = true }, -- 文字列と同じ緑
+    ["@markup.heading.5.markdown"] = { fg = c.orange, bold = true }, -- 組み込みと同じオレンジ
+    ["@markup.heading.6.markdown"] = { fg = c.white, bold = true },
+    ["@markup.strong.markdown_inline"] = { fg = c.white, bold = true },
+    ["@markup.italic.markdown_inline"] = { fg = c.white, italic = true },
+    ["@markup.raw.markdown_inline"] = { link = "String" }, -- `code` は文字列と同じ緑
+    ["@markup.raw.block.markdown"] = { fg = c.white }, -- 言語付きのコードブロックは中の言語の色が乗る
+    ["@markup.link.label.markdown_inline"] = { fg = c.member }, -- [label] はフィールドと同じ水色
+    ["@markup.link.markdown_inline"] = { fg = c.member },
+    ["@markup.link.url.markdown_inline"] = { fg = c.func_blue, underline = true },
+    ["@markup.list.markdown"] = { link = "@punctuation" }, -- 箇条書きの記号は括弧と同じ灰色
+    -- チェックボックスと引用は、render-markdown が言語なしの @markup.list.checked / @markup.quote を参照するので基底に置く
+    ["@markup.list.checked"] = { fg = c.green },
+    ["@markup.list.unchecked"] = { fg = c.grey5 },
+    ["@markup.quote"] = { fg = c.comment, italic = true }, -- 引用はコメントと同じ灰色
+    RenderMarkdownBullet = { link = "@markup.list.markdown" },
 })

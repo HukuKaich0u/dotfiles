@@ -428,6 +428,7 @@ fzf-native と themes 拡張を組み込んだファジーピッカー。多く�
 - 選んだテーマは `stdpath("state")/current-theme.lua` に永続化される
 - `sethy-default` は `colors/sethy-default.lua` にある自前テーマ。Neovim 標準の `default` の構文色はそのままに、背景透過と float / picker / 補完メニューの見た目を他テーマに揃えている(dark 固定)
 - `sethy-vim` は `colors/sethy-vim.lua` にある自前テーマ。Vim 標準の `vim` と Neovim 標準の `default` を混ぜている。骨格は `default` に倣って白を多くし(キーワード・`import` / `export`・演算子・変数・引数は白、コメントは灰色)、色は白・緑・水色・赤・青の5系統が混ざるように割り当てている(文字列は緑、フィールド・プロパティは水色、型と数値・定数は赤 `#ff6b6b`、関数は青 `#7b9cff`、`this` / `self` / 組み込みは vim のオレンジ)。ピンク(`#ff5faf`)はデコレータ・属性・マクロ・見出しなど出現頻度の低いところだけに使う。`true` / `false` は白、JSON / TOML / YAML のキーも白にして、データファイルが色付きの文字だけにならないようにしている。色の濃さは端末で vim を動かしたときの ANSI 色(WezTerm 標準の `#55cc55` など)に合わせている。vim の黄色は行番号と検索などの UI にだけ使い、コードには使わない。青い `~` など vim の UI の特徴も残し、ピンクは補完メニューなどの面には使わない(dark 固定)
+- `sethy-vim` のときは Markdown もコードと同じ5系統の色で塗る(見出しは H1 から赤・青・水色・緑・オレンジ・白、インラインコードは緑、リンクは水色、引用はコメントの灰色)。`after/ftplugin/markdown.lua` の VS Code 風の色は `sethy-vim` 以外のテーマでだけ当てる
 - 自前テーマ共通の透過・float・picker・補完メニューの上書きは `lua/Sethy/colors/ui.lua` にまとめている
 
 ### auto-session

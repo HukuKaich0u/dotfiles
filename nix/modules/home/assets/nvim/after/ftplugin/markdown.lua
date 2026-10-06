@@ -468,7 +468,10 @@ local markdown_hls = {
     RenderMarkdownTableRow = { fg = "#D4D4D4", bg = "NONE" },
 }
 
-for group, hl in pairs(markdown_hls) do
-    hl.bg = hl.bg or "NONE"
-    vim.api.nvim_set_hl(0, group, hl)
+-- sethy-vim は Markdown の色も colors/sethy-vim.lua で定義しているので上書きしない
+if vim.g.colors_name ~= "sethy-vim" then
+    for group, hl in pairs(markdown_hls) do
+        hl.bg = hl.bg or "NONE"
+        vim.api.nvim_set_hl(0, group, hl)
+    end
 end
