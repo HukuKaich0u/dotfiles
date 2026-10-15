@@ -1,6 +1,6 @@
 ---
 created: 2026-09-05
-updated: 2026-09-05
+updated: 2026-10-14
 author: Koki Aoyagi
 type: reference
 ---
@@ -19,7 +19,7 @@ type: reference
 6. **フォーマット** - conform.nvim
 7. **Markdown** - render-markdown, image-support, after/ftplugin/markdown.lua
 8. **コード折りたたみ** - nvim-ufo
-9. **ユーティリティ** - undotree, vim-maximizer, noice
+9. **ユーティリティ** - undotree, vim-maximizer, hydra, noice
 10. **LeetCode** - leetcode.nvim
 11. **その他のプラグイン** - telescope, auto-session, todo-comments, emmet ほか
 
@@ -368,6 +368,21 @@ Treesitterベースの高速な折りたたみ。
 |------|------|
 | `<leader>sm` | 現在のウィンドウを最大化/元に戻す |
 
+### hydra.nvim
+
+分割ウィンドウのサイズ変更モード。tmux の `prefix s` → `h/j/k/l` 連打と同じ操作感。
+
+| キー | 動作 |
+|------|------|
+| `<leader>sr` | resize モードに入る |
+| `h` / `j` / `k` / `l` | 境界をその向きに動かす（横 5 桁、縦 3 行） |
+| `q` / `Esc` / `Enter` | resize モードを抜ける |
+
+- `h/j/k/l` 以外のキーはそのまま実行され、同時にモードを抜ける
+- 右端・下端のウィンドウでも「押した向きに境界が動く」ように、`lua/Sethy/core/window.lua` で符号を反転している
+- 分割のない方向（左右分割だけのときの `j` / `k` など）では何もしない
+- モード中に次のキーを待つ間は、タイマーや RPC などの非同期処理が止まる（Neovim の保留中マッピングの挙動。キーを押すか抜ければ再開する）
+
 ### noice.nvim
 
 UIの改善（コマンドライン、メッセージ、通知）。
@@ -554,6 +569,7 @@ LSPがアタッチされたバッファで使用可能。
 | `<leader>sh` | 横分割 |
 | `<leader>se` | 分割を均等化 |
 | `<leader>sx` | 分割を閉じる |
+| `<leader>sr` | resize モード（hydra.nvim の項を参照） |
 | `<leader>to` | 新しいタブ |
 | `<leader>tx` | タブを閉じる |
 | `<leader>tn` | 次のタブ |
