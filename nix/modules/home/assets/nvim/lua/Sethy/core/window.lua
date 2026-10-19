@@ -37,4 +37,40 @@ function M.move_border(direction, amount)
     vim.cmd(("%s %s%d"):format(command, grow and "+" or "-", amount))
 end
 
+-- tmux の prefix z (resize-pane -Z) 相当。今のウィンドウだけを新しい tab に
+-- 開いて画面いっぱいに表示し、もう一度呼ぶと tab を閉じて元のレイアウトに
+-- 戻る。ズーム中に動かしたカーソル位置や開き直した buffer は、戻るときに
+-- 元のウィンドウへ引き継ぐ。
+function M.toggle_zoom()
+    local origin = vim.t.sethy_zoom_origin
+    if origin then
+        local buf = vim.api.nvim_get_current_buf()
+        local view = vim.fn.winsaveview()
+        if #vim.api.nvim_list_tabpages() > 1 then
+            vim.cmd("tabclose")
+        else
+            -- 元の tab が閉じられていて戻り先がない
+            vim.t.sethy_zoom_origin = nil
+        end
+        if vim.api.nvim_win_is_valid(origin) then
+            vim.api.nvim_set_current_win(origin)
+            if vim.api.nvim_win_get_buf(origin) ~= buf then
+                vim.api.nvim_win_set_buf(origin, buf)
+            end
+            vim.fn.winrestview(view)
+        end
+        return
+    end
+
+    local windows = vim.tbl_filter(function(win)
+        return vim.api.nvim_win_get_config(win).relative == ""
+    end, vim.api.nvim_tabpage_list_wins(0))
+    if #windows < 2 then
+        return -- 分割がなければズームするものがない
+    end
+    local current = vim.api.nvim_get_current_win()
+    vim.cmd("tab split")
+    vim.t.sethy_zoom_origin = current
+end
+
 return M

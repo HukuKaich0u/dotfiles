@@ -95,6 +95,9 @@ vim.keymap.set("n", "<leader>sh", "<C-w>s", { desc = "Split window horizontally"
 vim.keymap.set("n", "<leader>se", "<C-w>=", { desc = "Make splits equal size" }) -- make split windowss equal width and height
 vim.keymap.set("n", "<leader>sx", "<cmd>close<CR>", { desc = "Close current split" })
 -- サイズ変更は <leader>sr の resize モード (plugins/hydra.lua)
+vim.keymap.set("n", "<leader>sz", function()
+    require("Sethy.core.window").toggle_zoom()
+end, { desc = "Zoom split (toggle)" })
 
 -- Copy filepath to the clipboard
 vim.keymap.set("n", "<leader>fp", function()

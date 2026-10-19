@@ -1,6 +1,6 @@
 ---
 created: 2026-09-05
-updated: 2026-10-14
+updated: 2026-10-15
 author: Koki Aoyagi
 type: reference
 ---
@@ -19,7 +19,7 @@ type: reference
 6. **フォーマット** - conform.nvim
 7. **Markdown** - render-markdown, image-support, after/ftplugin/markdown.lua
 8. **コード折りたたみ** - nvim-ufo
-9. **ユーティリティ** - undotree, vim-maximizer, hydra, noice
+9. **ユーティリティ** - undotree, hydra, noice
 10. **LeetCode** - leetcode.nvim
 11. **その他のプラグイン** - telescope, auto-session, todo-comments, emmet ほか
 
@@ -360,14 +360,6 @@ Treesitterベースの高速な折りたたみ。
 | `<leader>u` | 外部 undotree をトグル |
 | `<leader>U` | builtin undotree を開く |
 
-### vim-maximizer
-
-分割ウィンドウの最大化/復元。
-
-| キー | 動作 |
-|------|------|
-| `<leader>sm` | 現在のウィンドウを最大化/元に戻す |
-
 ### hydra.nvim
 
 分割ウィンドウのサイズ変更モード。tmux の `prefix s` → `h/j/k/l` 連打と同じ操作感。
@@ -570,10 +562,15 @@ LSPがアタッチされたバッファで使用可能。
 | `<leader>se` | 分割を均等化 |
 | `<leader>sx` | 分割を閉じる |
 | `<leader>sr` | resize モード（hydra.nvim の項を参照） |
+| `<leader>sz` | 現在のウィンドウだけを画面いっぱいに表示/元に戻す（tmux の `prefix z` 相当） |
 | `<leader>to` | 新しいタブ |
 | `<leader>tx` | タブを閉じる |
 | `<leader>tn` | 次のタブ |
 | `<leader>tp` | 前のタブ |
+
+`<leader>sz` は今のウィンドウだけを新しいタブに開く方式（`lua/Sethy/core/window.lua`）。
+ズーム中はタブラインが出る。もう一度押すとそのタブを閉じ、ズーム中に動かした
+カーソル位置と開き直した buffer を元のウィンドウに引き継ぐ。
 
 ### その他
 
