@@ -7,6 +7,8 @@
   settings = {
     model = "gpt-6.1-sol";
     approval_policy = "on-request";
+    approvals_reviewer = "auto_review";
+    sandbox_mode = "workspace-write";
     model_reasoning_effort = "high";
     web_search = "live";
     features.multi_agent = true;
