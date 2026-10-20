@@ -140,6 +140,9 @@ chsh -s "$(command -v zsh)"
 
 この中で `sudo darwin-rebuild switch --flake ./nix#KokiAoyagi` を通して `nix/modules/darwin/homebrew.nix` の Homebrew cask / brew 群も適用される。`cmux` と `mo` の install はここで入る。`mo` は当面 macOS のみで管理し、Linux にはまだ導入しない。`ghostty` config は Home Manager 側の設定資産として repo に残すが、macOS では Homebrew install しない。
 
+Herdr は共通 overlay で公式 release を固定し、config は同じ版の
+`herdr config check` が build 時に通ったものを配布する。
+
 ### 4. If `darwin-rebuild` Is Missing On First Run
 
 初回は `darwin-rebuild` がまだ無いことがある。その場合は先にこれを実行する。

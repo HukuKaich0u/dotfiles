@@ -16,7 +16,6 @@
       "git-gui"
       "glib"
       "gnu-time"
-      "herdr"
       "jpeg-xl"
       "libheif"
       "liblqr"

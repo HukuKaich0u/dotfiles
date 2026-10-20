@@ -13,6 +13,7 @@
     fd
     ghostscript
     gnumake
+    herdr
     imagemagick
     just
     lazydocker

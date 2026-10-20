@@ -149,6 +149,8 @@ overlay の置き場です。
 例:
 
 - `direnv-no-zsh-check.nix`
+- `herdr.nix`
+  - 両 OS 共通で公式 release `0.9.5` と platform ごとの SHA-256 を固定する
 - `mo-markdown-viewer.nix`
   - nixpkgs の `mo` は無関係な mustache テンプレートツールなので、`k1LoW/mo`(Markdown を browser で開くビューア)の darwin release binary を fetch して `mo` attr を上書きする
   - aarch64-darwin 限定
@@ -184,6 +186,7 @@ OS を問わず入れたい user package を置きます。
 - `fd`
 - `ghostscript`
 - `gnumake`
+- `herdr`
 - `lazygit`
 - `imagemagick`
 - `lua-language-server`
@@ -290,7 +293,26 @@ Cursor(エディタ)の設定配布です。macOS のみ有効。
 
 #### `modules/home/programs/herdr.nix`
 
-Herdr(terminal multiplexer)の config 配布です。
+Herdr(terminal multiplexer)の本体と config を両 OS 共通で管理する。
+
+本体は `overlays/herdr.nix`、設定は `modules/home/assets/herdr/config.toml`。
+nixpkgs の版が config schema に追いつかない場合も、共通 overlay で両 OS の
+version をそろえる。公式 Linux binary は static link、macOS binary は署名を
+維持するため strip せずに配置する。
+
+Home Manager は配布前に、同じ package の `herdr config check` を実行する。
+未知の設定や keybinding の衝突は build を失敗させ、defaults への暗黙の
+fallback を防ぐ。config は Nix 管理の read-only ファイルなので、変更は repo に
+反映する。GUI からの永続保存は使わない。
+
+更新時は release の version / asset の SHA-256 を overlay で更新し、
+`sh tests/herdr_deploy_test.sh` と対象 OS の build を確認してから switch する。
+`herdr --version` は PATH 上の CLI、`herdr status server` は稼働中 server の版を
+確認する。switch だけでは server / client は入れ替わらない。
+`herdr server stop` は pane のプロセスも終了するので、作業を保存してから実行し、
+新しい `herdr` で起動し直す。同じ版のまま config だけを変えた場合は
+`herdr server reload-config` で反映する。
+
 
 - `xdg.configFile."herdr/config.toml"` に `assets/herdr/config.toml` を配置する
 - `assets/herdr/key-bind.md` は repository-only の参照 doc で、Home Manager では配布しない
@@ -492,7 +514,9 @@ Linux 用 Home Manager wrapper です。
 Linux だけに必要な package や import を置きます。
 
 Linux 固有差分を `modules/home/` の条件分岐で増やしすぎないこと。
-`herdr` の install ownership は macOS では `modules/darwin/homebrew.nix` の brew、Linux ではここ (nixpkgs の `herdr`) が持つ。config は両OS共通で `modules/home/programs/herdr.nix` が配布する。
+`herdr` の install ownership は両 OS 共通の `modules/home/packages.nix` と
+`overlays/herdr.nix` が持つ。config は `modules/home/programs/herdr.nix` が
+検証して配布する。
 `mo` はまだ Linux には入れない。必要になったら `k1LoW/mo` 用 package を overlay に追加し、nixpkgs の別物 `mo` と衝突しない attr 名でここへ入れる。
 
 ## Common Tasks

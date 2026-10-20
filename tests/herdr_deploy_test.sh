@@ -14,4 +14,14 @@ if ! nix eval --impure --file "$herdr_repo_only_test" >/dev/null; then
   exit 1
 fi
 
+# Validate the deployed config with the exact Herdr package used on this host.
+# The source derivation runs `herdr config check`, catching schema drift and
+# conflicting shortcuts before Home Manager can replace the live config.
+case "$(uname -s)" in
+  Darwin) herdr_config_target='darwinConfigurations.KokiAoyagi.config.home-manager.users.KokiAoyagi.xdg.configFile."herdr/config.toml".source' ;;
+  Linux) herdr_config_target='homeConfigurations.kokiaoyagi.config.xdg.configFile."herdr/config.toml".source' ;;
+  *) echo "Unsupported Herdr test platform" >&2; exit 1 ;;
+esac
+nix build --no-link "$repo_root/nix#$herdr_config_target"
+
 echo "Herdr deploy invariant test passed"

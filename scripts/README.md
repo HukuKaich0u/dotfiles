@@ -85,6 +85,9 @@ sudo nix --extra-experimental-features 'nix-command flakes' run nix-darwin -- sw
 gcloud init
 ```
 
+Herdr は `nix/overlays/herdr.nix` の公式 release を使う。config の検証は
+Home Manager の build 時に行い、既存の server / pane は setup では再起動しない。
+
 ## Script 一覧
 
 ### `linux/setup.sh`

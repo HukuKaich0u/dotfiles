@@ -1,6 +1,6 @@
 ---
 created: 2026-07-16
-updated: 2026-09-24
+updated: 2026-10-20
 author: Koki Aoyagi
 type: reference
 ---
@@ -8,6 +8,12 @@ type: reference
 # Herdr key bindings
 
 Herdr runs outside tmux and uses `Ctrl-g` as the same prefix.
+
+Validated with Herdr 0.9.5, pinned in `nix/overlays/herdr.nix`.
+Home Manager runs `herdr config check` with that package before deploying
+`config.toml`. The `popup` commands require a newer schema than Herdr 0.7.1.
+After a package update, restart the server once work in its panes is saved;
+`reload-config` updates settings within the running version.
 
 ## Concepts
 
