@@ -11,6 +11,8 @@
     web_search = "live";
     features.multi_agent = true;
 
+    tui.notifications = ["agent-turn-complete" "approval-requested"];
+    tui.notification_condition = "always";
     tui.keymap.global.open_external_editor = [];
   };
 in {
