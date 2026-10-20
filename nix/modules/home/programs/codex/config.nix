@@ -5,12 +5,13 @@
 }: let
   tomlFormat = pkgs.formats.toml {};
   settings = {
-    model = "gpt-6-astra";
+    model = "gpt-6.1-sol";
     approval_policy = "on-request";
     model_reasoning_effort = "high";
     model_verbosity = "medium";
     web_search = "live";
     personality = "pragmatic";
+    features.multi_agent = true;
     features.terminal_resize_reflow = true;
 
     tui.keymap.global.open_external_editor = [];
