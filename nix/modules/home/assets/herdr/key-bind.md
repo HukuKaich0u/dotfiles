@@ -1,6 +1,6 @@
 ---
 created: 2026-07-16
-updated: 2026-10-20
+updated: 2026-10-21
 author: Koki Aoyagi
 type: reference
 ---
@@ -26,12 +26,16 @@ After a package update, restart the server once work in its panes is saved;
 
 ## Navigation model
 
-`n/p` は tab、Shift を足すと space (workspace)、`a` は agent。番号で飛ぶのは tab だけ。
+`prefix+w` で Go To を開き、各 workspace の pane に直接移動する。
+Workspace picker のショートカットは使わないため解除する。
+lazygit は `prefix+g` に割り当てる。
+
+`n/p` は tab、`Shift+n` は次の space (workspace)、`a` は agent。番号で飛ぶのは tab だけ。
 
 | Layer | Previous / next | Jump | New | Close |
 | --- | --- | --- | --- | --- |
-| tab | `prefix+p` / `prefix+n` | `Ctrl-1..9` (prefix なし) | `prefix+c` | `prefix+Shift+x` |
-| space | `prefix+Shift+p` / `prefix+Shift+n` | `prefix+o` (picker) | `prefix+Shift+c` | `prefix+Shift+d` |
+| tab | `prefix+p` / `prefix+n` | `prefix+1..9` | `prefix+c` | `prefix+Shift+x` |
+| space | — / `prefix+Shift+n` | `prefix+w` (Go To) | `prefix+Shift+c` | `prefix+Shift+d` |
 | agent | `prefix+Shift+a` / `prefix+a` | — | — | — |
 
 - lowercase が tab、Shift が space という対応を new / close でも揃えている。pane は `prefix+x` で閉じる。
@@ -42,24 +46,25 @@ After a package update, restart the server once work in its panes is saved;
 | Key | Operation |
 | --- | --- |
 | `Ctrl-g` | Prefix |
-| `prefix+comma` | Rename tab |
-| `prefix+Shift+r` | Rename space |
+| `prefix+Shift+t` | Rename tab |
+| `prefix+Shift+w` | Rename space |
+| `prefix+Shift+p` | Rename pane |
 | `prefix+Shift+g` | New worktree |
-| `prefix+w` | Herdr navigator (`g` は lazygit popup に割り当て) |
+| `prefix+w` | Go To |
 | `prefix+h/j/k/l` | Focus pane |
-| `prefix+Shift+j` | Split down |
-| `prefix+Shift+l` | Split right |
+| `prefix+Shift+v` | Vertical split (左右、右に新しい pane) |
+| `prefix+Shift+h` | Horizontal split (上下、下に新しい pane) |
 | `prefix+;` | Last pane |
 | `prefix+[` | Copy mode |
 | `prefix+z` | Zoom |
 | `prefix+s` | Resize |
 | `prefix+b` | Sidebar |
-| `prefix+r` | Reload config |
-| `prefix+q` | Detach (tmux の `prefix+d` から移動。`d` は lazydocker popup に割り当て) |
+| `prefix+Shift+r` | Reload config |
+| `prefix+q` | Detach |
 | `prefix+Shift+s` | Settings |
 | `prefix+Shift+o` | Notification target |
 | `prefix+?` | Help |
-| `prefix+Shift+h` | Open `hunk diff --watch` in the focused pane's current working directory |
+| `prefix+Ctrl+h` | Open `hunk diff --watch` in the focused pane's current working directory |
 
 ## Popups
 
@@ -76,13 +81,14 @@ A popup closes only when its command exits; Herdr does not intercept any key (no
 
 ## Intentionally unassigned
 
-- Numbered space / agent jumps (`prefix+Shift+1..9`, `prefix+Alt+1..9`) are unassigned: Shift+digit can arrive as a symbol depending on the terminal and keyboard layout, and the picker / priority-ordered agent cycling cover these cases.
-- `prefix+1..9` is unassigned because `Ctrl-1..9` already switches tabs directly.
-- Direct Ctrl bindings are limited to digits; Ctrl+letter would collide with Neovim and zsh emacs keybindings.
-- `rename_pane` is explicitly disabled so its default (`prefix+Shift+p`) cannot collide with previous space.
-- `prefix+u` / `prefix+i` / `prefix+e` / `prefix+&` / `prefix+Shift+w` are free.
-- H/K pane split bindings are unused because this setup only creates panes to the right or downward.
-- Tab reordering and "last tab / last space" toggles are unassigned because Herdr has no corresponding operation.
-- All Shift+h/j/k/l pane swaps are disabled: Shift+j/l create splits, Shift+h opens Hunk, and Shift+k is left unassigned to keep the entire pane-swap group consistently disabled.
+- Numbered space / agent jumps (`prefix+Shift+1..9`, `prefix+Alt+1..9`) are unassigned: Shift+digit can arrive as a symbol depending on the terminal and keyboard layout, and Go To / priority-ordered agent cycling cover these cases.
+- Tab number jumps use the standard `prefix+1..9`; direct `Ctrl-1..9` bindings are unassigned.
+- Custom Ctrl-letter shortcuts require the prefix (`prefix+Ctrl+h` for Hunk) so plain Ctrl-letter input still reaches pane apps.
+- Workspace picker is explicitly unassigned; `prefix+w` opens Go To instead.
+- Previous-space cycling is unassigned, matching the default; `prefix+Shift+p` keeps the standard pane rename binding.
+- `prefix+u` / `prefix+i` / `prefix+&` / `prefix+r` / `prefix+comma` / `prefix+o` are free. `prefix+e` keeps the standard scrollback editor binding.
+- Pane splits use `prefix+Shift+v/h`, matching WezTerm, Ghostty, and tmux. New panes open to the right or downward.
+- Tab reordering is unassigned, matching the defaults (`move_tab_previous` / `move_tab_next`).
+- Shift+h/j/k/l pane swaps are disabled: Shift+h creates a horizontal split; left/right swaps use `prefix+{` / `prefix+}`.
 
 This reference remains repository-only and is not deployed by the Home Manager module.
