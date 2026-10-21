@@ -172,7 +172,7 @@ EOF
         ;;
       1)
         assert_file_equals "$curl_log" "curl" "$scenario: curl should run exactly once when rustup is absent"
-        assert_file_equals "$installer_log" "-y" "$scenario: installer should receive -y when rustup is absent"
+        assert_file_equals "$installer_log" "-y --component rust-analyzer --component rust-src" "$scenario: installer should add stable LSP components when rustup is absent"
         ;;
       *)
         echo "unsupported expectation: $expected_installer_calls"

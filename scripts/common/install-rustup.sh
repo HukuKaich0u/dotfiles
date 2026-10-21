@@ -7,6 +7,8 @@ usage() {
 Usage: ./scripts/common/install-rustup.sh
 
 Install rustup for the current user if it is not already available.
+The stable toolchain also gets rust-analyzer and rust-src for editor and
+Claude Code language server support.
 EOF
 }
 
@@ -61,7 +63,7 @@ main() {
   trap 'rm -f "$installer"' EXIT HUP INT TERM
 
   curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs -o "$installer"
-  sh "$installer" -y
+  sh "$installer" -y --component rust-analyzer --component rust-src
 }
 
 main "$@"

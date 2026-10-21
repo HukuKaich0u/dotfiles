@@ -47,7 +47,7 @@ Google Cloud CLI の認証は必要なら `gcloud init`。
 | `mac/install-homebrew.sh` | 未導入時に Homebrew 公式 installer を実行 |
 | `mac/apply-nix-darwin.sh` | repo root で nix-darwin を反映。初回導入は担当しない |
 | `common/setup-user.sh` | Node 24 確認 → global mise install → rustup → Claude Code → Lazy restore |
-| `common/install-rustup.sh` | 未導入時に公式 rustup installer を実行 |
+| `common/install-rustup.sh` | 未導入時に公式 rustup installer を実行し、stable に `rust-analyzer` / `rust-src` を追加 |
 | `common/install-claude-code.sh` | 公式 native installer の latest。cmux 付属 shim だけでは skip しない |
 | `common/link-dotfiles.sh` | legacy link cleanup / terminfo compile。config 配布は Home Manager |
 | `../tests/run.sh` | shell / Neovim テストの一括実行 |
