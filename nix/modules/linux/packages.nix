@@ -1,8 +1,5 @@
-{
-  pkgs,
-  ...
-}: {
+{pkgs, ...}: {
   home.packages = with pkgs; [
-    awscli2
+    # ホスト側の build-essential / Docker は apt で管理する。
   ];
 }

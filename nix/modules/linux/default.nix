@@ -1,10 +1,8 @@
-{
-  ...
-}: {
+{...}: {
   imports = [
     ../home/default.nix
     ./packages.nix
-    ./zsh.nix
+    ./bash.nix
   ];
 
   home.username = "kokiaoyagi";

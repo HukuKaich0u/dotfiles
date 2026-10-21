@@ -1,164 +1,117 @@
 # Dotfiles
 
-この repo は、KokiAoyagi の macOS / Linux user environment の source of truth です。
+macOS / Linux の user environment を同じ `nix/flake.lock` で管理する。
+macOS は nix-darwin + zsh、Linux (Debian / Ubuntu、aarch64) は standalone
+Home Manager + Bash を使う。
 
-end-to-end の環境構築手順はこの `README.md` を基準にする。
+- 全体の導入手順: この README
+- package ownership / 更新 / rollback: [nix/README.md](nix/README.md)
+- bootstrap script: [scripts/README.md](scripts/README.md)
+- shell: [docs/shell-guide.md](docs/shell-guide.md)
+- runtime: [docs/mise-guide.md](docs/mise-guide.md)
 
-- `scripts/README.md`: bootstrap script catalog
-- `nix/README.md`: `nix/` 配下の source of truth
+## 共通の前提
 
-## Resume
-
-- clone 先は `~/Documents/repos/personal/dotfiles` を前提にする
-- Nix 自体の install は手動で行う
-- Linux は `./scripts/linux/setup.sh` の後に `home-manager switch`、`mise install`、`./scripts/common/install-claude-code.sh`、`npm i -g @openai/codex` まで進める
-- Ubuntu Desktop で `ghostty` も必要なら `./scripts/linux/setup.sh --with-ghostty` を使う
-- macOS は `./scripts/mac/setup.sh` を入口にし、必要なら `nix-darwin` の初回 fallback を挟む
-- `ghostty` の install は Linux では `scripts/linux/install-ghostty.sh` が担当する
-- macOS では `cmux` を `nix/modules/darwin/homebrew.nix` の Homebrew cask で管理する
-- `mo` は当面 macOS の Homebrew brew だけで管理し、Linux にはまだ導入しない
-- `ghostty` の config は Home Manager で管理し、repo に残す
-
-- [Setup Overview](#setup-overview)
-- [Linux Setup](#linux-setup)
-- [macOS Setup](#macos-setup)
-- [References](#references)
-
-## Setup Overview
-
-- clone 先は `~/Documents/repos/personal/dotfiles` を前提にしている
-- Linux は standalone Home Manager を使う
-- macOS は `nix-darwin` を使う
-- Nix 自体の install は手動で行う
-
-### 1. Clone
+clone 先は `~/Documents/repos/personal/dotfiles`。
+Nix 自体は手動で導入し、`nix-command` / `flakes` を有効にする。
+Linux の初回 Home Manager は、この repo の lock にあるものを使う。
 
 ```sh
 mkdir -p ~/Documents/repos/personal
 git clone <your-dotfiles-repo-url> ~/Documents/repos/personal/dotfiles
 cd ~/Documents/repos/personal/dotfiles
-```
-
-### 2. Install Nix Manually
-
-Determinate Nix か公式 Nix installer で Nix を入れる。
-
-Linux では standalone Home Manager も使える状態にする。
-
-```sh
 nix --version
-home-manager --version
 ```
 
 ## Linux Setup
 
-### 3. Run The Pre-Nix Bootstrap
-
-Docker 不要:
+ホストの開発基盤を apt で入れる。Docker / Ghostty は任意。
 
 ```sh
 ./scripts/linux/setup.sh
-```
-
-Docker も必要:
-
-```sh
+# Docker も必要なら:
 ./scripts/linux/setup.sh --with-docker
-```
-
-Ubuntu Desktop で Ghostty も必要:
-
-```sh
+# Ubuntu Desktop で Ghostty も必要なら:
 ./scripts/linux/setup.sh --with-ghostty
-```
-
-Docker と Ghostty の両方が必要:
-
-```sh
+# 両方必要なら:
 ./scripts/linux/setup.sh --with-docker --with-ghostty
 ```
 
-この段階では OS package install、必要なら `ghostty` install、`rustup` install、dotfiles link までを行う。`ghostty` の config 自体は次の `home-manager switch` で反映する。
+既に zsh を login shell にしている場合は `chsh -s /bin/bash` を実行しておく。
+設定反映では `.bashrc` / `.profile` / `.bash_profile` を Home Manager が管理する。
+初回は既存ファイルを backup する。
 
-### 4. Apply Home Manager
+```sh
+nix run ./nix#homeConfigurations.kokiaoyagi.config.programs.home-manager.package -- \
+  -b before-dotfiles switch --flake ./nix#kokiaoyagi
+```
+
+以降の反映:
 
 ```sh
 home-manager switch --flake ./nix#kokiaoyagi
 ```
 
-### 5. Install Mise-Managed Runtimes
+新しい Bash を開き、repo のルートで共通の user setup を行う。
 
 ```sh
-mise install
+./scripts/common/setup-user.sh
 ```
 
-### 6. Confirm Node / npm
+AWS CLI / Google Cloud CLI / Herdr / prek / Node.js 24 は Nix が導入する。
+以前 apt で入れた Google Cloud CLI は自動削除しない。`type -a gcloud` で
+Nix 版の利用を確認してから、不要なら apt 版と専用 repository を手動で整理する。
+
+## macOS Setup
 
 ```sh
-npm -v
+./scripts/mac/setup.sh
 ```
 
-### 7. Install Claude Code
+初回で `darwin-rebuild` が無い場合:
 
 ```sh
-./scripts/common/install-claude-code.sh
+sudo nix --extra-experimental-features 'nix-command flakes' run --inputs-from ./nix nix-darwin#darwin-rebuild -- switch --flake ./nix#KokiAoyagi
+./scripts/mac/setup.sh
 ```
 
-Claude Code の install ownership は macOS / Linux ともこの script が持つ。公式 native installer を `latest` 指定で実行する。
+新しい zsh を開き、repo のルートで共通の user setup を行う。
 
-install 後に `claude` が見つからない場合は新しい zsh を開いて PATH を再確認する。
+```sh
+./scripts/common/setup-user.sh
+```
 
-### 8. Install Codex Manually
+共通 CLI は Nix、`cmux` / Codex / GUI app は Homebrew。
+`mo` は macOS 限定の Nix overlay で管理する。
+Herdr は共通 overlay で公式 release を固定し、config は同じ版の
+`herdr config check` が build 時に通ったものを配布する。
+Ghostty 本体は macOS の Homebrew cask で導入し、config は Home Manager で配置する。
+設定の実体は `nix/modules/home/assets/ghostty/config.ghostty`。
 
-`mise` / `npm` が見つからない場合は新しい shell を開いてから再確認する。
+## 共通 user setup
+
+`setup-user.sh` は次を順に行う。
+
+1. Nix 版 Node.js 24 / npm と mise / Neovim の存在を確認
+2. mise の global runtime を完全な version 指定で install
+3. 共通の公式 installer で rustup と Claude Code を導入
+4. `Lazy restore` で repo の lockfile に plugin をそろえる
+
+Node は shell hook の起動や `mise install` を必要とせず利用できる。
+Nix 版 pnpm を使い、旧 mise Node に依存する Corepack shim は設定反映時に外す。
+Yarn が必要な project は、その project 側で tool / version を宣言する。
+
+Claude Code 本体は `scripts/common/install-claude-code.sh` が公式 native installer の
+`latest` を使って導入し、普段の更新は Claude Code の自己更新に任せる。
+Codex は更新方法の移行を別途判断するまで macOS では Homebrew cask、Linux では:
 
 ```sh
 npm i -g @openai/codex
 ```
 
-### 9. Optional Manual Steps
-
-`gcloud` を使うなら:
-
-```sh
-gcloud init
-```
-
-login shell を `zsh` に変えるなら:
-
-```sh
-chsh -s "$(command -v zsh)"
-```
-
-## macOS Setup
-
-### 3. Run The Bootstrap Entrypoint
-
-```sh
-./scripts/mac/setup.sh
-```
-
-この中で `sudo darwin-rebuild switch --flake ./nix#KokiAoyagi` を通して `nix/modules/darwin/homebrew.nix` の Homebrew cask / brew 群も適用される。`cmux` と `mo` の install はここで入る。`mo` は当面 macOS のみで管理し、Linux にはまだ導入しない。`ghostty` config は Home Manager 側の設定資産として repo に残すが、macOS では Homebrew install しない。
-
-Herdr は共通 overlay で公式 release を固定し、config は同じ版の
-`herdr config check` が build 時に通ったものを配布する。
-
-### 4. If `darwin-rebuild` Is Missing On First Run
-
-初回は `darwin-rebuild` がまだ無いことがある。その場合は先にこれを実行する。
-
-```sh
-sudo nix --extra-experimental-features 'nix-command flakes' run nix-darwin -- switch --flake ./nix#KokiAoyagi
-./scripts/mac/setup.sh
-```
-
-### 5. Optional Manual Steps
-
-`gcloud` を使うなら:
-
-```sh
-gcloud init
-```
+Rust project は `rust-toolchain.toml` で toolchain / components / targets を宣言する。
+Neovim の Rust 支援には、その toolchain の `rust-analyzer` / `rustfmt` / `clippy` が必要。
+`gcloud` を利用する場合の認証は `gcloud init` で行う。
 
 ## Shared agent instructions
 

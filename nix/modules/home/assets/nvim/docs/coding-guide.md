@@ -7,7 +7,7 @@ type: runbook
 # Neovim コーディング環境
 
 Neovim 0.12 以降を前提に、Rust / TypeScript / Go / Java / Python / C / C++ を支援する。
-LSP の設定・有効化は `lua/Sethy/core/servers.lua` を基準にし、Mason の導入一覧もそこから作る。
+LSP の設定・有効化は `lua/Sethy/core/servers.lua` を基準にし、対応する executable は `nix/modules/home/programs/nvim.nix` の nixpkgs package で導入する。
 Rust は rustaceanvim、Java は nvim-jdtls がクライアントの起動を担当する。
 
 ## 言語ごとの役割
@@ -34,19 +34,33 @@ RustOwl の無効な設定、未構成の nvim-dap 依存、未使用の nvim-cm
    Git flake に新規ファイルを含めるため、追加ファイルを Git の管理対象にしてから実行する。
 2. Rust の toolchain に `rustup component add rust-analyzer rustfmt clippy` を導入する。
    `rust-toolchain.toml` があるプロジェクトではその toolchain にも必要。
-3. Neovim を起動して `:Lazy install` を実行し、nvim-jdtls などの導入完了を待つ。
-   `:Lazy update rustaceanvim` で Neovim 0.12 対応の v9 系へ更新する。
-4. `:Mason` でサーバを確認。`:MasonToolsInstall` で goimports などの整形ツールを導入できる。
+3. 新しい shell で `./scripts/common/setup-user.sh` を実行する。
+   `Lazy restore` が repo の lockfile に plugin をそろえる。
+4. LSP / formatter は Nix の反映で導入される。Mason は使用しない。
 5. Treesitter は不足パーサを起動時に非同期で導入する。初回はネットワーク接続と
    `tree-sitter` CLI / C compiler / curl / tar が必要。更新後は `:TSUpdate`。
 
 設定は Home Manager が Nix store 経由で配置するため、repo のファイル変更だけでは
 既に開いている Neovim に反映されない。反映後に Neovim を再起動する。
 
-Nix で導入済みの clangd / clang-format / lua-language-server と、
-mise / rustup / プロジェクトの PATH を Mason より優先する。
-不足するツールは Mason が補う。Node と Go の runtime は mise、Python 環境は uv など、
-Java の JDK は mise が引き続き管理する。Mason はプロジェクトの runtime を導入しない。
+LSP / formatter の version は `nix/flake.lock` で固定する。
+project / mise / rustup の PATH を維持し、project の formatter 設定も引き続き優先する。
+Node 24 は Nix、Go / Java は完全な version を指定した mise、Python 環境は uv などで管理する。
+rust-analyzer / rustfmt / clippy は Rust project の toolchain に合わせる。
+
+## Plugin の固定と更新
+
+正本は config root の `lazy-lock.json`。Home Manager はこれを writable な
+`$XDG_STATE_HOME/nvim/lazy-lock.json` (default `~/.local/state/nvim/lazy-lock.json`) へ配布する。
+初回の lazy.nvim 自体もこの lock の commit から bootstrap する。
+設定反映後に `:Lazy restore`、または共通の `setup-user.sh` を実行する。
+plugin の自動更新チェックは無効にしている。
+
+更新するときは `:Lazy update` を実行して動作確認後、state の lock を
+`nix/modules/home/assets/nvim/lazy-lock.json` へコピーし、差分とテストを確認する。
+次の Home Manager switch は state の lock を repo の内容で上書きするので、
+残したい更新は switch 前に repo へ取り込む。
+LSP / formatter の更新は nixpkgs の更新と build で行う。
 
 ## よく使う操作
 
@@ -168,7 +182,7 @@ CompileFlags:
 ## 確認
 
 - `:checkhealth vim.lsp`: サーバ、root、コマンド。
-- `:checkhealth mason`: インストーラの依存。
+- `:checkhealth vim.lsp`: LSP executable と起動状態。
 - `:checkhealth nvim-treesitter`: パーサと compiler。
 - `:ConformInfo`: 実際に選ばれた formatter とログ。
 - `:messages`、`:JdtShowLogs`: 起動失敗の詳細。

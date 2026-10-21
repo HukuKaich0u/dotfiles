@@ -6,7 +6,8 @@
   # skip a zsh test that hangs during the darwin build.
   programs.direnv = {
     enable = true;
-    # zsh-integrations.nix で事前生成した hook を読み込む。
+    # shell-integrations.nix で事前生成した hook を読み込む。
+    enableBashIntegration = false;
     enableZshIntegration = false;
     nix-direnv.enable = true;
   };

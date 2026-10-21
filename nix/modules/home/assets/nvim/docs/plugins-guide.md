@@ -236,7 +236,7 @@ Rust では通常の LSP に加えて次のプラグインが有効。
 | **rustaceanvim** (`mrcjkb/rustaceanvim`) | rust-analyzer を rustaceanvim 経由で駆動。`:RustLsp` 系コマンド(runnables / expand macro / hover actions 等)を追加 |
 | **bacon** (`nvim-bacon`) | `bacon` の継続チェックを Neovim から利用(下記) |
 
-`rustaceanvim` が `rust-analyzer` の設定を持つ(`rustaceanvim.lua`)。mason の install リストには rust-analyzer を入れていない。
+`rustaceanvim` が `rust-analyzer` の設定を持つ(`rustaceanvim.lua`)。rust-analyzer は project の rustup toolchain が提供する。
 
 #### bacon
 
@@ -467,7 +467,7 @@ cwd 単位でセッション(開いていたバッファ・レイアウト)を�
 
 ### nvim-emmet
 
-HTML/CSS の emmet 展開のうち、既存の選択範囲を abbreviation で包む用途だけに絞って使う(補完自体は mason の `emmet_ls` が担当)。
+HTML/CSS の emmet 展開のうち、既存の選択範囲を abbreviation で包む用途だけに絞って使う(補完自体は Nix 管理の `emmet_language_server` が担当)。
 
 | キー | 動作 |
 |------|------|
@@ -482,7 +482,6 @@ HTML/CSS の emmet 展開のうち、既存の選択範囲を abbreviation で�
 | blink.cmp | `Saghen/blink.cmp` | 補完エンジン(LSP / snippet / path) |
 | nvim-treesitter | `nvim-treesitter/nvim-treesitter` | 構文解析ベースのハイライト・textobject |
 | nvim-autopairs | `windwp/nvim-autopairs` | 括弧・クォートの自動補完 |
-| mason.nvim | `williamboman/mason.nvim` | LSP / formatter / linter のインストーラ(`mason.lua` 参照) |
 | lualine.nvim | `nvim-lualine/lualine.nvim` | ステータスライン |
 | incline.nvim | `b0o/incline.nvim` | 各ウィンドウ右上のファイル名表示 |
 | wilder.nvim | `gelguy/wilder.nvim` | コマンドライン補完 UI |

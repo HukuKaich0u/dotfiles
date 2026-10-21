@@ -18,7 +18,7 @@ Bootstraps a Linux machine for this dotfiles repo by:
 
 Options:
   --with-docker  Also install the linux-extra Docker profile
-  --with-ghostty Also install Ghostty via the official Linux installer
+  --with-ghostty Also install Ghostty via the documented community Ubuntu installer
 EOF
 }
 
@@ -53,7 +53,7 @@ main() {
   if [ "$WITH_GHOSTTY" -eq 1 ]; then
     "$SCRIPT_DIR"/install-ghostty.sh
   fi
-  "$SCRIPT_DIR"/install-rustup.sh
+  "$COMMON_DIR"/install-rustup.sh
   "$COMMON_DIR"/link-dotfiles.sh
 }
 

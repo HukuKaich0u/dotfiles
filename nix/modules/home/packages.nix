@@ -1,9 +1,7 @@
-{
-  pkgs,
-  ...
-}: {
+{pkgs, ...}: {
   home.packages = with pkgs; [
     ast-grep
+    awscli2
     bat
     clang-tools
     dotenvx
@@ -13,6 +11,7 @@
     fd
     ghostscript
     gnumake
+    google-cloud-sdk
     herdr
     imagemagick
     just
@@ -20,10 +19,12 @@
     lazygit
     lua-language-server
     luarocks
+    nodejs_24
     pipx
     pkg-config
     pnpm
     postgresql_17
+    prek
     ripgrep
     tectonic
     tmux

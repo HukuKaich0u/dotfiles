@@ -4,28 +4,20 @@
   homebrew = {
     enable = true;
     onActivation.cleanup = "uninstall";
-    onActivation.extraFlags = [ "--force-cleanup" ];
+    onActivation.extraFlags = ["--force-cleanup"];
 
     taps = [];
 
     brews = [
       "aom"
-      "awscli"
       "dnsmasq"
-      "gauche"
       "git-gui"
       "glib"
-      "gnu-time"
       "jpeg-xl"
       "libheif"
       "liblqr"
       "libraw"
       "libtiff"
-      "llvm"
-      "marp-cli"
-      "php"
-      "prek"
-      "qemu"
       "terminal-notifier"
     ];
 
@@ -33,7 +25,7 @@
       "codex"
       "cmux"
       "drawio"
-      "gcloud-cli"
+      "ghostty"
       "github"
       "ngrok"
       "utm"

@@ -5,7 +5,7 @@ set -eu
 repo_root="$(CDPATH= cd -- "$(dirname "$0")/.." && pwd)"
 packages_script="$repo_root/scripts/linux/install-packages.sh"
 setup_script="$repo_root/scripts/linux/setup.sh"
-rustup_script="$repo_root/scripts/linux/install-rustup.sh"
+rustup_script="$repo_root/scripts/common/install-rustup.sh"
 ghostty_script="$repo_root/scripts/linux/install-ghostty.sh"
 root_readme="$repo_root/README.md"
 scripts_readme="$repo_root/scripts/README.md"
@@ -39,7 +39,11 @@ assert_file_mode() {
     exit 1
   fi
 
-  actual="$(stat -f '%Lp' "$path")"
+  if actual="$(stat -c '%a' "$path" 2>/dev/null)"; then
+    :
+  else
+    actual="$(stat -f '%Lp' "$path")"
+  fi
   if [ "$actual" != "$expected" ]; then
     echo "$message"
     printf 'expected mode:\n%s\nactual mode:\n%s\n' "$expected" "$actual"
@@ -258,11 +262,11 @@ echo "install-linux-packages:\$*" >>"$log_file"
 EOF
     make_executable "$linux_dir/install-packages.sh"
 
-    cat >"$linux_dir/install-rustup.sh" <<EOF
+    cat >"$common_dir/install-rustup.sh" <<EOF
 #!/bin/sh
 echo "install-rustup:\$*" >>"$log_file"
 EOF
-    make_executable "$linux_dir/install-rustup.sh"
+    make_executable "$common_dir/install-rustup.sh"
 
     cat >"$common_dir/link-dotfiles.sh" <<EOF
 #!/bin/sh
@@ -306,11 +310,11 @@ echo "install-ghostty-linux:\$*" >>"$log_file"
 EOF
     make_executable "$linux_dir/install-ghostty.sh"
 
-    cat >"$linux_dir/install-rustup.sh" <<EOF
+    cat >"$common_dir/install-rustup.sh" <<EOF
 #!/bin/sh
 echo "install-rustup:\$*" >>"$log_file"
 EOF
-    make_executable "$linux_dir/install-rustup.sh"
+    make_executable "$common_dir/install-rustup.sh"
 
     cat >"$common_dir/link-dotfiles.sh" <<EOF
 #!/bin/sh
@@ -355,11 +359,11 @@ echo "install-ghostty-linux:\$*" >>"$log_file"
 EOF
     make_executable "$linux_dir/install-ghostty.sh"
 
-    cat >"$linux_dir/install-rustup.sh" <<EOF
+    cat >"$common_dir/install-rustup.sh" <<EOF
 #!/bin/sh
 echo "install-rustup:\$*" >>"$log_file"
 EOF
-    make_executable "$linux_dir/install-rustup.sh"
+    make_executable "$common_dir/install-rustup.sh"
 
     cat >"$common_dir/link-dotfiles.sh" <<EOF
 #!/bin/sh
@@ -481,6 +485,7 @@ EOF
 
     cat >"$fake_bin/gpg" <<'EOF'
 #!/bin/sh
+if [ "$1" = "--batch" ] && [ "$2" = "--yes" ]; then shift 2; fi
 if [ "$1" = "--dearmor" ] && [ "$2" = "--output" ]; then
   cat "$4" >"$3"
   exit 0
@@ -508,22 +513,14 @@ EOF
     PATH="$fake_bin:/bin:/usr/bin" /bin/sh "$script_under_test" core
     PATH="$fake_bin:/bin:/usr/bin" /bin/sh "$script_under_test" core
 
-    assert_file_equals "$fake_root/etc/apt/sources.list.d/google-cloud-sdk.list" \
-"deb [signed-by=$fake_root/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" \
-      "core profile should write the Google Cloud apt source once"
-    assert_file_equals "$fake_root/usr/share/keyrings/cloud.google.gpg" "google-key" \
-      "core profile should write the Google Cloud keyring"
+    assert_file_missing "$fake_root/etc/apt/sources.list.d/google-cloud-sdk.list" \
+      "core must leave Google Cloud CLI ownership to Nix"
     assert_file_equals "$log_dir/apt-get.log" \
 "update
-install -y apt-transport-https ca-certificates curl gnupg
+install -y ca-certificates curl gnupg bash unzip build-essential locales ncurses-bin
 update
-update
-install -y zsh unzip build-essential locales google-cloud-cli
-update
-install -y apt-transport-https ca-certificates curl gnupg
-update
-install -y zsh unzip build-essential locales google-cloud-cli" \
-      "re-running core should skip the repo-refresh apt update when repo files are unchanged"
+install -y ca-certificates curl gnupg bash unzip build-essential locales ncurses-bin" \
+      "core must install host prerequisites without a third-party apt repository"
 
     : >"$log_dir/apt-get.log"
 
@@ -559,6 +556,11 @@ test_linux_package_keyring_mode_repair() {
     mkdir -p "$fake_bin" "$log_dir"
 
     prepare_patched_linux_packages_script "$script_under_test" "$fake_root"
+    cat >"$fake_bin/dpkg" <<'EOF'
+#!/bin/sh
+echo amd64
+EOF
+    make_executable "$fake_bin/dpkg"
 
     cat >"$fake_bin/sudo" <<'EOF'
 #!/bin/sh
@@ -592,6 +594,7 @@ EOF
 
     cat >"$fake_bin/gpg" <<'EOF'
 #!/bin/sh
+if [ "$1" = "--batch" ] && [ "$2" = "--yes" ]; then shift 2; fi
 if [ "$1" = "--dearmor" ] && [ "$2" = "--output" ]; then
   cat "$4" >"$3"
   exit 0
@@ -606,16 +609,16 @@ exit 0
 EOF
     make_executable "$fake_bin/chown"
 
-    PATH="$fake_bin:/bin:/usr/bin" /bin/sh "$script_under_test" core
+    PATH="$fake_bin:/bin:/usr/bin" /bin/sh "$script_under_test" linux-extra
 
-    chmod 0600 "$fake_root/usr/share/keyrings/cloud.google.gpg"
-    assert_file_mode "$fake_root/usr/share/keyrings/cloud.google.gpg" "600" \
-      "test setup should drift the Google Cloud keyring mode"
+    chmod 0600 "$fake_root/etc/apt/keyrings/docker.gpg"
+    assert_file_mode "$fake_root/etc/apt/keyrings/docker.gpg" "600" \
+      "test setup should drift the Docker keyring mode"
 
-    PATH="$fake_bin:/bin:/usr/bin" /bin/sh "$script_under_test" core
+    PATH="$fake_bin:/bin:/usr/bin" /bin/sh "$script_under_test" linux-extra
 
-    assert_file_mode "$fake_root/usr/share/keyrings/cloud.google.gpg" "644" \
-      "re-running core should repair Google Cloud keyring readability drift"
+    assert_file_mode "$fake_root/etc/apt/keyrings/docker.gpg" "644" \
+      "re-running core should repair Docker keyring readability drift"
   )
 }
 
@@ -630,6 +633,11 @@ test_linux_package_keyring_download_failure() {
     mkdir -p "$fake_bin"
 
     prepare_patched_linux_packages_script "$script_under_test" "$fake_root"
+    cat >"$fake_bin/dpkg" <<'EOF'
+#!/bin/sh
+if [ "$1" = "--print-architecture" ]; then echo amd64; fi
+EOF
+    make_executable "$fake_bin/dpkg"
 
     cat >"$fake_bin/sudo" <<'EOF'
 #!/bin/sh
@@ -651,6 +659,7 @@ EOF
 
     cat >"$fake_bin/gpg" <<'EOF'
 #!/bin/sh
+if [ "$1" = "--batch" ] && [ "$2" = "--yes" ]; then shift 2; fi
 if [ "$1" = "--dearmor" ] && [ "$2" = "--output" ]; then
   cat "$4" >"$3"
   exit 0
@@ -665,8 +674,8 @@ exit 0
 EOF
     make_executable "$fake_bin/chown"
 
-    if PATH="$fake_bin:/bin:/usr/bin" /bin/sh "$script_under_test" core; then
-      echo "install-linux-packages.sh should fail when the Google Cloud keyring download fails"
+    if PATH="$fake_bin:/bin:/usr/bin" /bin/sh "$script_under_test" linux-extra; then
+      echo "install-linux-packages.sh should fail when the Docker keyring download fails"
       exit 1
     fi
   )
@@ -736,6 +745,11 @@ test_install_linux_packages_requires_curl() {
     mkdir -p "$fake_bin"
 
     prepare_patched_linux_packages_script "$script_under_test" "$fake_root"
+    cat >"$fake_bin/dpkg" <<'EOF'
+#!/bin/sh
+if [ "$1" = "--print-architecture" ]; then echo amd64; fi
+EOF
+    make_executable "$fake_bin/dpkg"
 
     cat >"$fake_bin/sudo" <<'EOF'
 #!/bin/sh
@@ -749,7 +763,7 @@ exit 0
 EOF
     make_executable "$fake_bin/apt-get"
 
-    if PATH="$fake_bin" /bin/sh "$script_under_test" core 2>"$stderr_log"; then
+    if PATH="$fake_bin" /bin/sh "$script_under_test" linux-extra 2>"$stderr_log"; then
       echo "install-linux-packages.sh should fail when curl is unavailable"
       exit 1
     fi
@@ -771,6 +785,11 @@ test_install_linux_packages_requires_gpg() {
     mkdir -p "$fake_bin"
 
     prepare_patched_linux_packages_script "$script_under_test" "$fake_root"
+    cat >"$fake_bin/dpkg" <<'EOF'
+#!/bin/sh
+if [ "$1" = "--print-architecture" ]; then echo amd64; fi
+EOF
+    make_executable "$fake_bin/dpkg"
 
     cat >"$fake_bin/sudo" <<'EOF'
 #!/bin/sh
@@ -801,7 +820,7 @@ printf 'google-key\n' >"$output_file"
 EOF
     make_executable "$fake_bin/curl"
 
-    if PATH="$fake_bin" /bin/sh "$script_under_test" core 2>"$stderr_log"; then
+    if PATH="$fake_bin" /bin/sh "$script_under_test" linux-extra 2>"$stderr_log"; then
       echo "install-linux-packages.sh should fail when gpg is unavailable"
       exit 1
     fi
@@ -855,6 +874,7 @@ EOF
 
     cat >"$fake_bin/gpg" <<'EOF'
 #!/bin/sh
+if [ "$1" = "--batch" ] && [ "$2" = "--yes" ]; then shift 2; fi
 if [ "$1" = "--dearmor" ] && [ "$2" = "--output" ]; then
   cat "$4" >"$3"
   exit 0
@@ -988,22 +1008,16 @@ assert_contains "$packages_script" 'ca-certificates' \
   "install-linux-packages.sh should include ca-certificates in core"
 assert_contains "$packages_script" 'curl' \
   "install-linux-packages.sh should include curl in core"
-assert_contains "$packages_script" 'apt-transport-https' \
-  "install-linux-packages.sh should include apt-transport-https for the gcloud apt repo"
 assert_contains "$packages_script" 'gnupg' \
-  "install-linux-packages.sh should include gnupg for the gcloud apt repo"
-assert_contains "$packages_script" 'zsh' \
-  "install-linux-packages.sh should include zsh in core"
+  "install-linux-packages.sh should include gnupg for Docker"
+assert_contains "$packages_script" 'bash' \
+  "install-linux-packages.sh should include bash in core"
 assert_contains "$packages_script" 'unzip' \
   "install-linux-packages.sh should include unzip in core"
 assert_contains "$packages_script" 'build-essential' \
   "install-linux-packages.sh should include build-essential in core"
 assert_contains "$packages_script" 'locales' \
   "install-linux-packages.sh should include locales in core"
-assert_contains "$packages_script" 'packages.cloud.google.com' \
-  "install-linux-packages.sh should configure the Google Cloud apt repository"
-assert_contains "$packages_script" 'google-cloud-cli' \
-  "install-linux-packages.sh should install google-cloud-cli in core"
 assert_contains "$packages_script" 'docker-ce' \
   "install-linux-packages.sh should install docker-ce in linux-extra"
 assert_contains "$packages_script" 'docker-ce-cli' \

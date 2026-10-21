@@ -15,11 +15,12 @@
     ./programs/hunk.nix
     ./programs/mise.nix
     ./programs/nvim.nix
+    ./programs/shell.nix
     ./programs/starship.nix
     ./programs/tmux.nix
     ./programs/yazi.nix
     ./programs/zoxide.nix
-    ./programs/zsh-integrations.nix
+    ./programs/shell-integrations.nix
   ];
 
   # This value determines the Home Manager release that your configuration is

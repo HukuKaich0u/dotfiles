@@ -1,165 +1,61 @@
 # Scripts
 
-このディレクトリには、dotfiles repo の bootstrap を役割ごとに分けた script を置く。
-
-end-to-end の環境構築手順は repo root の `README.md` を参照。
-この README は script catalog と各 script の責務整理に集中する。
-
-## 方針
-
-- `mac/` は macOS 専用の入口と installer
-- `linux/` は Linux 専用の入口と installer
-- `common/` は macOS / Linux 共通の user-level installer と dotfiles 配布
-- `scripts/` 直下に wrapper は置かない
-- script は複数回実行しても壊れにくい前提で保つ
-
-権限も責務も混ぜない。
-
-- OS package install は `sudo` が必要
-- `rustup` は user-level installer
-- dotfiles link は repo 配布処理
+全体の導入手順は [repo root README](../README.md)。
+`mac/` / `linux/` は OS 固有 bootstrap、`common/` は共通の user-level 処理。
+OS package は sudo、runtime / CLI の user install は通常ユーザーで実行する。
 
 ## Linux 最短手順
 
-Docker 不要:
-
 ```sh
 ./scripts/linux/setup.sh
+# Home Manager 初回導入・既存 Bash 設定の backup は root README を参照
 home-manager switch --flake ./nix#kokiaoyagi
-gcloud init
+# 新しい Bash を開く
+./scripts/common/setup-user.sh
 ```
 
-Ubuntu Desktop で Ghostty も必要:
-
-```sh
-./scripts/linux/setup.sh --with-ghostty
-home-manager switch --flake ./nix#kokiaoyagi
-gcloud init
-```
-
-Docker も必要:
-
-```sh
-./scripts/linux/setup.sh --with-docker
-home-manager switch --flake ./nix#kokiaoyagi
-gcloud init
-```
-
-Docker と Ghostty の両方が必要:
-
-```sh
-./scripts/linux/setup.sh --with-docker --with-ghostty
-home-manager switch --flake ./nix#kokiaoyagi
-gcloud init
-```
-
-Claude Code も必要ならこれを実行する。
-
-```sh
-./scripts/common/install-claude-code.sh
-```
-
-`scripts/linux/setup.sh` は orchestrator だけを担当する。apt repository 追加、package install、Ghostty install、`rustup` install、dotfiles link の実装詳細は個別 script 側に置く。Claude Code は公式 native installer を使うので、`scripts/common/` の user-level install step として管理する。
+Docker: `./scripts/linux/setup.sh --with-docker`
+Ubuntu Desktop の Ghostty: `./scripts/linux/setup.sh --with-ghostty`
+両方: `./scripts/linux/setup.sh --with-docker --with-ghostty`
+Google Cloud CLI は Nix 管理。認証だけ `gcloud init` を手動実行する。
 
 ## macOS 最短手順
 
 ```sh
 ./scripts/mac/setup.sh
+# 新しい zsh を開く
+./scripts/common/setup-user.sh
 ```
 
-`scripts/mac/setup.sh` は orchestrator だけを担当する。Homebrew の導入確認、`sudo darwin-rebuild switch --flake ./nix#KokiAoyagi`、dotfiles link の実装詳細は個別 script 側に置く。`cmux` 自体の package ownership は `nix/modules/darwin/homebrew.nix` にある。ghostty config は Home Manager module として repo に残すが、macOS では Homebrew install 対象にしない。
-
-この repo では `scripts/mac/`, `scripts/linux/`, `scripts/common/` の実体 path をそのまま使う。
-
-手動 step:
-
-```sh
-sudo nix --extra-experimental-features 'nix-command flakes' run nix-darwin -- switch --flake ./nix#KokiAoyagi
-```
-
-初回は `darwin-rebuild` がまだ無いことがある。その場合は上の command で一度 `nix-darwin` を適用してから、以後は `./scripts/mac/setup.sh` を再実行する。
-
-`gcloud` を使うなら追加でこれを実行する。
-
-```sh
-gcloud init
-```
-
+内部で `sudo darwin-rebuild switch --flake ./nix#KokiAoyagi` を実行する。
+初回の nix-darwin 導入は root README を参照。
+`cmux` は Homebrew cask、`mo` と共通 CLI は Nix。
 Herdr は `nix/overlays/herdr.nix` の公式 release を使う。config の検証は
 Home Manager の build 時に行い、既存の server / pane は setup では再起動しない。
+Ghostty 本体は Homebrew cask、`ghostty config` は既存の設定資産を Home Manager が配置する。
+Google Cloud CLI の認証は必要なら `gcloud init`。
 
 ## Script 一覧
 
-### `linux/setup.sh`
+| Script | 責務 |
+| --- | --- |
+| `linux/setup.sh` | core apt → 任意の Docker → 任意の Ghostty → 共通 rustup → terminfo |
+| `linux/install-packages.sh core` | ca-certificates / curl / gnupg / Bash / unzip / build-essential / locales / ncurses-bin |
+| `linux/install-packages.sh linux-extra` | Docker 公式 apt repository と Docker CE / CLI / containerd / Buildx / Compose |
+| `linux/install-ghostty.sh` | Ubuntu 向け community installer。既存 Ghostty があれば skip |
+| `mac/setup.sh` | Homebrew 確認 → nix-darwin 反映 → terminfo |
+| `mac/install-homebrew.sh` | 未導入時に Homebrew 公式 installer を実行 |
+| `mac/apply-nix-darwin.sh` | repo root で nix-darwin を反映。初回導入は担当しない |
+| `common/setup-user.sh` | Node 24 確認 → global mise install → rustup → Claude Code → Lazy restore |
+| `common/install-rustup.sh` | 未導入時に公式 rustup installer を実行 |
+| `common/install-claude-code.sh` | 公式 native installer の latest。cmux 付属 shim だけでは skip しない |
+| `common/link-dotfiles.sh` | legacy link cleanup / terminfo compile。config 配布は Home Manager |
+| `../tests/run.sh` | shell / Neovim テストの一括実行 |
 
-- 役割: Linux bootstrap の入口
-- 実行順: `linux/install-packages.sh core` → 必要なら `linux/install-packages.sh linux-extra` → 必要なら `linux/install-ghostty.sh` → `linux/install-rustup.sh` → `common/link-dotfiles.sh`
-- やらないこと: `home-manager switch`、Docker daemon の post-install 調整、`gcloud init`
-- 例: `./scripts/linux/setup.sh`, `./scripts/linux/setup.sh --with-docker`, `./scripts/linux/setup.sh --with-ghostty`
-
-### `mac/setup.sh`
-
-- 役割: macOS bootstrap の入口
-- 実行順: `mac/install-homebrew.sh` → `mac/apply-nix-darwin.sh` → `common/link-dotfiles.sh`
-- やらないこと: `darwin-rebuild` 初回導入の完全自動化、GUI app 側の認証や初期設定、`gcloud init`
-- 例: `./scripts/mac/setup.sh`
-
-### `mac/install-homebrew.sh`
-
-- 役割: macOS の Homebrew installer
-- やること: macOS 判定、既存 `brew` の skip、未導入時のみ Homebrew 公式 installer 実行
-- やらないこと: Homebrew formula / cask の適用、`darwin-rebuild` 実行、dotfiles 配布
-- 例: `./scripts/mac/install-homebrew.sh`
-
-### `mac/apply-nix-darwin.sh`
-
-- 役割: macOS の `nix-darwin` apply
-- やること: macOS 判定、`nix` と `darwin-rebuild` の前提確認、repo root で `sudo darwin-rebuild switch --flake ./nix#KokiAoyagi` 実行
-- やらないこと: Nix installer 自体の導入、`darwin-rebuild` 初回導入の完全自動化、dotfiles 配布
-- 例: `./scripts/mac/apply-nix-darwin.sh`
-
-### `linux/install-packages.sh`
-
-- 役割: Debian / Ubuntu 向け OS package installer
-- profile:
-  - `core`: `ca-certificates`, `curl`, `zsh`, `unzip`, `build-essential`, `locales`, `google-cloud-cli`
-  - `linux-extra`: Docker 公式 apt repository を登録してから `docker-ce`, `docker-ce-cli`, `containerd.io`, `docker-buildx-plugin`, `docker-compose-plugin`
-- やらないこと: `rustup` install、dotfiles 配布、Home Manager 実行
-- 例: `./scripts/linux/install-packages.sh core`, `./scripts/linux/install-packages.sh linux-extra`
-
-### `linux/install-rustup.sh`
-
-- 役割: `rustup` の shared installer
-- やること: 既存 install の検知、未導入時のみ公式 installer を non-interactive で実行
-- やらないこと: `apt` package install、dotfiles 配布、toolchain/channel カスタマイズ
-- 例: `./scripts/linux/install-rustup.sh`
-
-### `common/install-claude-code.sh`
-
-- 役割: Claude Code の user-level installer
-- やること: 既存 `claude` の skip、`curl` / `bash` 前提確認、公式 native installer の `latest` 実行、install 後の `claude` 確認
-- やらないこと: Homebrew / npm install、dotfiles 配布
-- 例: `./scripts/common/install-claude-code.sh`
-
-### `linux/install-ghostty.sh`
-
-- 役割: Ubuntu 向け `ghostty` installer
-- やること: Ubuntu 判定、既存 `ghostty` の skip、Ghostty docs が案内している Ubuntu installer 実行
-- やらないこと: `apt` profile 管理、dotfiles 配布、`ghostty` 設定ファイル管理
-- 例: `./scripts/linux/install-ghostty.sh`
-
-### `common/link-dotfiles.sh`
-
-- 役割: legacy link cleanup と terminfo compile
-- やること: legacy link cleanup、terminfo compile
-- やらないこと: `~/.config` 配下の配布(Home Manager 管理領域)、package install
-- 例: `./scripts/common/link-dotfiles.sh`
-
-### `../tests/run.sh`
-
-- 役割: `tests/` 配下の shell / Neovim テストの一括実行
-- 例: `./tests/run.sh`
-
-## 推奨手順
-
-Linux は上の「Linux 最短手順」、macOS は「macOS 最短手順」がそのまま推奨手順。
+Claude Code の個別導入は `./scripts/common/install-claude-code.sh`。
+Ghostty の個別導入は `./scripts/linux/install-ghostty.sh`。
+`setup-user.sh` は Home Manager 適用後の新しい shell で、project override のない
+repo root から実行する。runtime install は home directory を基準に行う。
+`Lazy restore` は network と build tools を必要とする場合がある。
+Rust toolchain の components / targets は project の `rust-toolchain.toml` に宣言する。
+login shell 変更、認証、既存 apt Google Cloud CLI の削除は script では行わない。

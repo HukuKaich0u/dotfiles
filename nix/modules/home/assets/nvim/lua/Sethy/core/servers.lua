@@ -1,4 +1,4 @@
--- Shared by LSP setup and Mason so installation and activation stay in sync.
+-- LSP configuration; executables are provided by programs/nvim.nix.
 -- Rust and Java have dedicated clients (rustaceanvim / nvim-jdtls).
 return {
     ts_ls = {

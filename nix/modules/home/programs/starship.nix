@@ -1,7 +1,8 @@
 {...}: {
   programs.starship = {
     enable = true;
-    # 初期化コードは zsh-integrations.nix でビルド時に生成する。
+    # 初期化コードは shell-integrations.nix でビルド時に生成する。
+    enableBashIntegration = false;
     enableZshIntegration = false;
     settings = {
       add_newline = false;

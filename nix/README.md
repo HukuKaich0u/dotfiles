@@ -1,299 +1,157 @@
 # Nix Configuration SoT
 
-この README は `nix/` 配下の **source of truth** です。
-
-- いま実際にどう置かれているか、ではなく
-- これから **どの構成に寄せるか**
-- どこに何を書くべきか
-
-を定義します。
-
-今後 `nix/` 配下を触るときは、まずこの README に従います。
-
-zero-to-working の全体手順は repo root の `README.md` を参照。
-この README は `nix/` 配下の source of truth と責務整理に集中する。
+この README は `nix/` 配下の責務と運用の source of truth。
+全体の導入手順は [repo root README](../README.md) を参照する。
 
 ## Goal
 
-- macOS は `nix-darwin` を入口に使う
-- Linux は standalone `home-manager` を入口に使う
-- 共通の user 設定は `modules/home/` に寄せる
-- OS 固有差分は `modules/darwin/` と `modules/linux/` に閉じ込める
-- overlay と helper は `overlays/` と `lib/` に分ける
-- `flake.nix` は入口の配線だけを担当し、設定本体を持たない
+- macOS は nix-darwin + Home Manager、Linux は standalone Home Manager
+- macOS の対話 shell は zsh、Linux は distro の `/bin/bash`
+- 両 OS は同じ `flake.lock` / nixpkgs / Home Manager を使う
+- 共通設定は `modules/home/`、OS 固有の設定は `modules/darwin/` / `modules/linux/`
+- Node.js 24、共通 CLI、Neovim の LSP / formatter は nixpkgs で固定
+- mise の global runtime は完全な version を指定。Node は project override のみ
+- Neovim plugin は repo の `lazy-lock.json` を共有し、`Lazy restore` で反映
 
 ## Linux Shortest Path
 
-Linux の最短 bootstrap は 2 段階です。
-
 ```sh
 ./scripts/linux/setup.sh
-home-manager switch --flake ./nix#kokiaoyagi
+# 初回は repo の lock に対応する Home Manager を使い、既存設定を backup する。
+nix run ./nix#homeConfigurations.kokiaoyagi.config.programs.home-manager.package -- \
+  -b before-dotfiles switch --flake ./nix#kokiaoyagi
+# 新しい Bash を開いてから:
+./scripts/common/setup-user.sh
 ```
 
-Ubuntu Desktop で Ghostty も必要なら最初の command だけ `./scripts/linux/setup.sh --with-ghostty` に置き換える。Docker も必要なら `./scripts/linux/setup.sh --with-docker`、両方必要なら `./scripts/linux/setup.sh --with-docker --with-ghostty` を使う。`scripts/linux/setup.sh` は OS package, `rustup`, dotfiles link、必要なら Ghostty install までを担当し、Ghostty config を含む Nix 側の反映は `home-manager switch` を明示的に続ける。
+Docker は `./scripts/linux/setup.sh --with-docker`、Ubuntu Desktop の Ghostty は
+`./scripts/linux/setup.sh --with-ghostty`、両方なら
+`./scripts/linux/setup.sh --with-docker --with-ghostty`。
+以降の反映は `home-manager switch --flake ./nix#kokiaoyagi`。
+既に zsh を login shell にしていた場合、反映前に `chsh -s /bin/bash` を実行する。
 
 ## macOS Shortest Path
 
-macOS の最短 bootstrap は、まず入口 script を実行してから必要な手動 step を続ける。
+```sh
+./scripts/mac/setup.sh
+# 新しい zsh を開いてから:
+./scripts/common/setup-user.sh
+```
+
+`scripts/mac/setup.sh` は Homebrew install、
+`sudo darwin-rebuild switch --flake ./nix#KokiAoyagi`、terminfo の準備を行う。
+初回で `darwin-rebuild` が無い場合は、repo の input に固定した版で導入する。
 
 ```sh
+sudo nix --extra-experimental-features 'nix-command flakes' run --inputs-from ./nix nix-darwin#darwin-rebuild -- switch --flake ./nix#KokiAoyagi
 ./scripts/mac/setup.sh
 ```
 
-`scripts/mac/setup.sh` は Homebrew install, `sudo darwin-rebuild switch --flake ./nix#KokiAoyagi`, dotfiles link を順に呼ぶ orchestrator として保つ。`cmux` の install は `modules/darwin/homebrew.nix` の Homebrew cask が担当する。ghostty config は Home Manager module として repo に残すが、macOS では Homebrew install 対象にしない。
-
-初回は `darwin-rebuild` command がまだ存在しない場合がある。その場合の手動 step はこれ。
-
-```sh
-sudo nix --extra-experimental-features 'nix-command flakes' run nix-darwin -- switch --flake ./nix#KokiAoyagi
-./scripts/mac/setup.sh
-```
-
-追加の手動 step:
-
-```sh
-gcloud init
-```
-
-## Canonical Structure
-
-将来的な正規構成はこれです。
-
-```text
-nix/
-├── README.md
-├── flake.nix
-├── flake.lock
-├── lib/
-│   └── *.nix
-├── overlays/
-│   ├── default.nix
-│   ├── direnv-no-zsh-check.nix
-│   └── mo-markdown-viewer.nix
-└── modules/
-    ├── home/
-    │   ├── default.nix
-    │   ├── packages.nix
-    │   ├── programs/
-    │   │   ├── agent-instructions.nix
-    │   │   ├── bacon.nix
-    │   │   ├── claude/
-    │   │   ├── codex/
-    │   │   ├── cursor.nix
-    │   │   ├── direnv.nix
-    │   │   ├── gh.nix
-    │   │   ├── git.nix
-    │   │   ├── ghostty.nix
-    │   │   ├── herdr.nix
-    │   │   ├── hunk.nix
-    │   │   ├── mise.nix
-    │   │   ├── nvim.nix
-    │   │   ├── starship.nix
-    │   │   ├── tmux.nix
-    │   │   ├── wezterm.nix
-    │   │   ├── yazi.nix
-    │   │   ├── zoxide.nix
-    │   │   └── zsh.nix
-    │   └── assets/
-    │       ├── cursor/
-    │       ├── ghostty/
-    │       ├── herdr/
-    │       ├── nvim/
-    │       ├── nvim-vscode/
-    │       ├── tmux/
-    │       └── wezterm/
-    ├── darwin/
-    │   ├── default.nix
-    │   ├── packages.nix
-    │   ├── system.nix
-    │   ├── home-manager.nix
-    │   └── homebrew.nix
-    └── linux/
-        ├── default.nix
-        ├── packages.nix
-        └── zsh.nix
-```
+`cmux` / Codex / GUI app は `modules/darwin/homebrew.nix`。
+`mo` は `modules/darwin/packages.nix` と Nix overlay。
+Ghostty 本体は macOS の Homebrew cask で導入する。
+`ghostty config` は `modules/home/assets/ghostty/config.ghostty` を正本とし、
+Home Manager が `~/Library/Application Support/com.mitchellh.ghostty/config` に配置する。
+`gcloud` の認証は両 OS とも `gcloud init`。
 
 ## Responsibility
 
-### `flake.nix`
+| 場所 | 責務 |
+| --- | --- |
+| `flake.nix` | input と OS の入口の配線。package 一覧や program 設定は置かない |
+| `lib/nixpkgs.nix` | 共通の nixpkgs config / overlay |
+| `overlays/` | 既存 package の修正、独自 package |
+| `modules/home/default.nix` | 共通 import / stateVersion |
+| `modules/home/packages.nix` | 両 OS の汎用 CLI / Node.js 24 / pnpm |
+| `modules/home/programs/` | program ごとの設定。1 program = 1 module |
+| `modules/home/assets/` | Neovim Lua / lockfile、tmux、terminal、Cursor 等の実ファイル |
+| `modules/darwin/default.nix` | macOS の user、zsh、macOS 専用 import |
+| `modules/darwin/packages.nix` | macOS だけで使う Nix package |
+| `modules/darwin/system.nix` | nix-darwin の machine 設定、root GC / optimise |
+| `modules/darwin/home-manager.nix` | nix-darwin と Home Manager の bridge |
+| `modules/darwin/homebrew.nix` | Homebrew に残す OS 連携 / GUI / 外部更新ツール |
+| `modules/linux/default.nix` | Linux user / home directory / import |
+| `modules/linux/bash.nix` | Bash completion / 履歴 / interactive 初期化 |
+| `modules/linux/packages.nix` | Linux 専用の Nix package |
 
-入口定義だけを書く場所です。
+新規 module は上記へ配置し、`nix/home-manager/` 等の別階層を作らない。
+`home.stateVersion` / `system.stateVersion` は更新のために変更しない。
 
-- `darwinConfigurations."KokiAoyagi"`
-- `homeConfigurations."kokiaoyagi"`
-- shared input / helper wiring
+## Package ownership
 
-ここに program 設定や package 一覧を書かないこと。
+- 共通 Nix CLI: AWS CLI (`awscli2`)、Google Cloud CLI (`google-cloud-sdk`)、Herdr、prek、
+  Node.js 24 (`nodejs_24`)、pnpm、および `modules/home/packages.nix` の一覧
+- Herdr は `overlays/herdr.nix` で公式 release `0.9.5` と platform ごとの SHA-256 を固定
+- macOS 専用 Nix CLI: Gauche、LLVM、Marp CLI、PHP、QEMU、GNU time、pngpaste、
+  ascii-image-converter、mo
+  (GNU time は従来の `gtime` command も提供する)
+- Homebrew: cmux、Codex、GUI app、dnsmasq、terminal-notifier、既存の native library 群
+- apt: Bash、curl、gnupg、build-essential、locales、terminfo compiler、任意の Docker
+- mise: Bun `1.3.14`、Go `1.26.6`、Java `25.0.2`、Lua `5.4.8`、Terraform `1.12.2`
+- Rust: 共通の公式 rustup installer。project の `rust-toolchain.toml` で固定
+- Python: uv を Nix で導入し、project の環境 / lockfile で管理
+- Claude Code: `scripts/common/install-claude-code.sh` の公式 native installer、自己更新。
+  本体は Nix / Homebrew に置かない
+- Codex: 当面 macOS は Homebrew cask、Linux は `npm i -g @openai/codex`
 
-### `lib/`
+mise の version は移行時の Mac の選択値を完全な version として固定したもの。
+Node 24 は Home Manager の通常の PATH に入り、mise hook に依存しない。
+project が mise で別 Node を要求した場合は、その project の指定を優先する。
+旧 activation が `~/.local/bin` に作った mise Node 依存の Corepack symlink だけを除去し、
+pnpm は Nix に統一する。Yarn 等は必要な project 側で宣言する。
 
-shared helper を置く場所です。
+Linux の旧 apt Google Cloud CLI は自動削除しない。`type -a gcloud` で Nix 版を確認し、
+不要になった apt package / 専用 apt source は手動で整理する。
+Homebrew の `cleanup = "uninstall"` により、一覧から移した formula は次の反映で外れる。
+今回の編集だけでは package の削除や環境反映は行わない。
 
-例:
+### Nix package の信頼と更新
 
-- `mkPkgs`
-- shared attr builder
-- path helper
+nixpkgs に package があることと、upstream がその配布を公式サポートすることは別。
+既存 CLI の移行では対応 platform / package source / version と実動作を確認する。
+upstream の自己更新機能は Nix store を変更できないので、Nix 管理の CLI は
+`brew upgrade` やツール自身の updater では更新せず、flake を更新して反映する。
 
-複数 module から使うロジックだけを置きます。単一ファイル専用のロジックは元の module に残します。
+`flake.lock` を更新しない限り、nixpkgs の branch の最新状態には勝手に追従しない。
+セキュリティ修正も自動では取り込まれないので、定期的に次の更新手順を実行する。
 
-### `overlays/`
+## Shell
 
-overlay の置き場です。
+alias と user PATH は `modules/home/programs/shell.nix` が正本。
+`home.shellAliases` を Bash / zsh の両方へ反映する。
 
-- 個別 overlay は 1 file 1 responsibility
-- `default.nix` で束ねる
+`modules/home/programs/shell-integrations.nix` は対象 OS の shell 用に mise / direnv /
+zoxide / Starship の初期化コードを build 時に生成する。hook の二重登録は行わない。
+Yazi の `yy` は Home Manager の Bash / zsh integration が生成する。
 
-例:
+Linux は Home Manager が `.bashrc` / `.profile` / `.bash_profile` を配布する。
+Bash completion、履歴10,000件、重複・先頭空白の除外、prompt ごとの履歴共有、
+Emacs keymap、Esc+Enter の改行入力を設定する。
+Bash 標準には zsh-autosuggestions / syntax highlighting の同等機能を追加していない。
+端末固有設定は Linux が `~/.config/bash/local.bash`、macOS が
+`~/.config/zsh/local.zsh`。login shell の変更は Home Manager では実行しない。
 
-- `direnv-no-zsh-check.nix`
-- `herdr.nix`
-  - 両 OS 共通で公式 release `0.9.5` と platform ごとの SHA-256 を固定する
-- `mo-markdown-viewer.nix`
-  - nixpkgs の `mo` は無関係な mustache テンプレートツールなので、`k1LoW/mo`(Markdown を browser で開くビューア)の darwin release binary を fetch して `mo` attr を上書きする
-  - aarch64-darwin 限定
+## Neovim
 
-`common/` のような曖昧な名前ではなく、overlay は overlay として明示します。
+- Lua: `modules/home/assets/nvim/`
+- 本体 / LSP / formatter: `modules/home/programs/nvim.nix` と共通 package
+- plugin: `modules/home/assets/nvim/lazy-lock.json`
 
-### `modules/home/`
+Mason は使わず、LSP / formatter を Nix に統一する。rust-analyzer / rustfmt / clippy は
+project の rustup toolchain に合わせる。既存 Mason data は自動削除しない。
+Neovim wrapper で PATH を上書きせず、project / mise / rustup の選択を維持する。
 
-cross-platform な Home Manager 設定の本体です。
+Home Manager は共通 lockfile を writable な `$XDG_STATE_HOME/nvim/lazy-lock.json`
+(default: `~/.local/state/nvim/lazy-lock.json`) へ配置する。
+反映後の `./scripts/common/setup-user.sh` または `:Lazy restore` で checkout をそろえる。
+初回の lazy.nvim bootstrap 自体も共通 lockfile の commit を使う。
 
-#### `modules/home/default.nix`
+plugin を更新するときは `:Lazy update` で確認後、state 側の lockfile を
+`nix/modules/home/assets/nvim/lazy-lock.json` へコピーして diff とテストを確認する。
+反映前の state の変更は端末ローカル。次回 switch で repo の lockfile に戻る。
+詳細は `modules/home/assets/nvim/docs/coding-guide.md`。
 
-共通 Home Manager module の入口です。
-
-- shared import 一覧
-- `home.stateVersion`
-- `programs.home-manager.enable`
-- 共通設定の配線
-
-#### `modules/home/packages.nix`
-
-OS を問わず入れたい user package を置きます。
-
-例:
-
-- `ast-grep`
-- `bat`
-- `clang-tools`
-- `ffmpeg`
-- `fzf`
-- `git`
-- `ripgrep`
-- `fd`
-- `ghostscript`
-- `gnumake`
-- `herdr`
-- `lazygit`
-- `imagemagick`
-- `lua-language-server`
-- `luarocks`
-- `pipx`
-- `pkg-config`
-- `pnpm`
-- `postgresql_17`
-- `tectonic`
-- `tmux`
-- `tombi`
-- `tree`
-- `tree-sitter`
-- `uv`
-
-package 一覧を `default.nix` に直接肥大化させないこと。
-
-#### `modules/home/programs/`
-
-各ツールごとの Home Manager module を置きます。
-
-- 1 program = 1 file
-- `programs.<name>` の設定はここ
-- 特定ツールの `xdg.configFile` もここ
-
-例:
-
-- `git.nix`
-- `gh.nix`
-- `ghostty.nix`
-- `claude/`
-- `codex/`
-- `cursor.nix`
-- `herdr.nix`
-- `hunk.nix`
-- `mise.nix`
-- `nvim.nix`
-- `tmux.nix`
-- `zsh.nix`
-
-#### `modules/home/assets/`
-
-program module から参照される実ファイル群を置きます。
-
-例:
-
-- Neovim の Lua / lockfile (`nvim/`)
-- VSCode/Cursor 内 Neovim 拡張用の init.lua (`nvim-vscode/`)
-- tmux の `tmux.conf`
-- Ghostty の `config`
-- WezTerm の Lua config
-- Cursor の `settings.json` / `keybindings.json` / `extensions.txt` (`cursor/`)
-- Herdr の `config.toml` / `key-bind.md` (`herdr/`)
-
-Lua や tmux conf のような asset を `programs/` と同じ階層に散らさないこと。
-
-#### `modules/home/programs/codex/`
-
-Codex 固有の Home Manager module 群です。
-
-- `config.nix`
-  - `~/.codex/config.toml` を activation で実ファイル生成する
-- `default.nix`
-  - Codex module の束ね役
-
-共有 instructions は `agent-instructions.nix` が配布します。
-この module は config.toml の生成を担当します。
-
-#### `modules/home/programs/claude/`
-
-Claude 固有の Home Manager module 群です。
-
-- `config.nix`
-  - `~/.claude/settings.json` は activation で既存 JSON に Nix 側の設定キーを merge する
-- `default.nix`
-  - Claude module の束ね役
-
-共有 instructions は `agent-instructions.nix` が `~/.claude/AGENTS.md` に配布します。
-Claude Code 本体の install ownership はここではなく platform ごとに分けます。
-
-#### `modules/home/programs/agent-instructions.nix`
-
-共有 instructions の正本は repo root の `agents/AGENTS.md` です。
-同じファイルを `home.file` で配布します。本文の変換や生成スクリプトはありません。
-
-- Claude: `~/.claude/AGENTS.md`
-- Codex: `~/.codex/AGENTS.md`
-
-Claude は v2.1.277 以降の `agents-md` 機能で祖先ディレクトリを探索します。
-`claude/config.nix` の `instructionFiles = "claude-md-and-agents-md"` により、
-プロジェクトの `CLAUDE.md` があってもホーム配下で共有本文を読み込めます。
-ホーム外や機能が利用できないセッションは対象外です。
-
-#### `modules/home/programs/cursor.nix`
-
-Cursor(エディタ)の設定配布です。macOS のみ有効。
-
-- `settings.json` / `keybindings.json` は repo 内実ファイルへの out-of-store symlink で配置する
-  - Cursor 自身が JSONC(コメント付き)で書き込むため、store 固定 symlink や jq merge は使えない
-  - GUI からの変更は git diff で拾って commit する運用
-- `extensions.txt` にある拡張を activation で一方向 sync する(未導入のものだけ install、リスト外は消さない)
-  - リスト更新: `cursor --list-extensions | sort > nix/modules/home/assets/cursor/extensions.txt`
-- asset は `assets/cursor/`、VSCode 拡張用 Neovim config は `assets/nvim-vscode/`(配布は `nvim.nix`)
-
-#### `modules/home/programs/herdr.nix`
-
-Herdr(terminal multiplexer)の本体と config を両 OS 共通で管理する。
+## Herdr
 
 本体は `overlays/herdr.nix`、設定は `modules/home/assets/herdr/config.toml`。
 nixpkgs の版が config schema に追いつかない場合も、共通 overlay で両 OS の
@@ -313,310 +171,66 @@ fallback を防ぐ。config は Nix 管理の read-only ファイルなので、
 新しい `herdr` で起動し直す。同じ版のまま config だけを変えた場合は
 `herdr server reload-config` で反映する。
 
-
-- `xdg.configFile."herdr/config.toml"` に `assets/herdr/config.toml` を配置する
-- `assets/herdr/key-bind.md` は repository-only の参照 doc で、Home Manager では配布しない
-
-#### `modules/home/programs/hunk.nix`
-
-Hunk(diff viewer)の設定です。
-
-- `programs.hunk` を有効化し、settings は module 内に直書き(asset ファイルは持たない)
-
-### `modules/darwin/`
-
-macOS 固有の責務を置く場所です。
-
-#### `modules/darwin/default.nix`
-
-macOS 用 Home Manager wrapper です。
-
-- `home.username`
-- `home.homeDirectory`
-- `modules/home/default.nix` の import
-- macOS 固有の user-only import
-
-#### `modules/darwin/packages.nix`
-
-macOS でだけ Home Manager package に載せたいものを置きます。
-
-例:
-
-- `pngpaste`
-- `ascii-image-converter`
-
-Homebrew と Home Manager の境界を曖昧にしないため、darwin 専用 package はここへ寄せます。
-
-#### `modules/darwin/system.nix`
-
-`nix-darwin` の machine-level 設定です。
-
-例:
-
-- `system.stateVersion`
-- `system.configurationRevision`
-- `system.primaryUser`
-- `users.users.<name>.home`
-- `system.defaults`
-- `security`
-
-shell や git のような user 設定はここに書かないこと。
-
-#### `modules/darwin/home-manager.nix`
-
-`nix-darwin` から Home Manager へ接続する bridge です。
-
-- `home-manager.useGlobalPkgs`
-- `home-manager.useUserPackages`
-- `home-manager.users.<name> = ./default.nix`
-
-ここに日常設定本体は書かないこと。
-
-#### `modules/darwin/homebrew.nix`
-
-Homebrew 専用です。
-
-- taps
-- brews
-- casks
-
-現状の Codex install もここで管理します。Claude Code は公式 native installer 側に寄せます。
-
-- `codex` の install は Homebrew cask
-- `mo` は当面 macOS の Homebrew brew だけで管理する
-- Claude の設定ファイル配布は `modules/home/programs/claude/`
-- Codex の設定ファイル配布は `modules/home/programs/codex/`
-
-Nix package で足りるものはまず Nix を優先し、Homebrew は macOS 依存や運用上必要なものだけに寄せます。
-`k1LoW/mo` は nixpkgs の `mo` と別物なので、Linux へ入れる場合は `k1low-mo` のような名前で overlay/package 化してから `modules/linux/packages.nix` に追加する。
-
-## Codex Layout
-
-Codex まわりは install / config / prompt assets を分けて考えます。
-
-### install
-
-- macOS: `modules/darwin/homebrew.nix`
-- Linux: `npm i -g @openai/codex`(repo root README.md の手順を正とする)
-
-### config
-
-- `modules/home/programs/codex/config.nix`
-- `~/.codex/config.toml` を Home Manager activation で実ファイル生成
-
-現状 `config.toml` に入れている設定はこれです。
-
-```toml
-model = "gpt-6-astra"
-approval_policy = "on-request"
-model_reasoning_effort = "high"
-model_verbosity = "medium"
-web_search = "live"
-personality = "pragmatic"
-
-[tui.keymap.global]
-open_external_editor = []
-```
-
-これはプロンプト入力中に external editor を開く操作を無効化する設定です。
-
-`config.toml` は symlink ではなく writable な実ファイルとして生成するので、Codex 自身が trust 状態などを書き込めます。ただし次回 `home-manager switch` では Nix 側の初期値で上書きされます。
-
-### prompt assets / adapters
-
-- repo root `/.codex/AGENTS.md`
-- repo root `/.claude/`
-- repo root `/.agents/skills/`
-
-役割はこう分けます。
-
-- `/.codex/`
-  - Codex 用 adapter 層
-  - `AGENTS.md` のような Codex 向け入口を置く
-- `/.claude/`
-  - Claude 用 adapter 層
-- `/.agents/`
-  - cross-tool な agent / skill 資産の SoT
-  - `AGENTS.md` の実体
-  - `skills/` の local SoT
-
-現状の `/.codex/AGENTS.md` は `/.agents/AGENTS.md` への tracked symlink です。
-つまり adapter 層の入口だけ `/.codex/` に残し、実体は `/.agents/` に寄せます。
-
-グローバル(`~/.codex/AGENTS.md` 等)への配布は `agent-instructions.nix` が担当し、
-repo 内の adapter はこのリポジトリ自体で作業するときのプロジェクトレベル指示として機能する。
-
-## Claude Layout
-
-Claude まわりも install / config / prompt assets を分けて考えます。
-
-### install
-
-- macOS: `scripts/common/install-claude-code.sh`
-- Linux: `scripts/common/install-claude-code.sh`
-
-macOS / Linux とも `./scripts/common/install-claude-code.sh` が公式 native installer を `latest` 指定で実行する。普段の shell が zsh でも installer script は `bash` で実行する。
-
-### config
-
-- `modules/home/programs/claude/config.nix`
-- `~/.claude/settings.json` は丸ごと置換ではなく、既存 JSON に Nix 側の設定キーを merge
-
-### prompt assets / adapters
-
-- repo root `/.claude/`
-- repo root `/.agents/AGENTS.md`
-
-`/.claude/CLAUDE.md` は Claude 用 adapter 層の入口で、現状は `/.agents/AGENTS.md` への tracked symlink です。
-
-### instructions と skills
-
-共有 instructions は repo root の `agents/AGENTS.md` で編集し、Home Manager で反映します。
-独自の global skill は配置しません。プロジェクト固有の skill は各プロジェクト内で管理します。
-Codex 標準の `.system` と runtime の plugin は各ツールの管理に任せます。
-
-## Linux zsh
-
-Linux は standalone Home Manager を使っているので、login shell の変更までは Nix で自動化しません。
-
-- zsh の install は `scripts/linux/install-packages.sh core`
-- `google-cloud-cli` の install も `scripts/linux/install-packages.sh core`
-- default shell の変更は手動で `chsh -s "$(command -v zsh)"`
-- shell 設定ファイルは repo root の `zsh/` を source of truth にする
-- `modules/linux/zsh.nix` はその `zsh/.zshenv` / `zsh/.zshrc` を `home.file` で配布する
-- `modules/home/programs/zsh.nix` は macOS の Home Manager 用設定として残す
-
-### Linux bootstrap
-
-Linux 初回セットアップは次の順で実行します。
-
-1. `./scripts/linux/setup.sh`
-2. Docker も必要なら `./scripts/linux/setup.sh --with-docker`
-3. `home-manager switch --flake ./nix#kokiaoyagi`
-4. `gcloud` を使うなら `gcloud init`
-
-script ごとの責務と詳細は `scripts/README.md` を参照。
-
-### `modules/linux/`
-
-Linux 固有の責務を置く場所です。
-
-#### `modules/linux/default.nix`
-
-Linux 用 Home Manager wrapper です。
-
-- `home.username`
-- `home.homeDirectory`
-- `modules/home/default.nix` の import
-
-#### `modules/linux/packages.nix`
-
-Linux だけに必要な package や import を置きます。
-
-Linux 固有差分を `modules/home/` の条件分岐で増やしすぎないこと。
-`herdr` の install ownership は両 OS 共通の `modules/home/packages.nix` と
-`overlays/herdr.nix` が持つ。config は `modules/home/programs/herdr.nix` が
-検証して配布する。
-`mo` はまだ Linux には入れない。必要になったら `k1LoW/mo` 用 package を overlay に追加し、nixpkgs の別物 `mo` と衝突しない attr 名でここへ入れる。
-
-## Common Tasks
-
-| Task | Write Here |
-| --- | --- |
-| 共通 package を追加 | `modules/home/packages.nix` |
-| macOS 専用 package を追加 | `modules/darwin/packages.nix` |
-| Homebrew package を追加 | `modules/darwin/homebrew.nix` |
-| git 設定を変える | `modules/home/programs/git.nix` |
-| gh 設定を変える | `modules/home/programs/gh.nix` |
-| Codex の keymap / config を変える | `modules/home/programs/codex/config.nix` |
-| Cursor の settings / keybindings を変える | `modules/home/assets/cursor/` |
-| Cursor の拡張リストを変える | `modules/home/assets/cursor/extensions.txt` |
-| VSCode/Cursor 内 Neovim の config を変える | `modules/home/assets/nvim-vscode/` |
-| Herdr の config を変える | `modules/home/assets/herdr/config.toml` |
-| Hunk の設定を変える | `modules/home/programs/hunk.nix` |
-| グローバル instructions を変える | repo root `agents/AGENTS.md` |
-| instructions の配布先を変える | `modules/home/programs/agent-instructions.nix` |
-| プロジェクト固有の skill を追加/削除する | 各プロジェクト |
-| Codex の macOS install を変える | `modules/darwin/homebrew.nix` |
-| mise の global runtime を変える | `modules/home/programs/mise.nix` |
-| macOS の zsh 設定を変える | `modules/home/programs/zsh.nix` |
-| Linux の zsh 設定を変える | repo root `zsh/` と `modules/linux/zsh.nix` |
-| tmux 設定を変える | `modules/home/programs/tmux.nix` |
-| Neovim module 側を変える | `modules/home/programs/nvim.nix` |
-| Neovim の Lua / asset を変える | `modules/home/assets/nvim/` |
-| macOS system 設定を変える | `modules/darwin/system.nix` |
-| darwin と Home Manager の橋渡しを変える | `modules/darwin/home-manager.nix` |
-| overlay を追加する | `overlays/` |
-| flake entry を増やす / 配線を変える | `flake.nix` |
+## Other program configuration
+
+- `cursor.nix`: macOS の settings / keybindings / tasks を repo への out-of-store symlink で配布。
+  拡張は一覧から不足分のみ導入する。GUI の変更は git diff で確認する
+- `herdr.nix`: 検証済み config.toml のみ配布。`assets/herdr/key-bind.md` は repository-only
+- `hunk.nix`: Home Manager module の settings で管理
+- `agent-instructions.nix`: repo root `agents/AGENTS.md` を
+  `~/.claude/AGENTS.md` / `~/.codex/AGENTS.md` へ同じ内容で配布
+- `modules/home/programs/claude/`: writable な settings.json に管理キーを merge。
+  `agents-md` plugin の設定もここで管理する
+- `codex/config.nix`: writable な config.toml を生成。次回 switch で管理値に戻す
+- `mo-markdown-viewer.nix`: k1LoW/mo の macOS ARM release を固定。
+  nixpkgs の同名の別ツールを上書きするため、Linux で使う際は専用 attr に分ける
+- `direnv-no-zsh-check.nix`: Darwin の build に限って upstream の zsh test を回避
 
 ## Updating Inputs
 
-flake inputs を更新するときは `nixpkgs` / `nix-darwin` / `home-manager` を必ずまとめて更新する。
+nixpkgs / nix-darwin / Home Manager は互換性のため一緒に更新する。
+repo ルートから実行する。
 
 ```sh
-nix flake update nixpkgs nix-darwin home-manager
-```
-
-`nixpkgs` だけを単独で進めると、古い `nix-darwin` / `home-manager` が新しい nixpkgs と非互換になりビルドが壊れることがある(2026-07 に darwin-manual の build 失敗として発生)。逆に他の input を意図せず巻き込みたくない場合も、この 3 つは 1 セットで扱う。
-
-更新後は switch の前に必ずビルドで検証する。
-
-```sh
+nix flake update --flake ./nix nixpkgs nix-darwin home-manager
 nix build ./nix#darwinConfigurations.KokiAoyagi.system --no-link
 ./tests/run.sh
 ```
 
+Linux 上でも build / tests を確認する。
+
+```sh
+nix build ./nix#homeConfigurations.kokiaoyagi.activationPackage --no-link
+./tests/run.sh
+```
+
+この flake の Linux は `aarch64-linux` 固定。x86_64 VM を使う場合は entry を追加する。
+Mac での Linux 構成の evaluation は、Linux 上の build / 動作確認の代わりにはならない。
+`nix flake check` だけでは独自の homeConfigurations / darwinConfigurations の
+build を網羅しないため、上記 target を明示する。
+
+通過後に各 OS の switch と `setup-user.sh` を実行し、新しい shell で確認する。
+失敗した場合は switch せず lockfile / 設定の差分を見直す。
+
+## Rollback
+
+Nix 管理 package / 設定の直前の generation に戻す例:
+
+```sh
+# macOS
+sudo darwin-rebuild switch --rollback
+# Linux: home-manager generations で一覧を確認し、戻したい generation の activate を実行
+home-manager generations
+```
+
+mise の install、rustup、Claude Code、Homebrew、Neovim の plugin checkout は
+Nix generation の rollback だけでは戻らない。
+plugin は戻した設定の lockfile で `Lazy restore`、mise は戻した完全な version で
+`setup-user.sh` を再実行する。Homebrew app / 自己更新する CLI は別に更新状態を確認する。
+GC で消した generation には戻れない。macOS の保持期間は30日。
+
 ## Rules
 
-### Rule 1
-
-新しい設定は `nix/home-manager/` や `nix/nix-darwin/` の直下へ増やさないこと。
-
-新規追加先は原則として以下です。
-
-- `modules/home/`
-- `modules/darwin/`
-- `modules/linux/`
-- `overlays/`
-- `lib/`
-
-### Rule 2
-
-`flake.nix` は入口の配線だけを担当すること。
-
-- package 群を直書きしない
-- program 設定を書かない
-- user 設定本体を書かない
-
-### Rule 3
-
-共通設定に OS 条件分岐を増やしすぎないこと。
-
-判断基準:
-
-- 共通なら `modules/home/`
-- macOS 固有なら `modules/darwin/`
-- Linux 固有なら `modules/linux/`
-
-### Rule 4
-
-asset と module を分けること。
-
-- Nix module: `programs/*.nix`
-- 実ファイル: `assets/<tool>/`
-
-### Rule 5
-
-1 file 1 responsibility を崩さないこと。
-
-例:
-
-- `git` 設定は `git.nix`
-- `gh` 設定は `gh.nix`
-- Homebrew 一覧は `homebrew.nix`
-
-## Important
-
-- `nix/README.md` を `nix/` 配下の責務整理の SoT とする
-- 構成判断に迷ったら、まず README を更新してからコードを動かす
-- README に反する置き方は、一時的でも増やさない
+構成を変えるときはこの README と root / scripts / tool guides を同時に更新する。
+新規ファイルを Git flake の評価対象にしてから検証する。
+実機で確認できないものは、evaluation / build / runtime のどこまで確認したかを区別する。

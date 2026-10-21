@@ -99,7 +99,7 @@ sync_keyring() {
     return 1
   fi
 
-  if ! gpg --dearmor --output "$dearmored_tmp" "$raw_tmp"; then
+  if ! gpg --batch --yes --dearmor --output "$dearmored_tmp" "$raw_tmp"; then
     trap - EXIT HUP INT TERM
     cleanup
     return 1
@@ -165,49 +165,16 @@ sync_apt_source() {
   return 2
 }
 
-install_google_cloud_repo() {
-  apt_install apt-transport-https ca-certificates curl gnupg
-  repo_changed=0
-
-  if sync_keyring \
-    https://packages.cloud.google.com/apt/doc/apt-key.gpg \
-    /usr/share/keyrings/cloud.google.gpg; then
-    status=0
-  else
-    status=$?
-  fi
-  if [ "$status" -eq 0 ]; then
-    repo_changed=1
-  elif [ "$status" -ne 2 ]; then
-    return "$status"
-  fi
-
-  if sync_apt_source \
-    /etc/apt/sources.list.d/google-cloud-sdk.list \
-    "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main"; then
-    status=0
-  else
-    status=$?
-  fi
-  if [ "$status" -eq 0 ]; then
-    repo_changed=1
-  elif [ "$status" -ne 2 ]; then
-    return "$status"
-  fi
-
-  if [ "$repo_changed" -eq 1 ]; then
-    sudo apt-get update
-  fi
-}
-
 install_core() {
-  install_google_cloud_repo
   apt_install \
-    zsh \
+    ca-certificates \
+    curl \
+    gnupg \
+    bash \
     unzip \
     build-essential \
     locales \
-    google-cloud-cli
+    ncurses-bin
 }
 
 install_linux_extra() {
@@ -215,6 +182,7 @@ install_linux_extra() {
   . /etc/os-release
 
   apt_install ca-certificates curl gnupg
+  require_repo_commands
   repo_changed=0
 
   if sync_keyring \
@@ -267,13 +235,11 @@ main() {
     core)
       require_supported_distro
       require_base_commands
-      require_repo_commands
       install_core
       ;;
     linux-extra)
       require_supported_distro
       require_base_commands
-      require_repo_commands
       require_command dpkg \
         "dpkg is required before configuring the Docker apt repository."
       install_linux_extra

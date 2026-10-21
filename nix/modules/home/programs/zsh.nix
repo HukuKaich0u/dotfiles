@@ -27,17 +27,6 @@ in {
     autosuggestion.enable = true;
     syntaxHighlighting.enable = true;
     history.path = "${config.home.homeDirectory}/.local/state/zsh/.zsh_history";
-    shellAliases = {
-      nv = "nvim";
-      tm = "tmux";
-      codex = "codex --no-alt-screen";
-      codex-alt = "command codex";
-      codex-work = "CODEX_HOME=$HOME/.codex-work codex";
-      ghmp = "gh markdown-preview";
-      tmls = "tmux list-sessions";
-      tma = "tmux a -t";
-      tmnew = "tmux new -s";
-    };
     profileExtra = ''
       # ここは login shell の初期化。
       # コマンド解決と環境変数に関わるものは、対話操作より前にここでそろえる。
@@ -62,7 +51,8 @@ in {
           else
             export HOMEBREW_REPOSITORY="$brew_prefix"
           fi
-          export PATH="$brew_prefix/bin:$brew_prefix/sbin:$PATH"
+          # 共通 CLI は Nix を優先し、Homebrew の GUI / OS 専用ツールも使えるようにする。
+          path+=("$brew_prefix/bin" "$brew_prefix/sbin")
           [ -z "''${MANPATH-}" ] || export MANPATH=":''${MANPATH#:}"
           export INFOPATH="$brew_prefix/share/info:''${INFOPATH:-}"
           fpath[1,0]="$brew_prefix/share/zsh/site-functions"
@@ -70,24 +60,9 @@ in {
         fi
       done
 
-      path_prepend_if_dir() {
-        if [ -d "$1" ]; then
-          export PATH="$1:$PATH"
-        fi
-      }
-
-      # 標準では見つからない個人用コマンドだけを明示的に追加する。
-      path_prepend_if_dir "$HOME/.local/bin"
-      path_prepend_if_dir "$HOME/.npm-global/bin"
-
       # rustup/cargo が管理する PATH をそのまま読む。
       if [ -f "$HOME/.cargo/env" ]; then
         . "$HOME/.cargo/env"
-      fi
-
-      # Homebrew 管理の gcloud は prefix 配下の shell hook を使う。
-      if [ -n "''${HOMEBREW_PREFIX:-}" ] && [ -f "$HOMEBREW_PREFIX/share/google-cloud-sdk/path.zsh.inc" ]; then
-        . "$HOMEBREW_PREFIX/share/google-cloud-sdk/path.zsh.inc"
       fi
 
       # ここから下は PATH 以外の環境変数。
@@ -106,12 +81,6 @@ in {
         # repo に入れないマシン固有の調整を最後に差し込む。
         if [ -f "$ZDOTDIR/local.zsh" ]; then
           . "$ZDOTDIR/local.zsh"
-        fi
-      '')
-      (lib.mkOrder 700 ''
-        # gcloud の補完は重いので、必要な端末だけ明示的に有効化する。
-        if [ -n "''${ENABLE_GCLOUD_COMPLETION:-}" ] && [ -n "''${HOMEBREW_PREFIX:-}" ] && [ -f "$HOMEBREW_PREFIX/share/google-cloud-sdk/completion.zsh.inc" ]; then
-          . "$HOMEBREW_PREFIX/share/google-cloud-sdk/completion.zsh.inc"
         fi
       '')
       (lib.mkOrder 1000 ''

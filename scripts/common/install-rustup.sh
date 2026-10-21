@@ -4,7 +4,7 @@ set -eu
 
 usage() {
   cat <<'EOF'
-Usage: ./scripts/linux/install-rustup.sh
+Usage: ./scripts/common/install-rustup.sh
 
 Install rustup for the current user if it is not already available.
 EOF

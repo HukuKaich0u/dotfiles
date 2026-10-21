@@ -1,11 +1,11 @@
 ---
 created: 2026-09-05
-updated: 2026-09-07
+updated: 2026-10-15
 author: Koki Aoyagi
 type: runbook
 ---
 
-# zsh / Starship
+# Shell / Starship
 
 ## プロンプト
 
@@ -34,9 +34,9 @@ macOS では nix-darwin の `programs.zsh.enableGlobalCompInit = false` にし�
 補完の初期化を Home Manager の1回にまとめる。システムのデフォルトプロンプトも
 初期化せず、Starship を使う。補完、履歴候補、syntax highlighting は維持する。
 
-`nix/modules/home/programs/zsh-integrations.nix` が、mise / direnv / zoxide /
-Starship の zsh 初期化コードを Nix のビルド時に生成する。macOS / Linux ともに
-このファイルを source する。ツールのバージョンが変わると Nix が再生成するため、
+`nix/modules/home/programs/shell-integrations.nix` が、mise / direnv / zoxide /
+Starship の初期化コードを Nix のビルド時に生成する。macOS は zsh 用、Linux は
+Bash 用のコードを生成して source する。ツールのバージョンが変わると Nix が再生成するため、
 手動でキャッシュを更新する必要はない。
 
 mise の `hook-env` と direnv の `.envrc` 評価は実行時に残している。
@@ -44,11 +44,34 @@ mise の `hook-env` と direnv の `.envrc` 評価は実行時に残している
 起動だけを速くするために mise を shims に置き換えたり、hook を無効化したりしない。
 仕組みは [mise の shell activation](https://mise.jdx.dev/cli/activate.html) を参照。
 
+## Linux の Bash
+
+設定は `nix/modules/linux/bash.nix`。distro の `/bin/bash` を利用し、Home Manager が
+`.bashrc` / `.profile` / `.bash_profile` を配布する。
+初回は root README の `-b before-dotfiles` を使って既存ファイルを backup する。
+以前 zsh を login shell にした場合は `chsh -s /bin/bash` を実行して新しい shell を開く。
+
+- macOS と共通の alias (`nv` / `tm` / `codex` / tmux 操作等)
+- Starship / mise / direnv / zoxide、Yazi から cwd を変更する `yy`
+- Bash completion、履歴10,000件、prompt ごとの履歴追記・他セッションからの取り込み
+- Emacs keymap、Esc+Enter による改行入力
+
+alias / 個人用 PATH の正本は `nix/modules/home/programs/shell.nix`。
+Node 24 は Nix の通常の PATH に置き、mise activation に依存しない。
+Bash の非 login 対話 shell も Nix の PATH / session 変数を読み込む。
+非対話 shell は prompt / completion の初期化を行わない。
+Bash に zsh の autosuggestions / syntax highlighting を追加してはいない。
+
+端末固有設定は Linux が `~/.config/bash/local.bash`、macOS が
+`~/.config/zsh/local.zsh`。Linux の local.bash は共通 hook / keymap の後に読む。
+
 ## 検証
 
 ```sh
 sh tests/starship_prompt_test.sh
 sh tests/zsh_headless_smoke_test.sh
+# 新しい構成の Bash は tests/shell_configuration_test.sh で検証する
+sh tests/shell_configuration_test.sh
 nix build --no-link --no-write-lock-file ./nix#darwinConfigurations.KokiAoyagi.system
 ```
 
@@ -71,10 +94,18 @@ headless のテストはインストール済み設定に対する `zsh -lic` �
 
 ## 反映
 
+macOS:
+
 新規 Nix ファイルを Git の追跡対象にした後、repository のルートで実行する。
 
 ```sh
 sudo darwin-rebuild switch --flake ./nix#KokiAoyagi
+```
+
+Linux:
+
+```sh
+home-manager switch --flake ./nix#kokiaoyagi
 ```
 
 その後、新しい Terminal タブを開く。`source ~/.zshrc` だけでは `/etc/zshrc` の
