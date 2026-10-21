@@ -82,6 +82,8 @@ sudo nix --extra-experimental-features 'nix-command flakes' run --inputs-from ./
 ```
 
 共通 CLI は Nix、`cmux` / Codex / GUI app は Homebrew。
+Markdown Preview（`markdown-preview`）も Homebrew で導入し、Markdown の閲覧と Quick Look に使う。
+shell からは `m README.md` で開く。
 `mo` は macOS 限定の Nix overlay で管理する。
 Herdr は共通 overlay で公式 release を固定し、config は同じ版の
 `herdr config check` が build 時に通ったものを配布する。

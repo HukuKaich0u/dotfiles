@@ -27,6 +27,7 @@
       "drawio"
       "ghostty"
       "github"
+      "markdown-preview"
       "ngrok"
       "utm"
       "visual-studio-code"

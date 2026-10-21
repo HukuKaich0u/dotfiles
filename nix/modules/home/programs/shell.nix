@@ -1,16 +1,25 @@
-{config, ...}: {
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}: {
   # Shell ごとの alias の写しを作らない。Home Manager が bash / zsh へ配布する。
-  home.shellAliases = {
-    nv = "nvim";
-    tm = "tmux";
-    codex = "codex --no-alt-screen";
-    codex-alt = "command codex";
-    codex-work = "CODEX_HOME=$HOME/.codex-work codex";
-    ghmp = "gh markdown-preview";
-    tmls = "tmux list-sessions";
-    tma = "tmux a -t";
-    tmnew = "tmux new -s";
-  };
+  home.shellAliases =
+    {
+      nv = "nvim";
+      tm = "tmux";
+      codex = "codex --no-alt-screen";
+      codex-alt = "command codex";
+      codex-work = "CODEX_HOME=$HOME/.codex-work codex";
+      ghmp = "gh markdown-preview";
+      tmls = "tmux list-sessions";
+      tma = "tmux a -t";
+      tmnew = "tmux new -s";
+    }
+    // lib.optionalAttrs pkgs.stdenv.isDarwin {
+      m = "mdp";
+    };
 
   home.sessionPath = [
     "${config.home.homeDirectory}/.local/bin"

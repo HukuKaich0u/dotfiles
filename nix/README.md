@@ -48,6 +48,7 @@ sudo nix --extra-experimental-features 'nix-command flakes' run --inputs-from ./
 ```
 
 `cmux` / Codex / GUI app は `modules/darwin/homebrew.nix`。
+Markdown Preview（`markdown-preview`）は Markdown 閲覧用の app / Quick Look 拡張として Homebrew で導入する。
 `mo` は `modules/darwin/packages.nix` と Nix overlay。
 Ghostty 本体は macOS の Homebrew cask で導入する。
 `ghostty config` は `modules/home/assets/ghostty/config.ghostty` を正本とし、
@@ -119,6 +120,7 @@ upstream の自己更新機能は Nix store を変更できないので、Nix �
 
 alias と user PATH は `modules/home/programs/shell.nix` が正本。
 `home.shellAliases` を Bash / zsh の両方へ反映する。
+macOS では `m` を Homebrew の `mdp`（Markdown Preview）へ割り当てる。
 
 `modules/home/programs/shell-integrations.nix` は対象 OS の shell 用に mise / direnv /
 zoxide / Starship の初期化コードを build 時に生成する。hook の二重登録は行わない。

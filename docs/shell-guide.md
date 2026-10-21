@@ -1,6 +1,6 @@
 ---
 created: 2026-09-05
-updated: 2026-10-15
+updated: 2026-10-21
 author: Koki Aoyagi
 type: runbook
 ---
@@ -57,6 +57,7 @@ mise の `hook-env` と direnv の `.envrc` 評価は実行時に残している
 - Emacs keymap、Esc+Enter による改行入力
 
 alias / 個人用 PATH の正本は `nix/modules/home/programs/shell.nix`。
+macOS では `m README.md` で Markdown Preview を起動する（`m` は `mdp` の alias）。
 Node 24 は Nix の通常の PATH に置き、mise activation に依存しない。
 Bash の非 login 対話 shell も Nix の PATH / session 変数を読み込む。
 非対話 shell は prompt / completion の初期化を行わない。

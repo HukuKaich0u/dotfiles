@@ -30,6 +30,7 @@ Google Cloud CLI は Nix 管理。認証だけ `gcloud init` を手動実行す�
 内部で `sudo darwin-rebuild switch --flake ./nix#KokiAoyagi` を実行する。
 初回の nix-darwin 導入は root README を参照。
 `cmux` は Homebrew cask、`mo` と共通 CLI は Nix。
+Markdown Preview（`markdown-preview`）は Homebrew cask で導入する。
 Herdr は `nix/overlays/herdr.nix` の公式 release を使う。config の検証は
 Home Manager の build 時に行い、既存の server / pane は setup では再起動しない。
 Ghostty 本体は Homebrew cask、`ghostty config` は既存の設定資産を Home Manager が配置する。
