@@ -84,11 +84,9 @@ return {
     -- 貼り付け
     { key = "v", mods = "SUPER", action = act.PasteFrom("Clipboard") },
 
-    -- Pane作成 (Shift + hjkl)
-    { key = "H", mods = "LEADER|SHIFT", action = act.SplitPane({ direction = "Left", size = { Percent = 50 } }) },
-    { key = "J", mods = "LEADER|SHIFT", action = act.SplitPane({ direction = "Down", size = { Percent = 50 } }) },
-    { key = "K", mods = "LEADER|SHIFT", action = act.SplitPane({ direction = "Up", size = { Percent = 50 } }) },
-    { key = "L", mods = "LEADER|SHIFT", action = act.SplitPane({ direction = "Right", size = { Percent = 50 } }) },
+    -- Pane作成: V = vertical (左右)、H = horizontal (上下)
+    { key = "V", mods = "LEADER|SHIFT", action = act.SplitPane({ direction = "Right", size = { Percent = 50 } }) },
+    { key = "H", mods = "LEADER|SHIFT", action = act.SplitPane({ direction = "Down", size = { Percent = 50 } }) },
     -- Pane移動 leader + hljk
     { key = "h", mods = "LEADER", action = act.ActivatePaneDirection("Left") },
     { key = "l", mods = "LEADER", action = act.ActivatePaneDirection("Right") },
