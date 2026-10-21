@@ -112,7 +112,8 @@ npm i -g @openai/codex
 Rust project は `rust-toolchain.toml` で toolchain / components / targets を宣言する。
 Neovim と Claude Code の Rust 支援には、その toolchain の `rust-analyzer` / `rustfmt` / `clippy` が必要。
 rustup の新規導入時は stable に `rust-analyzer` / `rust-src` も入れる。
-nightly などほかの toolchain と cargo の追加 tool は、必要になったときに入れる。
+nightly は未導入のときだけ入れ、既存の nightly の更新は `rustup update` に任せる。
+それ以外の toolchain と cargo の追加 tool は、必要になったときに入れる。
 `gcloud` を利用する場合の認証は `gcloud init` で行う。
 
 ## Shared agent instructions

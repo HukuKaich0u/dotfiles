@@ -110,6 +110,7 @@ run_install_rustup_test() {
   rustup_on_path="$2"
   rustup_in_home="$3"
   expected_installer_calls="$4"
+  nightly_installed="${5:-no}"
 
   (
     tmpdir="$(create_temp_dir)"
@@ -119,24 +120,30 @@ run_install_rustup_test() {
     fake_bin="$tmpdir/bin"
     curl_log="$tmpdir/curl.log"
     installer_log="$tmpdir/installer.log"
-    touch "$curl_log"
+    rustup_log="$tmpdir/rustup.log"
+    fake_rustup="$tmpdir/fake-rustup"
+    touch "$curl_log" "$rustup_log"
 
     mkdir -p "$home_dir/.cargo/bin" "$fake_bin"
 
-    if [ "$rustup_on_path" = "yes" ]; then
-      cat >"$fake_bin/rustup" <<'EOF'
+    cat >"$fake_rustup" <<EOF
 #!/bin/sh
-exit 0
+echo "\$*" >>"$rustup_log"
+if [ "\$*" = "toolchain list" ]; then
+  echo stable-aarch64-apple-darwin
+  if [ "$nightly_installed" = "yes" ]; then
+    echo nightly-aarch64-apple-darwin
+  fi
+fi
 EOF
-      make_executable "$fake_bin/rustup"
+    make_executable "$fake_rustup"
+
+    if [ "$rustup_on_path" = "yes" ]; then
+      cp "$fake_rustup" "$fake_bin/rustup"
     fi
 
     if [ "$rustup_in_home" = "yes" ]; then
-      cat >"$home_dir/.cargo/bin/rustup" <<'EOF'
-#!/bin/sh
-exit 0
-EOF
-      make_executable "$home_dir/.cargo/bin/rustup"
+      cp "$fake_rustup" "$home_dir/.cargo/bin/rustup"
     fi
 
     cat >"$fake_bin/curl" <<EOF
@@ -159,6 +166,7 @@ done
 cat >"\$output_file" <<'SCRIPT'
 #!/bin/sh
 echo "\$*" >>"$installer_log"
+cp "$fake_rustup" "$home_dir/.cargo/bin/rustup"
 SCRIPT
 EOF
     make_executable "$fake_bin/curl"
@@ -179,6 +187,15 @@ EOF
         exit 1
         ;;
     esac
+
+    if [ "$nightly_installed" = "yes" ]; then
+      assert_file_equals "$rustup_log" "toolchain list" \
+        "$scenario: existing nightly should not be reinstalled or updated"
+    else
+      assert_file_equals "$rustup_log" "toolchain list
+toolchain install nightly --profile default --allow-downgrade" \
+        "$scenario: missing nightly should be installed"
+    fi
   )
 }
 
@@ -238,6 +255,7 @@ test_install_rustup_behaviors() {
   run_install_rustup_test "PATH rustup" yes no 0
   run_install_rustup_test "HOME rustup" no yes 0
   run_install_rustup_test "missing rustup" no no 1
+  run_install_rustup_test "existing nightly" no yes 0 yes
   test_install_rustup_download_failure
   test_install_rustup_requires_curl
 }
