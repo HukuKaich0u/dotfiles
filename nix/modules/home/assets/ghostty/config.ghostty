@@ -2,8 +2,12 @@
 # Ghostty で再現できない挙動は無理に入れず、まずは pane/tab/font 周りを揃える。
 
 font-family = "JetBrainsMono Nerd Font"
-font-family = "Hiragino Sans"
+# "Hiragino Sans" だと Ghostty は W1〜W4 を同点扱いして極細の W1 を選ぶため、
+# 通常 W3 / 太字 W6 だけを持つ ProN を指定する。
+font-family = "Hiragino Kaku Gothic ProN"
 font-size = 12
+# CoreText の細い描画を WezTerm の見た目に近い太さへ寄せる。
+font-thicken = true
 
 background = "#000000"
 foreground = "#FFFFFF"
