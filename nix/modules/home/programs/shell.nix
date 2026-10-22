@@ -26,5 +26,14 @@
     "${config.home.homeDirectory}/.npm-global/bin"
     "${config.home.homeDirectory}/.cargo/bin"
   ];
-  home.sessionVariables.BAT_THEME = "1337";
+  home.sessionVariables =
+    {
+      BAT_THEME = "1337";
+    }
+    // lib.optionalAttrs pkgs.stdenv.isDarwin {
+      # eMudhra 対応: 検証済みの 2026-10-20 CA バンドルを使う一時回避策。
+      SSL_CERT_FILE = "${config.home.homeDirectory}/.config/emudhra/cacert.pem";
+      SSL_CERT_DIR = "${config.home.homeDirectory}/.config/emudhra";
+      NIX_SSL_CERT_FILE = "${config.home.homeDirectory}/.config/emudhra/cacert.pem";
+    };
 }
