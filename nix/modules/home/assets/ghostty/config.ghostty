@@ -11,7 +11,7 @@ font-thicken = true
 
 background = "#000000"
 foreground = "#FFFFFF"
-background-opacity = 0.9
+background-opacity = 0.7
 background-opacity-cells = true
 background-blur = false
 cursor-style = block
