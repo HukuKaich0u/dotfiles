@@ -16,6 +16,12 @@
   # "experimental Nix feature 'nix-command' is disabled".
   nix.settings.experimental-features = ["nix-command" "flakes"];
 
+  # eMudhra の漏洩した中間 CA へつながるルートを Nix 側でも除外する。
+  security.pki.caCertificateBlacklist = [
+    "Comodo AAA Services root"
+    "emSign ECC Root CA - G3"
+  ];
+
   # switch のたびに増える古い世代と /nix/store を定期的に掃除する。
   # 設定変更は 2 週に 1 回程度なので、30 日残せば直前の数世代へは戻せる。
   # root で走るこの GC は system の世代だけを消す。ユーザー側の世代は
