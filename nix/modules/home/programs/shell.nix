@@ -26,6 +26,12 @@
     "${config.home.homeDirectory}/.npm-global/bin"
     "${config.home.homeDirectory}/.cargo/bin"
   ];
+  # Nix 側の Node.js 更新まで、修正版を mise で優先する。
+  # NODE_OPTIONS の全体設定は Electron と互換性がないため使わない。
+  programs.mise.globalConfig = lib.mkIf pkgs.stdenv.isDarwin {
+    tools.node = "24.22.1";
+  };
+
   home.sessionVariables =
     {
       BAT_THEME = "1337";
