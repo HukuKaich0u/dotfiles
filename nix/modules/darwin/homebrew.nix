@@ -3,6 +3,10 @@
   # Keep the top-level packages that are intentionally present on this Mac here.
   homebrew = {
     enable = true;
+    # Without these, switch only installs missing entries and never runs
+    # `brew update` or upgrades what is already installed.
+    onActivation.autoUpdate = true;
+    onActivation.upgrade = true;
     onActivation.cleanup = "uninstall";
     onActivation.extraFlags = ["--force-cleanup"];
 
