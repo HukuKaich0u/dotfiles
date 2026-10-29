@@ -23,14 +23,18 @@
     pipx
     pkg-config
     pnpm
+    poppler-utils
     postgresql_17
     prek
     ripgrep
     tectonic
+    # imozuru の OCR が日本語の横書きと縦書きも読めるよう、言語データを絞って入れる。
+    (tesseract.override {enableLanguages = ["eng" "jpn" "jpn_vert"];})
     tmux
     tombi
     tree
     tree-sitter
     uv
+    yt-dlp
   ];
 }
