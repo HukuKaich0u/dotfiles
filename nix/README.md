@@ -177,6 +177,10 @@ fallback を防ぐ。config は Nix 管理の read-only ファイルなので、
 
 - `cursor.nix`: macOS の settings / keybindings / tasks を repo への out-of-store symlink で配布。
   拡張は一覧から不足分のみ導入する。GUI の変更は git diff で確認する
+- `gh.nix` / `git.nix`: `bin/gh` を git config の `gh.user` が指すアカウントで動く wrapper に
+  差し替える。git の HTTPS 認証（`gh auth git-credential`）も同じアカウントになる。
+  既定は個人、大学は remote の URL で判定。公開できない org / アカウントの割り当ては
+  `~/.config/git/local` に書く
 - `herdr.nix`: 検証済み config.toml のみ配布。`assets/herdr/key-bind.md` は repository-only
 - `hunk.nix`: Home Manager module の settings で管理
 - `agent-instructions.nix`: repo root `agents/AGENTS.md` を
