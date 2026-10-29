@@ -13,6 +13,31 @@
     permissions.defaultMode = "auto";
     # プロジェクトに CLAUDE.md があっても祖先の ~/.claude/AGENTS.md を読む。
     pluginConfigs."agents-md@builtin".options.instructionFiles = "claude-md-and-agents-md";
+    # サードパーティの marketplace は既定で自動更新が off。user settings の
+    # autoUpdate だけが known_marketplaces.json に反映されるため、ここで宣言する。
+    extraKnownMarketplaces = {
+      cursor-plugins = {
+        source = {
+          source = "github";
+          repo = "cursor/plugins";
+        };
+        autoUpdate = true;
+      };
+      i-have-adhd = {
+        source = {
+          source = "github";
+          repo = "ayghri/i-have-adhd";
+        };
+        autoUpdate = true;
+      };
+      drawio = {
+        source = {
+          source = "github";
+          repo = "jgraph/drawio-mcp";
+        };
+        autoUpdate = true;
+      };
+    };
   };
   claudeSettingsOverlay = pkgs.writeText "claude-settings-overlay.json" (builtins.toJSON claudeSettings);
 in {
