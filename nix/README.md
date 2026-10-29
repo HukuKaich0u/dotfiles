@@ -187,7 +187,8 @@ fallback を防ぐ。config は Nix 管理の read-only ファイルなので、
   `~/.claude/AGENTS.md` / `~/.codex/AGENTS.md` へ同じ内容で配布
 - `modules/home/programs/claude/`: writable な settings.json に管理キーを merge。
   `agents-md` plugin の設定もここで管理する
-- `codex/config.nix`: writable な config.toml を生成。次回 switch で管理値に戻す
+- `codex/config.nix`: writable な config.toml に管理キーを merge。Codex が書く
+  信頼済みフォルダや hook の信頼は残る。plugin の marketplace と有効化もここで管理する
 - `mo-markdown-viewer.nix`: k1LoW/mo の macOS ARM release を固定。
   nixpkgs の同名の別ツールを上書きするため、Linux で使う際は専用 attr に分ける
 - `direnv-no-zsh-check.nix`: Darwin の build に限って upstream の zsh test を回避
