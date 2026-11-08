@@ -39,6 +39,19 @@
     };
   };
   codexSettingsOverlay = pkgs.writeText "codex-settings-overlay.json" (builtins.toJSON settings);
+  codexDrawioRules = pkgs.writeText "codex-drawio.rules" ''
+    prefix_rule(
+        pattern = ["/Applications/draw.io.app/Contents/MacOS/draw.io"],
+        decision = "allow",
+        match = [["/Applications/draw.io.app/Contents/MacOS/draw.io", "-x", "-f", "png", "-o", "a.png", "a.drawio"]],
+    )
+    prefix_rule(
+        pattern = ["drawio"],
+        decision = "allow",
+        match = [["drawio", "-x", "-f", "png", "-o", "a.png", "a.drawio"]],
+        not_match = [["open", "a.drawio"]],
+    )
+  '';
 in {
   # config.toml には Codex 自身も書き込む (信頼済みフォルダ、hook の信頼、
   # CLI で追加した marketplace)。上書きするとそれらが消えるため、
@@ -60,6 +73,15 @@ in {
     # Codex が書く MCP の env などを残すようになったため、本人以外は読めなくする。
     chmod 600 "$codex_config"
     rm -f "$codex_base" "$codex_merged"
+  '';
+
+  # draw.io Desktop は sandbox 内だと WindowServer に登録できず起動直後に
+  # abort し、macOS のクラッシュダイアログが出る。allow は sandbox 外で実行
+  # させる。Codex が承認時に書き込む default.rules とは別ファイルにする。
+  # home.file の symlink だと Codex 0.166.0 は読まなかったため実ファイルで置く。
+  home.activation.writeCodexDrawioRules = lib.hm.dag.entryAfter ["writeBoundary"] ''
+    mkdir -p "$HOME/.codex/rules"
+    install -m 644 ${codexDrawioRules} "$HOME/.codex/rules/drawio.rules"
   '';
 
   # 共有 instructions の配布は ../agent-instructions.nix が担当する。
