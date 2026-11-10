@@ -13,6 +13,9 @@
     features.multi_agent = true;
 
     tui.notifications = ["agent-turn-complete" "approval-requested"];
+    # auto では Rex で音しか鳴らなかった。Rex は OSC 9 を受けると macOS の
+    # 通知を出すので明示する。
+    tui.notification_method = "osc9";
     tui.notification_condition = "always";
     tui.keymap.global.open_external_editor = [];
 
