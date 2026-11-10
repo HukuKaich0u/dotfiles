@@ -56,7 +56,7 @@ return {
             cpp = { "clang_format" },
             objc = { "clang_format" },
             objcpp = { "clang_format" },
-            nix = { "alejandra" },
+            nix = { "nixfmt" },
             sh = { "shfmt" },
             bash = { "shfmt" },
             -- shfmt does not support zsh syntax.

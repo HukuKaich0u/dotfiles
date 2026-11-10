@@ -7,7 +7,6 @@
   # Mason による端末ごとの最新解決を避け、flake.lock と一緒に更新する。
   # mise / project の PATH を妨げないよう、Neovim wrapper へ prefix しない。
   home.packages = with pkgs; [
-    alejandra
     bash-language-server
     biome
     emmet-language-server
@@ -16,6 +15,7 @@
     gotools
     jdt-language-server
     nil
+    nixfmt
     prettier
     pyright
     ruff
