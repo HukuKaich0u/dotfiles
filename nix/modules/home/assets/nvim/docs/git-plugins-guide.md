@@ -5,6 +5,7 @@
 | プラグイン | 用途 |
 |-----------|------|
 | **gitsigns.nvim** | hunk単位の変更操作・可視化 |
+| **snacks.nvim picker** | 変更ファイル一覧とunified diffをポップアップで確認 |
 | **diffview.nvim** | Git差分レビュー・ファイル履歴・merge conflict確認 |
 | **lazygit** (snacks.nvim経由) | フルスクリーンGit TUI |
 
@@ -43,7 +44,6 @@
 | キー | 動作 |
 |------|------|
 | `<leader>gp` | hunkをポップアップでプレビュー |
-| `<leader>gd` | HEADとのdiff |
 | `<leader>gD` | 前コミットとのdiff |
 
 #### Blame
@@ -74,6 +74,24 @@
 <leader>gs      " 良ければstage
 <leader>gr      " 不要なら破棄
 ```
+
+---
+
+## Snacks diff picker
+
+`<leader>gd` で、変更ファイル一覧とunified diffをポップアップで開く。
+一覧とプレビューは上下に並び、差分の表示に横幅を使える。
+以前のgitsignsの左右分割diffから、この操作へ置き換えている。
+
+| キー | 動作 |
+|------|------|
+| `<leader>gd` | ファイル単位のdiff pickerを開く |
+| `↓` / `↑` | 変更ファイルを選ぶ |
+| `Ctrl-f` / `Ctrl-b` | diffプレビューを下 / 上にスクロール |
+| `Enter` | 選択した変更箇所をファイルで開く |
+
+保存済みの変更が対象。未保存の変更は `<leader>gp` で確認する。
+直接実行する場合は `:lua Snacks.picker.git_diff({ group = true, layout = "vertical" })`。
 
 ---
 
