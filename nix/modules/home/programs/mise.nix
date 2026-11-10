@@ -1,4 +1,4 @@
-{lib, ...}: {
+{ lib, ... }: {
   programs.mise.enable = true;
   # shell-integrations.nix で事前生成した hook を読み込む。
   programs.mise.enableBashIntegration = false;
@@ -11,7 +11,7 @@
       lua = "5.4.8";
       terraform = "1.12.2";
     };
-    settings = {};
+    settings = { };
   };
 
   home.sessionVariables = {
@@ -21,7 +21,7 @@
 
   # 旧 activation が作った mise Node 依存の shim だけを外す。
   # 独自の executable や別の管理元への symlink は変更しない。
-  home.activation.removeLegacyCorepackShims = lib.hm.dag.entryAfter ["writeBoundary"] ''
+  home.activation.removeLegacyCorepackShims = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     for tool in pnpm pnpx yarn yarnpkg; do
       shim="$HOME/.local/bin/$tool"
       if [ -L "$shim" ]; then

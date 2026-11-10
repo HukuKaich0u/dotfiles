@@ -8,9 +8,9 @@
     onActivation.autoUpdate = true;
     onActivation.upgrade = true;
     onActivation.cleanup = "uninstall";
-    onActivation.extraFlags = ["--force-cleanup"];
+    onActivation.extraFlags = [ "--force-cleanup" ];
 
-    taps = [];
+    taps = [ ];
 
     brews = [
       "aom"

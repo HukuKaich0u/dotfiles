@@ -2,10 +2,12 @@
   config,
   lib,
   ...
-}: let
+}:
+let
   # Home Manager が生成する zsh 設定一式を ~/.config/zsh 配下に集約する。
   zshDotDir = "${config.home.homeDirectory}/.config/zsh";
-in {
+in
+{
   programs.zsh = {
     enable = true;
     dotDir = zshDotDir;

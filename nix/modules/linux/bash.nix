@@ -2,7 +2,8 @@
   config,
   lib,
   ...
-}: {
+}:
+{
   programs.bash = {
     enable = true;
     # Ubuntu / Debian の /bin/bash を login shell に使う。
@@ -11,8 +12,14 @@
     historyFile = "${config.home.homeDirectory}/.local/state/bash/history";
     historySize = 10000;
     historyFileSize = 10000;
-    historyControl = ["ignoreboth"];
-    shellOptions = ["histappend" "checkwinsize" "cmdhist" "extglob" "globstar"];
+    historyControl = [ "ignoreboth" ];
+    shellOptions = [
+      "histappend"
+      "checkwinsize"
+      "cmdhist"
+      "extglob"
+      "globstar"
+    ];
     # SSH の非 login 対話 shell からも Nix の package と session 変数を使う。
     bashrcExtra = ''
       if [ -f /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh ]; then

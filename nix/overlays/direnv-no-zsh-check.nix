@@ -1,7 +1,6 @@
 final: prev: {
   direnv =
-    if prev.stdenv.isDarwin
-    then
+    if prev.stdenv.isDarwin then
       prev.direnv.overrideAttrs (_old: {
         # direnv's upstream zsh integration test hangs in this darwin build path.
         checkPhase = ''
@@ -13,5 +12,6 @@ final: prev: {
           runHook postCheck
         '';
       })
-    else prev.direnv;
+    else
+      prev.direnv;
 }

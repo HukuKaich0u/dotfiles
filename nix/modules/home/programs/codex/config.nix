@@ -2,7 +2,8 @@
   lib,
   pkgs,
   ...
-}: let
+}:
+let
   settings = {
     model = "gpt-6.1-sol";
     approval_policy = "on-request";
@@ -12,12 +13,15 @@
     web_search = "live";
     features.multi_agent = true;
 
-    tui.notifications = ["agent-turn-complete" "approval-requested"];
+    tui.notifications = [
+      "agent-turn-complete"
+      "approval-requested"
+    ];
     # auto では Rex で音しか鳴らなかった。Rex は OSC 9 を受けると macOS の
     # 通知を出すので明示する。
     tui.notification_method = "osc9";
     tui.notification_condition = "always";
-    tui.keymap.global.open_external_editor = [];
+    tui.keymap.global.open_external_editor = [ ];
 
     # Codex には marketplace の自動更新が無い。配布元を宣言しておけば
     # `codex plugin marketplace upgrade` だけで全 plugin を更新できる。
@@ -55,11 +59,12 @@
         not_match = [["open", "a.drawio"]],
     )
   '';
-in {
+in
+{
   # config.toml には Codex 自身も書き込む (信頼済みフォルダ、hook の信頼、
   # CLI で追加した marketplace)。上書きするとそれらが消えるため、
   # activation で key 単位 merge し、管理キーだけを揃える。
-  home.activation.mergeCodexConfig = lib.hm.dag.entryAfter ["writeBoundary"] ''
+  home.activation.mergeCodexConfig = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     mkdir -p "$HOME/.codex" "$HOME/.codex-work"
 
     codex_config="$HOME/.codex/config.toml"
@@ -82,7 +87,7 @@ in {
   # abort し、macOS のクラッシュダイアログが出る。allow は sandbox 外で実行
   # させる。Codex が承認時に書き込む default.rules とは別ファイルにする。
   # home.file の symlink だと Codex 0.166.0 は読まなかったため実ファイルで置く。
-  home.activation.writeCodexDrawioRules = lib.hm.dag.entryAfter ["writeBoundary"] ''
+  home.activation.writeCodexDrawioRules = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     mkdir -p "$HOME/.codex/rules"
     install -m 644 ${codexDrawioRules} "$HOME/.codex/rules/drawio.rules"
   '';

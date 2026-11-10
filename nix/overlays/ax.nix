@@ -23,9 +23,9 @@ final: _prev: {
       description = "The AI-era curl: fetch, discover, extract";
       homepage = "https://github.com/yusukebe/ax";
       license = final.lib.licenses.mit;
-      sourceProvenance = [final.lib.sourceTypes.binaryNativeCode];
+      sourceProvenance = [ final.lib.sourceTypes.binaryNativeCode ];
       mainProgram = "ax";
-      platforms = ["aarch64-darwin"];
+      platforms = [ "aarch64-darwin" ];
     };
   };
 }

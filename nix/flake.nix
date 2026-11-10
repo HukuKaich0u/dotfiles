@@ -21,44 +21,49 @@
     };
   };
 
-  outputs = {
-    self,
-    nixpkgs,
-    home-manager,
-    nix-darwin,
-    hunk,
-    ...
-  }: let
-    sharedNixpkgs = import ./lib/nixpkgs.nix;
-    mkPkgs = system: import nixpkgs {
-      inherit system;
-      config = sharedNixpkgs.nixpkgs.config;
-      overlays = sharedNixpkgs.nixpkgs.overlays;
-    };
-  in {
-    # Standalone Home Manager entry is now reserved for Linux while macOS
-    # moves through nix-darwin below.
-    homeConfigurations."kokiaoyagi" = home-manager.lib.homeManagerConfiguration {
-      pkgs = mkPkgs "aarch64-linux";
-      modules = [
-        ./modules/home/default.nix
-        ./modules/linux/default.nix
-      ];
-      extraSpecialArgs = {inherit hunk;};
-    };
+  outputs =
+    {
+      self,
+      nixpkgs,
+      home-manager,
+      nix-darwin,
+      hunk,
+      ...
+    }:
+    let
+      sharedNixpkgs = import ./lib/nixpkgs.nix;
+      mkPkgs =
+        system:
+        import nixpkgs {
+          inherit system;
+          config = sharedNixpkgs.nixpkgs.config;
+          overlays = sharedNixpkgs.nixpkgs.overlays;
+        };
+    in
+    {
+      # Standalone Home Manager entry is now reserved for Linux while macOS
+      # moves through nix-darwin below.
+      homeConfigurations."kokiaoyagi" = home-manager.lib.homeManagerConfiguration {
+        pkgs = mkPkgs "aarch64-linux";
+        modules = [
+          ./modules/home/default.nix
+          ./modules/linux/default.nix
+        ];
+        extraSpecialArgs = { inherit hunk; };
+      };
 
-    # Main nix-darwin entry point. This is where macOS-wide settings such as
-    # homebrew, system.defaults, security, and users will eventually live.
-    darwinConfigurations."KokiAoyagi" = nix-darwin.lib.darwinSystem {
-      system = "aarch64-darwin";
-      # self is consumed by modules/darwin/system.nix (configurationRevision).
-      specialArgs = {inherit self hunk;};
-      modules = [
-        ./modules/darwin/system.nix
-        # Without this bridge module, nix-darwin cannot understand the
-        # home-manager.* options declared under ./modules/darwin/home-manager.nix.
-        home-manager.darwinModules.home-manager
-      ];
+      # Main nix-darwin entry point. This is where macOS-wide settings such as
+      # homebrew, system.defaults, security, and users will eventually live.
+      darwinConfigurations."KokiAoyagi" = nix-darwin.lib.darwinSystem {
+        system = "aarch64-darwin";
+        # self is consumed by modules/darwin/system.nix (configurationRevision).
+        specialArgs = { inherit self hunk; };
+        modules = [
+          ./modules/darwin/system.nix
+          # Without this bridge module, nix-darwin cannot understand the
+          # home-manager.* options declared under ./modules/darwin/home-manager.nix.
+          home-manager.darwinModules.home-manager
+        ];
+      };
     };
-  };
 }

@@ -1,4 +1,4 @@
-{hunk, ...}: {
+{ hunk, ... }: {
   imports = [
     hunk.homeManagerModules.default
     ./packages.nix

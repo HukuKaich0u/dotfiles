@@ -1,4 +1,4 @@
-{pkgs, ...}: {
+{ pkgs, ... }: {
   home.packages = with pkgs; [
     ast-grep
     awscli2
@@ -29,7 +29,13 @@
     ripgrep
     tectonic
     # imozuru の OCR が日本語の横書きと縦書きも読めるよう、言語データを絞って入れる。
-    (tesseract.override {enableLanguages = ["eng" "jpn" "jpn_vert"];})
+    (tesseract.override {
+      enableLanguages = [
+        "eng"
+        "jpn"
+        "jpn_vert"
+      ];
+    })
     tmux
     tombi
     tree

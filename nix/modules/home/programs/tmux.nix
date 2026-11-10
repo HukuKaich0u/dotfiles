@@ -1,8 +1,8 @@
 { pkgs, ... }:
 
 let
-  battery_script="${pkgs.tmuxPlugins.battery}/share/tmux-plugins/battery/scripts";
-  wifi_status_script=pkgs.writeShellScript "tmux-wifi-status" ''
+  battery_script = "${pkgs.tmuxPlugins.battery}/share/tmux-plugins/battery/scripts";
+  wifi_status_script = pkgs.writeShellScript "tmux-wifi-status" ''
     print_online() {
       printf '󰖩 on'
     }

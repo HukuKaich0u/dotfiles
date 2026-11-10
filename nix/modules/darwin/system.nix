@@ -2,7 +2,8 @@
   self,
   pkgs,
   ...
-}: {
+}:
+{
   # This is the main nix-darwin config file.
   #
   # For now it is intentionally kept as a minimal bridge so darwin can own the
@@ -14,7 +15,10 @@
   # `use flake` and darwin-rebuild enable these on their own, so plain
   # `nix develop` / `nix flake` would otherwise fail with
   # "experimental Nix feature 'nix-command' is disabled".
-  nix.settings.experimental-features = ["nix-command" "flakes"];
+  nix.settings.experimental-features = [
+    "nix-command"
+    "flakes"
+  ];
 
   # eMudhra の漏洩した中間 CA へつながるルートを Nix 側でも除外する。
   security.pki.caCertificateBlacklist = [
@@ -28,13 +32,25 @@
   # ./default.nix の Home Manager 側 nix.gc が消す。
   nix.gc = {
     automatic = true;
-    interval = [{Weekday = 7; Hour = 3; Minute = 15;}];
+    interval = [
+      {
+        Weekday = 7;
+        Hour = 3;
+        Minute = 15;
+      }
+    ];
     options = "--delete-older-than 30d";
   };
   # 同じ内容のファイルを hardlink にまとめて store の重複を減らす。
   nix.optimise = {
     automatic = true;
-    interval = [{Weekday = 7; Hour = 4; Minute = 15;}];
+    interval = [
+      {
+        Weekday = 7;
+        Hour = 4;
+        Minute = 15;
+      }
+    ];
   };
 
   # nix-darwin requires its own state version for compatibility tracking.

@@ -2,7 +2,8 @@
   lib,
   pkgs,
   ...
-}: {
+}:
+{
   imports = [
     ../home/default.nix
     ../home/programs/wezterm.nix

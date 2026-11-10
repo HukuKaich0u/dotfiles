@@ -28,7 +28,7 @@ in
     # 補完や man はそのまま使い、bin/gh だけ wrapper に差し替える。
     package = pkgs.symlinkJoin {
       name = "gh-${gh.version}";
-      paths = [gh];
+      paths = [ gh ];
       postBuild = ''
         rm "$out/bin/gh"
         ln -s ${ghWrapper} "$out/bin/gh"

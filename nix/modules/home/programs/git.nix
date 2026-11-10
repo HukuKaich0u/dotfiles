@@ -35,7 +35,7 @@
         contents.gh.user = "s1f102402697";
       }
       # 公開 repo に置けない端末ごとの設定。ファイルが無ければ Git は無視する。
-      {path = "~/.config/git/local";}
+      { path = "~/.config/git/local"; }
     ];
   };
 }

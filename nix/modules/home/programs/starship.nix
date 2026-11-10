@@ -1,4 +1,4 @@
-{...}: {
+{ ... }: {
   programs.starship = {
     enable = true;
     # 初期化コードは shell-integrations.nix でビルド時に生成する。
@@ -20,9 +20,9 @@
       # venv の activate が PS1 に足す "(name)" は残らない。
       python = {
         # 言語バージョンは出さず、VIRTUAL_ENV があるときだけ名前を出す。
-        detect_extensions = [];
-        detect_files = [];
-        detect_folders = [];
+        detect_extensions = [ ];
+        detect_files = [ ];
+        detect_folders = [ ];
         format = "[(\\($virtualenv\\) )]($style)";
         style = "#7dcfff";
       };

@@ -1,4 +1,4 @@
-{...}: {
+{ ... }: {
   # direnv evaluates a project's `.envrc` on `cd` (e.g. `use flake` to enter a
   # Nix devShell). This is separate from mise's own zsh integration, which only
   # switches runtimes from `.mise.toml`; mise cannot read `use flake`.

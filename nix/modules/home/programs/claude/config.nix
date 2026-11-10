@@ -2,7 +2,8 @@
   lib,
   pkgs,
   ...
-}: let
+}:
+let
   claudeSettings = {
     model = "opus[1m]";
     alwaysThinkingEnabled = false;
@@ -39,8 +40,11 @@
       };
     };
   };
-  claudeSettingsOverlay = pkgs.writeText "claude-settings-overlay.json" (builtins.toJSON claudeSettings);
-in {
+  claudeSettingsOverlay = pkgs.writeText "claude-settings-overlay.json" (
+    builtins.toJSON claudeSettings
+  );
+in
+{
   # Claude Code 本体は公式 native インストーラ管理 (~/.local/bin/claude, 自己アップデート)
   # のため package = null とする。settings.json は activation で key 単位 merge
   # し、Claude が書き込む動的な state はなるべく温存する。
@@ -49,7 +53,7 @@ in {
     package = null;
   };
 
-  home.activation.mergeClaudeSettings = lib.hm.dag.entryAfter ["writeBoundary"] ''
+  home.activation.mergeClaudeSettings = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     mkdir -p "$HOME/.claude"
 
     settings_target="$HOME/.claude/settings.json"

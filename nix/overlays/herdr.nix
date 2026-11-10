@@ -1,5 +1,6 @@
 # Keep Herdr's config schema and executable together while nixpkgs lags upstream.
-final: _prev: let
+final: _prev:
+let
   version = "0.9.5";
   releases = {
     aarch64-darwin = {
@@ -20,7 +21,8 @@ final: _prev: let
     };
   };
   release = releases.${final.stdenv.hostPlatform.system};
-in {
+in
+{
   herdr = final.stdenvNoCC.mkDerivation {
     pname = "herdr";
     inherit version;
@@ -49,7 +51,7 @@ in {
       homepage = "https://herdr.dev";
       changelog = "https://github.com/herdrdev/herdr/releases/tag/v${version}";
       license = final.lib.licenses.asl20;
-      sourceProvenance = [final.lib.sourceTypes.binaryNativeCode];
+      sourceProvenance = [ final.lib.sourceTypes.binaryNativeCode ];
       mainProgram = "herdr";
       platforms = builtins.attrNames releases;
     };

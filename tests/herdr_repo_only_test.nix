@@ -8,16 +8,18 @@ let
   isHerdrTarget = target: builtins.match ".*\\.config/herdr(/.*)?$" target != null;
   isHerdrConfig = target: builtins.match ".*\\.config/herdr/config\\.toml$" target != null;
 
-  assertTargetSet = name: targets:
+  assertTargetSet =
+    name: targets:
     let
       deployedKeyBindDocs = builtins.filter containsKeyBindDoc targets;
       herdrTargets = builtins.filter isHerdrTarget targets;
     in
-      if deployedKeyBindDocs != []
-      then throw "${name} must not deploy repository-only key-bind.md targets: ${builtins.toJSON deployedKeyBindDocs}"
-      else if builtins.length herdrTargets != 1 || !isHerdrConfig (builtins.head herdrTargets)
-      then throw "${name} must deploy only .config/herdr/config.toml under .config/herdr; found ${builtins.toJSON herdrTargets}"
-      else true;
+    if deployedKeyBindDocs != [ ] then
+      throw "${name} must not deploy repository-only key-bind.md targets: ${builtins.toJSON deployedKeyBindDocs}"
+    else if builtins.length herdrTargets != 1 || !isHerdrConfig (builtins.head herdrTargets) then
+      throw "${name} must deploy only .config/herdr/config.toml under .config/herdr; found ${builtins.toJSON herdrTargets}"
+    else
+      true;
 in
-  assertTargetSet "standalone Home Manager" standaloneTargets
-  && assertTargetSet "nix-darwin Home Manager" darwinTargets
+assertTargetSet "standalone Home Manager" standaloneTargets
+&& assertTargetSet "nix-darwin Home Manager" darwinTargets
