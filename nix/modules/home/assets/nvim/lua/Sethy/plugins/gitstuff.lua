@@ -1,6 +1,6 @@
 return {
     {
-        "sindrets/diffview.nvim",
+        "dlyongemallo/diffview-plus.nvim",
         cmd = {
             "DiffviewOpen",
             "DiffviewClose",
@@ -14,7 +14,7 @@ return {
             "nvim-tree/nvim-web-devicons",
         },
         keys = {
-            { "<leader>gv", "<cmd>DiffviewOpen<CR>", desc = "Git view changes" },
+            { "<leader>gd", "<cmd>DiffviewOpen<CR>", desc = "Git view changes" },
             { "<leader>gV", ":DiffviewOpen ", desc = "Git view range" },
             { "<leader>gh", "<cmd>DiffviewFileHistory %<CR>", desc = "Git history current file" },
             { "<leader>gH", "<cmd>DiffviewFileHistory<CR>", desc = "Git history repository" },
@@ -22,6 +22,10 @@ return {
             { "<leader>gq", "<cmd>DiffviewClose<CR>", desc = "Git view close" },
         },
         opts = {
+            view = {
+                default = { layout = "diff1_inline" },
+                file_history = { layout = "diff1_inline" },
+            },
             keymaps = {
                 view = {
                     { "n", "q", "<cmd>DiffviewClose<CR>", { desc = "Close diffview" } },

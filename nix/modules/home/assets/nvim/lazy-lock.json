@@ -15,9 +15,9 @@
     "branch": "master",
     "commit": "619363c30309d29ffa631e67c8183f2a72caa373"
   },
-  "diffview.nvim": {
+  "diffview-plus.nvim": {
     "branch": "main",
-    "commit": "4516612fe98ff56ae0415a259ff6361a89419b0a"
+    "commit": "fae72d6c981075dce2e0f946f002382ce0cb44e1"
   },
   "folkeTokyonight": {
     "branch": "main",

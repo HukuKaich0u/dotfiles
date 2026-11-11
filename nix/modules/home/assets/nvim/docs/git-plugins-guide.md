@@ -5,8 +5,7 @@
 | プラグイン | 用途 |
 |-----------|------|
 | **gitsigns.nvim** | hunk単位の変更操作・可視化 |
-| **snacks.nvim picker** | 変更ファイル一覧とunified diffをポップアップで確認 |
-| **diffview.nvim** | Git差分レビュー・ファイル履歴・merge conflict確認 |
+| **diffview-plus.nvim** | unified diffレビュー・ファイル履歴・merge conflict確認 |
 | **lazygit** (snacks.nvim経由) | フルスクリーンGit TUI |
 
 ---
@@ -77,33 +76,17 @@
 
 ---
 
-## Snacks diff picker
-
-`<leader>gd` で、変更ファイル一覧とunified diffをポップアップで開く。
-一覧とプレビューは上下に並び、差分の表示に横幅を使える。
-以前のgitsignsの左右分割diffから、この操作へ置き換えている。
-
-| キー | 動作 |
-|------|------|
-| `<leader>gd` | ファイル単位のdiff pickerを開く |
-| `↓` / `↑` | 変更ファイルを選ぶ |
-| `Ctrl-f` / `Ctrl-b` | diffプレビューを下 / 上にスクロール |
-| `Enter` | 選択した変更箇所をファイルで開く |
-
-保存済みの変更が対象。未保存の変更は `<leader>gp` で確認する。
-直接実行する場合は `:lua Snacks.picker.git_diff({ group = true, layout = "vertical" })`。
-
----
-
-## diffview.nvim
+## diffview-plus.nvim
 
 Gitの差分レビュー用UI。変更ファイル一覧とdiffを1つのタブで確認できる。
+通常の差分とファイル履歴は `diff1_inline` で開き、追加・削除を同じ画面に表示する。
+merge conflictは分割表示で開く。
 
 ### 起動
 
 | キー | 動作 |
 |------|------|
-| `<leader>gv` | 現在の変更をDiffviewで開く |
+| `<leader>gd` | 現在の変更をunified diffで開く |
 | `<leader>gV` | `:DiffviewOpen` 入力を開始 |
 | `<leader>gq` | Diffviewを閉じる |
 | `<leader>gf` | ファイル一覧パネルを表示/非表示 |
@@ -126,6 +109,7 @@ Gitの差分レビュー用UI。変更ファイル一覧とdiffを1つのタブ�
 ```
 
 Diffview内では `Tab` / `Shift-Tab` でファイルを移動し、`q` または `<leader>gq` で閉じる。
+`Ctrl-w w` でファイル一覧とdiffを行き来し、diff内では `j` / `k` や `Ctrl-d` / `Ctrl-u` でスクロールする。
 
 ---
 
@@ -300,7 +284,7 @@ c               " コミット
 ### 1.5. 変更全体をレビュー
 
 ```
-<leader>gv      " Diffviewで変更一覧を開く
+<leader>gd      " unified diffで変更一覧を開く
 Tab / S-Tab     " ファイル間を移動
 <leader>gf      " ファイル一覧を表示/非表示
 <leader>gq      " 閉じる

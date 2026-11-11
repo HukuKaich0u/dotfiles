@@ -227,19 +227,6 @@ return {
 				desc = "lazygit logs",
 			},
 			{
-				"<leader>gd",
-				function()
-					require("snacks").picker.git_diff({
-						group = true,
-						layout = {
-							preset = "vertical",
-							layout = { [3] = { height = 0.8 } },
-						},
-					})
-				end,
-				desc = "Git diff preview",
-			},
-			{
 				"<leader>cR",
 				function()
 					require("snacks").rename.rename_file()
