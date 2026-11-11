@@ -23,8 +23,9 @@ let
     tui.notification_condition = "always";
     tui.keymap.global.open_external_editor = [ ];
 
-    # Codex には marketplace の自動更新が無い。配布元を宣言しておけば
-    # `codex plugin marketplace upgrade` だけで全 plugin を更新できる。
+    # Codex は app-server の起動時に、ここで宣言した Git marketplace を自動で
+    # upgrade し、そこから入れた plugin も入れ直す。設定キーは無い。起動したまま
+    # 最新にしたいときは `codex plugin marketplace upgrade` を叩く。
     marketplaces = {
       pstack-claude = {
         source_type = "git";
