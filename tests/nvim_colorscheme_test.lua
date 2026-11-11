@@ -112,10 +112,14 @@ do
   assert(ch <= 10 or ch >= 350, ("Constant should be red, got #%06x"):format(hl("Constant").fg))
 end
 
--- ピンク (PreProc) は vim のマゼンタより紫を抑え、import / export には使わない
+-- ピンク (PreProc) は彩度を抑えた赤寄りにし、import / export には使わない
 do
-  local h = hue(hl("PreProc").fg)
-  assert(h >= 320 and h <= 345, ("PreProc should be a pink with less purple, got #%06x (hue %d)"):format(hl("PreProc").fg, h))
+  local fg = hl("PreProc").fg
+  local h = hue(fg)
+  local r, g, b = rgb(fg)
+  assert(h <= 10 or h >= 350, ("PreProc should be red-toned, got #%06x (hue %d)"):format(fg, h))
+  assert((math.max(r, g, b) - math.min(r, g, b)) / math.max(r, g, b) <= 0.5,
+    ("PreProc should have a muted saturation, got #%06x"):format(fg))
   assert_equal(hl("@keyword.import").fg, hl("Normal").fg, "import / export should use white instead of pink")
   assert_equal(hl("@keyword.import").bold, true, "import / export should be bold like other declaration keywords")
   assert_equal(hl("@attribute").fg, hl("PreProc").fg, "decorators / attributes should keep the pink accent")

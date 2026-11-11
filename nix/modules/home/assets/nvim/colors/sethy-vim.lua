@@ -33,7 +33,7 @@ local c = {
     yellow = "#fafa5a", -- Statement  #ffff60 (コードには使わず、行番号・検索などの UI に使う)
     green = "#55cc55", -- Type       #60ff60 (WezTerm 標準の ANSI green。default に倣い文字列に使う)
     orange = "#f5a623", -- Special    Orange
-    pink = "#ff5faf", -- PreProc    #ff80ff / Title Magenta (紫を抑えた ANSI 256 色の 205)
+    pink = "#d78787", -- PreProc / Title: コードブロックでも強く浮かない、彩度を抑えた赤寄りの色
     red = "#ee4444", -- Red
 
     -- default 由来の色
