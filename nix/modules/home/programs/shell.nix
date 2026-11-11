@@ -36,9 +36,10 @@
     BAT_THEME = "1337";
   }
   // lib.optionalAttrs pkgs.stdenv.isDarwin {
-    # eMudhra 対応: 検証済みの 2026-10-20 CA バンドルを使う一時回避策。
-    SSL_CERT_FILE = "${config.home.homeDirectory}/.config/emudhra/cacert.pem";
-    SSL_CERT_DIR = "${config.home.homeDirectory}/.config/emudhra";
-    NIX_SSL_CERT_FILE = "${config.home.homeDirectory}/.config/emudhra/cacert.pem";
+    # nix-darwin が nixpkgs の cacert から作る CA の一覧を使う。flake.lock の更新で新しくなる。
+    # 消すと python.org 版の /usr/local/bin/python3 が HTTPS の証明書を検証できなくなる。
+    SSL_CERT_FILE = "/etc/ssl/certs/ca-certificates.crt";
+    SSL_CERT_DIR = "/etc/ssl/certs";
+    NIX_SSL_CERT_FILE = "/etc/ssl/certs/ca-certificates.crt";
   };
 }
