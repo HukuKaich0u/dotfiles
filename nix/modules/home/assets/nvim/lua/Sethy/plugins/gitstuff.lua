@@ -26,6 +26,9 @@ return {
                 default = { layout = "diff1_inline" },
                 file_history = { layout = "diff1_inline" },
             },
+            file_panel = {
+                win_config = { width = 25 },
+            },
             keymaps = {
                 view = {
                     { "n", "q", "<cmd>DiffviewClose<CR>", { desc = "Close diffview" } },
