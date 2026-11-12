@@ -25,6 +25,7 @@ return {
             view = {
                 default = { layout = "diff1_inline" },
                 file_history = { layout = "diff1_inline" },
+                foldlevel = 99,
             },
             file_panel = {
                 win_config = { width = 25 },
