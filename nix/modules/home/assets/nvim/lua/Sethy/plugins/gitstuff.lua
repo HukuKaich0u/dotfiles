@@ -30,6 +30,11 @@ return {
             file_panel = {
                 win_config = { width = 25 },
             },
+            hooks = {
+                diff_buf_win_enter = function(_, winid)
+                    vim.wo[winid].foldcolumn = "0"
+                end,
+            },
             keymaps = {
                 view = {
                     { "n", "q", "<cmd>DiffviewClose<CR>", { desc = "Close diffview" } },
