@@ -153,11 +153,12 @@ require("Sethy.colors.ui").set({
     StatusLineTerm = { link = "StatusLine" },
     StatusLineTermNC = { link = "StatusLineNC" },
 
-    -- diff: vim の色相 (DarkBlue / DarkMagenta / DarkCyan / Red) のまま暗くする
-    DiffAdd = { bg = "#1c2a5c" },
-    DiffChange = { bg = "#33213f" },
-    DiffDelete = { fg = c.nontext_blue, bg = "#123b3b", bold = true },
-    DiffText = { bg = "#6b1f1f", bold = true },
+    -- diff: vim の色相だと削除が水色・変更文字が赤になり、unified diff で赤が削除に見える。
+    -- 下の Added / Changed / Removed と同じく 追加=緑・変更=青・削除=赤 にし、白い文字が読める範囲で濃くする
+    DiffAdd = { bg = "#1f5a2c" },
+    DiffChange = { bg = "#1f3f73" },
+    DiffDelete = { fg = "#8a3a3a", bg = "#6a2226" },
+    DiffText = { bg = "#2f66b8", bold = true },
     Added = { fg = "#44cc44" },
     Changed = { fg = "#3a8ee6" },
     Removed = { fg = c.red },
